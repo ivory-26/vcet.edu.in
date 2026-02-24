@@ -461,7 +461,7 @@ const Header: React.FC = () => {
           </a>
 
           {/* â”€â”€â”€â”€ Desktop Nav â”€â”€â”€â”€ */}
-          <nav className="hidden lg:flex items-center flex-1 min-w-0" aria-label="Main navigation">
+          <nav className="hidden md:flex items-center flex-1 min-w-0" aria-label="Main navigation">
             <ul className="flex items-center w-full">
               {menuGroups.map((group, idx) => (
                 <li key={group.label} className="relative flex-shrink-0">
@@ -475,7 +475,7 @@ const Header: React.FC = () => {
                         onBlur={scheduleClose}
                         aria-haspopup="true"
                         aria-expanded={activeMenu === group.label}
-                        className={`flex items-center gap-0.5 px-[5px] xl:px-[7px] py-2 text-[8px] xl:text-[9px] 2xl:text-[10px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap select-none ${
+                        className={`flex items-center gap-0.5 px-[2px] md:px-[3px] lg:px-[5px] xl:px-[7px] py-1.5 lg:py-2 text-[6.5px] md:text-[7px] lg:text-[8px] xl:text-[9px] 2xl:text-[10px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap select-none ${
                           activeMenu === group.label
                             ? 'bg-brand-blue text-white'
                             : 'text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue'
@@ -483,7 +483,7 @@ const Header: React.FC = () => {
                       >
                         {group.label}
                         <ChevronDown
-                          className={`w-2.5 h-2.5 flex-shrink-0 transition-transform duration-300 ${
+                          className={`w-2 h-2 lg:w-2.5 lg:h-2.5 flex-shrink-0 transition-transform duration-300 ${
                             activeMenu === group.label ? 'rotate-180 opacity-100' : 'opacity-40'
                           }`}
                         />
@@ -515,7 +515,7 @@ const Header: React.FC = () => {
                       href={group.href}
                       target={group.href?.startsWith('http') ? '_blank' : '_self'}
                       rel="noopener noreferrer"
-                      className="block px-[5px] xl:px-[7px] py-2 text-[8px] xl:text-[9px] 2xl:text-[10px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
+                      className="block px-[2px] md:px-[3px] lg:px-[5px] xl:px-[7px] py-1.5 lg:py-2 text-[6.5px] md:text-[7px] lg:text-[8px] xl:text-[9px] 2xl:text-[10px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
                     >
                       {group.label}
                     </a>
@@ -526,7 +526,7 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Right actions â€” search + apply */}
-          <div className="hidden lg:flex items-center gap-1 ml-auto flex-shrink-0">
+          <div className="hidden md:flex items-center gap-1 ml-auto flex-shrink-0">
             <div className="w-px h-5 bg-gray-200 mx-1" />
             <button
               onClick={() => setSearchOpen(true)}
@@ -537,14 +537,14 @@ const Header: React.FC = () => {
             </button>
             <a
               href="#admissions"
-              className="ml-0.5 flex items-center gap-1 px-3 py-2 rounded-lg text-[9px] xl:text-[10px] font-bold uppercase tracking-wide bg-brand-blue text-white hover:bg-brand-navy shadow-sm hover:shadow-md transition-all duration-200 whitespace-nowrap"
+              className="ml-0.5 flex items-center gap-1 px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg text-[7px] lg:text-[9px] xl:text-[10px] font-bold uppercase tracking-wide bg-brand-blue text-white hover:bg-brand-navy shadow-sm hover:shadow-md transition-all duration-200 whitespace-nowrap"
             >
               Apply Now <ArrowUpRight className="w-3 h-3" />
             </a>
           </div>
 
           {/* Mobile controls */}
-          <div className="lg:hidden flex items-center gap-1 ml-auto text-slate-700">
+          <div className="md:hidden flex items-center gap-1 ml-auto text-slate-700">
             <button
               onClick={() => setSearchOpen(true)}
               className="p-2 rounded-lg hover:bg-brand-blue/8 hover:text-brand-blue transition-all"
@@ -565,7 +565,7 @@ const Header: React.FC = () => {
 
       {/* â”€â”€â”€â”€â”€â”€â”€â”€ MOBILE FULL-SCREEN MENU â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div
-        className={`fixed inset-0 bg-brand-dark/98 backdrop-blur-lg text-white z-40 flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:hidden ${
+        className={`fixed inset-0 bg-brand-dark/98 backdrop-blur-lg text-white z-[60] flex flex-col transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] md:hidden ${
           mobileOpen
             ? 'opacity-100 visible translate-x-0'
             : 'opacity-0 invisible translate-x-full pointer-events-none'
