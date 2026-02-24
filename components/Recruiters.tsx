@@ -149,7 +149,7 @@ const Recruiters: React.FC = () => (
               className="text-5xl font-extrabold text-transparent bg-clip-text leading-none"
               style={{ backgroundImage: "linear-gradient(135deg, #D4A843, #E8C972)" }}
             >
-              ₹45 LPA
+              ₹21 LPA
             </h3>
             <p className="text-slate-400 text-sm mt-2">Best offer &middot; 2025 batch</p>
           </div>
