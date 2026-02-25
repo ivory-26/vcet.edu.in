@@ -17,11 +17,11 @@ const FocusCard: React.FC<{ card: Card }> = ({ card }) => (
     <img
       src={card.src}
       alt={card.title}
-      className="absolute inset-0 w-full h-full object-cover opacity-40 scale-100 group-hover:scale-105 group-hover:opacity-60 transition-all duration-700"
+      className="absolute inset-0 w-full h-full object-cover opacity-90 scale-100 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
     />
 
     {/* Dark gradient overlay */}
-    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
     {/* 2. Content block — slides up on hover */}
     <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
