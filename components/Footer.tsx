@@ -7,8 +7,8 @@ const Footer: React.FC = () => {
       {/* Top decorative line */}
       <div className="h-0.5 bg-gradient-to-r from-brand-blue via-brand-gold to-brand-blue"></div>
       
-      <div className="container mx-auto px-6 pt-16 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+      <div className="container mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 mb-10 sm:mb-14">
           
           {/* MENU Column */}
           <div>
@@ -88,14 +88,16 @@ const Footer: React.FC = () => {
             {/* Social Links */}
             <div className="flex items-center gap-3 mt-6">
               {[
-                { icon: Facebook, href: '#' },
-                { icon: Instagram, href: '#' },
-                { icon: Linkedin, href: '#' },
-                { icon: Youtube, href: '#' },
+                { icon: Facebook, href: 'https://www.facebook.com/vcet.vasai.50/' },
+                { icon: Instagram, href: 'https://www.instagram.com/official.vcet/' },
+                { icon: Linkedin, href: 'https://www.linkedin.com/school/vcetvasai/' },
+                { icon: Youtube, href: 'https://www.youtube.com/channel/UCjBw5a7WU00GwkxaTjF9jqg' },
               ].map((social, idx) => (
                 <a 
                   key={idx} 
-                  href={social.href} 
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-white/30 hover:bg-brand-gold hover:text-brand-dark transition-all duration-300"
                 >
                   <social.icon className="w-4 h-4" />

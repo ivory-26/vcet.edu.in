@@ -45,7 +45,7 @@ const Departments: React.FC = () => {
       {/* Top edge accent */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-blue via-brand-gold to-brand-blue" />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <SectionHeader
           title="Academic Departments"
           theme="light"

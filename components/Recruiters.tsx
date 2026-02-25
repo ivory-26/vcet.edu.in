@@ -67,10 +67,10 @@ const Recruiters: React.FC = () => (
       <div className="absolute bottom-3 right-3 w-5 h-5 border-b border-r" style={{ borderColor: "rgba(11,61,145,0.2)" }} />
     </div>
 
-    <div className="container mx-auto px-6 max-w-6xl relative z-10">
+    <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
 
       {/* Section Header */}
-      <div className="mb-14 text-center">
+      <div className="mb-8 md:mb-14 text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="w-8 h-px" style={{ background: "#F4B400" }} />
           <span className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: "#0B3D91" }}>
@@ -104,7 +104,7 @@ const Recruiters: React.FC = () => (
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#EAF2FB" }}>
               2024-25 &middot; Placements
             </p>
-            <h3 className="text-6xl md:text-7xl font-extrabold text-white leading-none tracking-tight">
+            <h3 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white leading-none tracking-tight">
               285
             </h3>
             <p className="text-2xl font-medium mt-2" style={{ color: "#EAF2FB" }}>Campus Offers Made</p>
@@ -180,8 +180,8 @@ const Recruiters: React.FC = () => (
             <p className="text-sm mt-1" style={{ color: "rgba(234,242,251,0.7)" }}>Companies that regularly recruit VCET graduates</p>
           </div>
           {/* Logo grid */}
-          <div className="bg-white px-8 py-10">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-5">
+          <div className="bg-white px-4 sm:px-8 py-6 sm:py-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-5">
               {recruiters.map((company) => (
                 <div
                   key={company.name}
