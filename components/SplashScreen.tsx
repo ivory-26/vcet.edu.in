@@ -21,7 +21,7 @@ const SplashScreen: React.FC = () => {
       onClick={() => setVisible(false)}
     >
       <div
-        className="relative max-h-[96vh] max-w-[720px] w-full mx-4 shadow-2xl"
+        className="relative max-h-[96vh] max-w-[95vw] w-full mx-4 shadow-2xl"
         onClick={e => e.stopPropagation()}
       >
         {/* Close button */}
@@ -38,7 +38,7 @@ const SplashScreen: React.FC = () => {
           src="/Images/Banner/poster%20Loder.png"
           alt="VCET Placement Poster"
           className="w-full h-auto block"
-          style={{ maxHeight: '96vh', objectFit: 'contain' }}
+          style={{ maxHeight: '96vh', objectFit: 'contain', width: '100%' }}
         />
 
         {/* Click outside hint */}

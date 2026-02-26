@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowDown, Send, ChevronDown, ChevronRight, ChevronLeft, Calendar, Bell } from 'lucide-react';
+import { ArrowDown, Send, ChevronDown, ChevronRight, ChevronLeft, Calendar, Bell, X, Image } from 'lucide-react';
 
 const notices = [
   { text: "Admission 2024-25: Applications open for First Year Engineering.", tag: "NEW", date: null },
@@ -175,10 +175,17 @@ const AdmissionForm: React.FC = () => {
   );
 };
 
+const packageImages = [
+  { src: '/Images/Packages/HIGEST%20Package%20banner.jpg', label: 'Highest Package' },
+  { src: '/Images/Packages/AICTE-Pamphlet_page-0001.jpg', label: 'AICTE Pamphlet' },
+];
+
 const Hero: React.FC = () => {
   const [panelOpen, setPanelOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'notices'|'events'>('notices');
   const [cardOpen, setCardOpen] = useState(false);
+  const [packagesOpen, setPackagesOpen] = useState(false);
+  const [packageIndex, setPackageIndex] = useState(0);
   return (
     <section id="home" className="relative h-screen w-full flex items-center overflow-hidden bg-brand-dark text-white -mt-12 pt-12">
 
@@ -363,6 +370,87 @@ const Hero: React.FC = () => {
           Enquire Now
         </span>
       </button>
+
+      {/* PACKAGES — vertical tab below ENQUIRE NOW */}
+      <button
+        onClick={() => { setPackagesOpen(true); setPackageIndex(0); }}
+        className="absolute left-0 z-20 flex flex-col items-center justify-center gap-2 py-10 px-3 shadow-2xl transition-all duration-200 hover:brightness-110 active:scale-95"
+        style={{
+          background: 'rgba(196, 149, 53, 0.55)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderLeft: 'none',
+          boxShadow: '0 8px 32px rgba(196,149,53,0.3), inset 0 1px 0 rgba(255,255,255,0.2)',
+          writingMode: 'vertical-rl',
+          top: 'calc(50% + 90px)',
+        }}
+        aria-label="Packages"
+      >
+        <span
+          className="text-[12px] font-extrabold uppercase tracking-[0.25em] text-white"
+          style={{ transform: 'rotate(180deg)' }}
+        >
+          Packages
+        </span>
+      </button>
+
+      {/* PACKAGES IMAGE VIEWER MODAL */}
+      {packagesOpen && (
+        <div
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={() => setPackagesOpen(false)}
+        >
+          <div
+            className="relative flex flex-col items-center max-h-[96vh] max-w-[95vw] w-full mx-4"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={() => setPackagesOpen(false)}
+              className="absolute -top-4 -right-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-700" />
+            </button>
+
+            {/* Image */}
+            <img
+              src={packageImages[packageIndex].src}
+              alt={packageImages[packageIndex].label}
+              className="w-full h-auto block shadow-2xl"
+              style={{ maxHeight: '88vh', objectFit: 'contain', width: '100%' }}
+            />
+
+            {/* Navigation dots + arrows */}
+            <div className="flex items-center gap-4 mt-4">
+              <button
+                onClick={() => setPackageIndex(i => (i - 1 + packageImages.length) % packageImages.length)}
+                className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-white" />
+              </button>
+              {packageImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPackageIndex(i)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-200 ${
+                    i === packageIndex ? 'bg-brand-gold scale-125' : 'bg-white/40 hover:bg-white/70'
+                  }`}
+                />
+              ))}
+              <button
+                onClick={() => setPackageIndex(i => (i + 1) % packageImages.length)}
+                className="w-9 h-9 rounded-full bg-white/15 hover:bg-white/30 flex items-center justify-center transition-colors"
+              >
+                <ChevronRight className="w-5 h-5 text-white" />
+              </button>
+            </div>
+            <p className="text-white/50 text-[11px] uppercase tracking-widest mt-2">
+              {packageImages[packageIndex].label} — {packageIndex + 1} / {packageImages.length}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden md:flex flex-col items-center gap-2">
