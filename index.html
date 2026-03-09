@@ -7,6 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/Images/VCET%20logo.jpeg" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -20,21 +21,25 @@
             },
             colors: {
               /* ── Primary institutional blue — strong, clear, trustworthy ── */
-              'brand-blue':       '#1A4F8C',
+              'brand-blue':       '#1a4b7c',
               /* ── Supporting lighter blue — cards, hover states, accents ── */
-              'brand-sky':        '#4A7FB5',
+              'brand-sky':        '#3a6fa8',
               /* ── Deep readable text / dark backgrounds ── */
               'brand-dark':       '#1C2B3A',
               /* ── Soft blue-tinted page background ── */
-              'brand-light':      '#EEF3F9',
-              /* ── Muted academic amber/gold — accent, highlights ── */
-              'brand-gold':       '#C49535',
+              'brand-light':      '#e8eef6',
+              /* ── Golden Yellow — accent, highlights ── */
+              'brand-gold':       '#fdb813',
               /* ── Lighter gold for gradient ends / hover ── */
-              'brand-gold-light': '#D4AA4F',
-              /* ── Medium navy for secondary headings / banners ── */
-              'brand-navy':       '#123A6E',
+              'brand-gold-light': '#fec740',
+              /* ── Navy for secondary headings / banners ── */
+              'brand-navy':       '#1a4b7c',
               /* ── Near-white page surface ── */
               'nova-white':       '#F8FAFC',
+              /* ── Dept page sidebar background ── */
+              'brand-navylight':  '#dce6f4',
+              /* ── Dept page gold-tinted background ── */
+              'brand-goldlight':  '#fffbee',
             },
             animation: {
               'scroll-up': 'scroll-up 10s linear infinite',
@@ -116,14 +121,21 @@
       /* Custom scrollbar for placement section */
       .custom-scrollbar::-webkit-scrollbar { height: 4px; }
       .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(212,168,67,0.4); border-radius: 10px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(212,168,67,0.8); }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(253,184,19,0.4); border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(253,184,19,0.8); }
+      /* Glassmorphism utility for dept timeline cards */
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
       /* Line clamp utility */
       .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
       .line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
       /* Gradient text utility */
       .text-gradient {
-        background: linear-gradient(135deg, #1B3A5C 0%, #D4A843 100%);
+        background: linear-gradient(135deg, #1a4b7c 0%, #fdb813 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -135,7 +147,7 @@
         left: 0;
         height: 3px;
         width: 0%;
-        background: linear-gradient(90deg, #1B3A5C, #D4A843);
+        background: linear-gradient(90deg, #1a4b7c, #fdb813);
         z-index: 9999;
         transition: width 0.08s linear;
         border-radius: 0 2px 2px 0;
@@ -148,8 +160,8 @@
         z-index: 9998;
         width: 44px;
         height: 44px;
-        background: #1B3A5C;
-        color: #D4A843;
+        background: #1a4b7c;
+        color: #fdb813;
         border: none;
         border-radius: 12px;
         cursor: pointer;
@@ -168,9 +180,9 @@
         pointer-events: all;
       }
       #scroll-top-btn:hover {
-        background: #D4A843;
-        color: #0F1F33;
-        box-shadow: 0 6px 28px rgba(212,168,67,0.35);
+        background: #fdb813;
+        color: #1a4b7c;
+        box-shadow: 0 6px 28px rgba(253,184,19,0.4);
         transform: translateY(-2px);
       }
       /* ── Hero entrance animations ─────────────────────── */
@@ -238,8 +250,8 @@
   <style>
     .gold-scrollbar::-webkit-scrollbar { width: 6px; }
     .gold-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
-    .gold-scrollbar::-webkit-scrollbar-thumb { background: rgba(196,149,53,0.65); border-radius: 3px; }
-    .gold-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(196,149,53,1); }
+    .gold-scrollbar::-webkit-scrollbar-thumb { background: rgba(253,184,19,0.65); border-radius: 3px; }
+    .gold-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(253,184,19,1); }
   </style>
 </head>
   <body class="bg-white text-slate-900 antialiased selection:bg-brand-blue selection:text-white">
