@@ -4,9 +4,15 @@ import { ChevronRight, Home } from 'lucide-react';
 interface PageBannerProps {
   title: string;
   breadcrumbs?: { label: string; href?: string }[];
+  /** Short category label shown above the title with decorative rules, e.g. "Leadership & Governance" */
+  category?: string;
+  /** Optional italic subtitle shown below the title */
+  subtitle?: string;
 }
 
-const PageBanner: React.FC<PageBannerProps> = ({ title, breadcrumbs }) => {
+const PageBanner: React.FC<PageBannerProps> = ({ title, breadcrumbs, category, subtitle }) => {
+  const categoryLabel = category ?? breadcrumbs?.[0]?.label ?? 'VCET';
+
   return (
     <>
       {/* ── Breadcrumb strip (below navbar) ── */}
@@ -49,18 +55,30 @@ const PageBanner: React.FC<PageBannerProps> = ({ title, breadcrumbs }) => {
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 relative z-10 py-16 md:py-24">
+          {/* Category label with decorative horizontal rules */}
+          <div className="flex items-center justify-start gap-3 mb-6 animate-fade-in" style={{ animationDelay: '0.15s' }}>
+            <span className="w-10 h-0.5 bg-brand-gold" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-gold whitespace-nowrap">
+              {categoryLabel}
+            </span>
+          </div>
+
           {/* Title */}
           <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-0.5 bg-brand-gold" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-gold">
-                {breadcrumbs?.[0]?.label || 'VCET'}
-              </span>
-            </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white tracking-tight leading-tight">
               {title}
             </h1>
           </div>
+
+          {/* Optional italic subtitle */}
+          {subtitle && (
+            <p
+              className="mt-6 max-w-2xl text-base md:text-lg text-white/70 leading-relaxed animate-fade-in-up"
+              style={{ animationDelay: '0.3s' }}
+            >
+              {subtitle}
+            </p>
+          )}
         </div>
 
         {/* Bottom gradient fade */}
