@@ -20,6 +20,8 @@ const members = [
   { id: 8,  role: 'Member',           name: 'Director, WRO AICTE',                   description: 'Ex-Officio',                                     image: 'https://picsum.photos/seed/aicte/400/400'  },
   { id: 9,  role: 'Member',           name: 'Educationalist / Industrialist',         description: 'Nominated by AICTE',                             image: 'https://picsum.photos/seed/edu/400/400'    },
   { id: 10, role: 'Member Secretary', name: 'Dr. Rakesh Himte',                       description: 'Principal',                                      image: 'https://picsum.photos/seed/himte/400/400'  },
+  { id: 11, role: 'Member',           name: 'Dr. Uday Aswalekar',                     description: 'Staff Representative, Professor — Mechanical Engg.', image: 'https://picsum.photos/seed/aswalekar/400/400' },
+  { id: 12, role: 'Member',           name: 'Dr. Archana Ekbote',                     description: 'Staff Representative, Assistant Professor — IT',  image: 'https://picsum.photos/seed/ekbote/400/400' },
 ];
 
 export default function GoverningCouncil() {
@@ -32,9 +34,9 @@ export default function GoverningCouncil() {
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/10 rounded-full translate-y-1/2 -translate-x-1/3 blur-3xl pointer-events-none" />
 
-          <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="max-w-5xl mx-auto text-left relative z-10">
             {/* Breadcrumb */}
-            <div className="flex items-center justify-center text-sm text-blue-200/80 mb-8 gap-2 font-medium">
+            <div className="flex items-center justify-start text-sm text-blue-200/80 mb-8 gap-2 font-medium">
               <Home className="w-4 h-4" />
               <ChevronRight className="w-4 h-4" />
               <span className="hover:text-white cursor-pointer transition-colors">About Us</span>
@@ -43,7 +45,7 @@ export default function GoverningCouncil() {
             </div>
 
             {/* Eyebrow */}
-            <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="flex items-center justify-start gap-3 mb-6">
               <div className="w-12 h-px bg-[#fdb813]" />
               <p className="font-sans text-xs tracking-[0.3em] text-[#fdb813] font-bold uppercase">
                 Leadership &amp; Governance
@@ -54,7 +56,7 @@ export default function GoverningCouncil() {
             <h1 className="font-serif text-5xl md:text-6xl text-white mb-6">
               The Governing Council
             </h1>
-            <p className="font-serif text-lg text-blue-100 max-w-2xl mx-auto leading-relaxed italic">
+            <p className="font-serif text-lg text-blue-100 max-w-2xl leading-relaxed italic">
               A distinguished assembly of educators, industrialists, and visionaries
               dedicated to shaping the future of our academic community.
             </p>
@@ -83,6 +85,7 @@ export default function GoverningCouncil() {
 
               {/* Text */}
               <div className="text-center md:text-left">
+                <p className="text-xs font-bold tracking-[0.25em] uppercase text-[#fdb813]/60 mb-1">01</p>
                 <p className="text-xs font-bold tracking-[0.25em] uppercase text-[#fdb813] mb-2">
                   {chairman.role}
                 </p>
@@ -109,6 +112,7 @@ export default function GoverningCouncil() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                 {members.map((member) => (
                   <div key={member.id} className="flex items-center gap-5 group">
+                    {/* Serial number */}
                     {/* Circular photo */}
                     <div className="w-16 h-16 shrink-0 rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#fdb813] transition-all duration-300 shadow-sm">
                       <img
@@ -120,6 +124,7 @@ export default function GoverningCouncil() {
 
                     {/* Text */}
                     <div className="min-w-0">
+                      <p className="text-[10px] font-bold text-[#fdb813]/50 leading-none mb-1">{String(member.id).padStart(2, '0')}</p>
                       <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#fdb813] leading-none mb-1">
                         {member.role}
                       </p>
