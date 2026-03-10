@@ -5,16 +5,16 @@ import PageLayout from '../../components/PageLayout';
 const chairman = {
   id: 1,
   role: 'Chairman',
-  name: 'Mr. Vikas Vartak',
+  name: 'Sri. Vikas Vartak',
   description: 'Chairman Vidyavardhini',
   image: 'https://picsum.photos/seed/vikas/400/400',
 };
 
 const members = [
-  { id: 2,  role: 'Member',           name: 'Mr. M.N. alias Bhausaheb Mohol',         description: 'Industrialist',                                  image: 'https://picsum.photos/seed/mohol/400/400'  },
-  { id: 3,  role: 'Member',           name: 'Mr. Pandurang alias Babansheth Naik',    description: 'Educationist',                                   image: 'https://picsum.photos/seed/naik/400/400'   },
-  { id: 4,  role: 'Member',           name: 'Mr. Hasmukh Shah',                       description: 'Industrialist',                                  image: 'https://picsum.photos/seed/shah/400/400'   },
-  { id: 5,  role: 'Member',           name: 'Mr. Madhurkar B. Parekh',                description: 'Industrialist, Chairman of Pidilite Industries', image: 'https://picsum.photos/seed/parekh/400/400' },
+  { id: 2,  role: 'Member',           name: 'Sri. M.N. alias Bhausaheb Mohol',         description: 'Industrialist',                                  image: 'https://picsum.photos/seed/mohol/400/400'  },
+  { id: 3,  role: 'Member',           name: 'Sri. Pandurang alias Babansheth Naik',    description: 'Educationist',                                   image: 'https://picsum.photos/seed/naik/400/400'   },
+  { id: 4,  role: 'Member',           name: 'Sri. Hasmukh Shah',                       description: 'Industrialist',                                  image: 'https://picsum.photos/seed/shah/400/400'   },
+  { id: 5,  role: 'Member',           name: 'Sri. Madhurkar B. Parekh',                description: 'Industrialist, Chairman of Pidilite Industries', image: 'https://picsum.photos/seed/parekh/400/400' },
   { id: 6,  role: 'Member',           name: 'Director of Technical Education (M.S.)', description: 'Ex-Officio',                                     image: 'https://picsum.photos/seed/dte/400/400'    },
   { id: 7,  role: 'Member',           name: 'Nominee of the University',              description: 'Ex-Officio',                                     image: 'https://picsum.photos/seed/uni/400/400'    },
   { id: 8,  role: 'Member',           name: 'Director, WRO AICTE',                   description: 'Ex-Officio',                                     image: 'https://picsum.photos/seed/aicte/400/400'  },
