@@ -410,27 +410,160 @@ const DeptAIDS: React.FC = () => {
           {/* ════ FACULTY ══════════════════════════════════════════ */}
           {activeId === 'faculty' && (() => {
             const faculty = [
-              { slug: 'hod-aids', name: 'HOD, AI & Data Science', post: 'Professor & HOD', email: 'aids@vcet.edu.in', photo: '', initials: 'AI', color: '#1a4b7c' },
+              {
+                slug: 'dr-tatwadarshi-nagarhalli',
+                name: 'Dr. Tatwadarshi Nagarhalli',
+                post: 'Associate Professor & Head of Department',
+                email: 'tatwadarshi.nagarhalli@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/dr-tatwadarshi-nagarhalli.jpg',
+                initials: 'TN',
+                color: '#1a4b7c',
+              },
+              {
+                slug: 'sejal-dmello',
+                name: 'Ms. Sejal D\'mello',
+                post: 'Deputy HOD & Asst. Prof.',
+                email: 'sejal.dmello@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/sejal-dmello.jpg',
+                initials: 'SD',
+                color: '#2563a8',
+              },
+              {
+                slug: 'sneha-yadav',
+                name: 'Mrs. Sneha Yadav',
+                post: 'Asst. Prof.',
+                email: 'sneha.yadav@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/sneha-yadav.jpg',
+                initials: 'SY',
+                color: '#1a4b7c',
+              },
+              {
+                slug: 'neha-raut',
+                name: 'Ms. Neha Raut',
+                post: 'Asst. Prof.',
+                email: 'neha.raut@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/neha-raut.jpg',
+                initials: 'NR',
+                color: '#2563a8',
+              },
+              {
+                slug: 'kshitija-gharat',
+                name: 'Ms. Kshitija Gharat',
+                post: 'Asst. Prof.',
+                email: 'kshitija.gharat@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/kshitija-gharat.jpg',
+                initials: 'KG',
+                color: '#1a4b7c',
+              },
+              {
+                slug: 'raunak-joshi',
+                name: 'Mr. Raunak Joshi',
+                post: 'Asst. Prof.',
+                email: 'raunak.joshi@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/raunak-joshi.jpg',
+                initials: 'RJ',
+                color: '#2563a8',
+              },
+              {
+                slug: 'rujuta-vartak',
+                name: 'Ms. Rujuta Vartak',
+                post: 'Asst. Prof.',
+                email: 'rujuta.vartak@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/rujuta-vartak.jpg',
+                initials: 'RV',
+                color: '#1a4b7c',
+              },
+              {
+                slug: 'sweety-patil',
+                name: 'Ms. Sweety Patil',
+                post: 'Asst. Prof.',
+                email: 'sweety.patil@vcet.edu.in',
+                photo: '/Images/departments/aids/faculty/sweety-patil.jpg',
+                initials: 'SP',
+                color: '#2563a8',
+              },
             ];
             return (
               <div className="space-y-10">
+                {/* Section header — compact bar */}
                 <div className="reveal flex items-center justify-between flex-wrap gap-4 pb-5 border-b-2 border-brand-gold/30">
                   <div>
-                    <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-brand-navy/60 flex items-center gap-2 mb-1"><i className="ph-fill ph-chalkboard-teacher text-sm text-brand-navy/50" /> AI &amp; Data Science</span>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-brand-navy/60 flex items-center gap-2 mb-1">
+                      <i className="ph-fill ph-chalkboard-teacher text-sm text-brand-navy/50" /> AI &amp; Data Science
+                    </span>
                     <h2 className="text-2xl font-display font-bold text-brand-navy">Our Faculty</h2>
                   </div>
                   <div className="flex items-center divide-x divide-slate-200">
-                    {[{ icon: 'ph-users-three', value: '10+', label: 'Members' }, { icon: 'ph-graduation-cap', value: '2+', label: 'PhD' }, { icon: 'ph-trophy', value: '15+', label: 'Yrs Exp.' }].map(stat => (
+                    {[
+                      { icon: 'ph-users-three',    value: `${faculty.length}`, label: 'Members' },
+                      { icon: 'ph-graduation-cap', value: '1',                 label: 'PhD' },
+                      { icon: 'ph-trophy',         value: '40+',               label: 'Yrs Exp.' },
+                    ].map(stat => (
                       <div key={stat.label} className="flex items-center gap-2.5 px-5">
                         <i className={`ph-fill ${stat.icon} text-lg text-brand-navy`} />
-                        <div><span className="text-lg font-bold text-brand-navy leading-none">{stat.value}</span><span className="block text-[11px] text-slate-500 mt-0.5">{stat.label}</span></div>
+                        <div>
+                          <span className="text-lg font-bold text-brand-navy leading-none">{stat.value}</span>
+                          <span className="block text-[11px] text-slate-500 mt-0.5">{stat.label}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="reveal bg-brand-navylight rounded-2xl p-6 flex items-center gap-4 border border-brand-navy/10">
-                  <i className="ph-fill ph-info text-2xl text-brand-navy flex-shrink-0" />
-                  <p className="text-sm text-brand-navy/70">Complete faculty profiles with photos are being updated. Please contact the department at <a href="mailto:aids@vcet.edu.in" className="underline font-semibold">aids@vcet.edu.in</a> for more information.</p>
+
+                {/* Faculty cards grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pt-4">
+                  {faculty.map((f) => (
+                    <Link
+                      key={f.email}
+                      to={`/ai-data-science/faculty/${f.slug}`}
+                      className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 border-t-[3px] border-b-[3px] border-t-[#1a4b7c] border-b-[#fdb813] flex flex-col items-center px-6 pt-6 pb-5 no-underline"
+                    >
+                      {/* Photo with gold badge at bottom-right */}
+                      <div className="relative w-32 h-36 mb-4 shrink-0">
+                        <img
+                          src={f.photo}
+                          alt={f.name}
+                          className="w-full h-full object-cover object-top"
+                          onError={(e) => {
+                            const t = e.currentTarget;
+                            t.style.display = 'none';
+                            (t.nextElementSibling as HTMLElement)!.style.display = 'flex';
+                          }}
+                        />
+                        {/* Fallback initials */}
+                        <div
+                          className="absolute inset-0 hidden items-center justify-center text-white font-bold text-2xl"
+                          style={{ background: f.color }}
+                        >
+                          {f.initials}
+                        </div>
+                        {/* Gold accent square */}
+                        <div className="absolute bottom-0 right-0 w-5 h-5 bg-[#fdb813]" />
+                      </div>
+
+                      {/* Name */}
+                      <h3 className="text-base font-bold text-[#1a4b7c] text-center leading-snug">
+                        {f.name}
+                      </h3>
+
+                      {/* Designation pill */}
+                      <span className="mt-2 px-3 py-0.5 bg-gray-100 text-gray-500 text-xs rounded font-medium text-center">
+                        {f.post}
+                      </span>
+
+                      {/* Divider */}
+                      <div className="w-10 h-0.5 bg-gray-300 my-3" />
+
+                      {/* Email */}
+                      <a
+                        href={`mailto:${f.email}`}
+                        className="flex items-center gap-2 text-xs text-gray-500 hover:text-[#1a4b7c] transition-colors w-full"
+                      >
+                        <i className="ph-fill ph-envelope text-sm shrink-0 text-gray-400" />
+                        <span className="truncate">{f.email}</span>
+                      </a>
+                    </Link>
+                  ))}
                 </div>
               </div>
             );
