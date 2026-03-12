@@ -82,7 +82,7 @@ const About: React.FC = () => {
               Located in the heart of the tech corridor, our sprawling campus is home to over 5,000 students and 200+ faculty members. We combine traditional engineering discipline with modern design thinking, preparing graduates who excel in both innovation and execution.
             </p>
             
-            <div className="group relative flex h-[260px] w-full items-center justify-center overflow-hidden rounded-2xl border border-brand-blue/10 bg-brand-light sm:h-[320px] md:h-[360px]">
+            <div className="group relative flex h-[380px] w-full items-center justify-center overflow-hidden rounded-2xl border border-brand-blue/10 bg-brand-light sm:h-[480px] md:h-[520px]">
               <div className="text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-blue/10">
                   <MapPin className="h-8 w-8 text-brand-blue/40" />
