@@ -44,9 +44,9 @@ Common features across **Notices**, **Events**, **Achievements**, **Enquiries**,
 
 | Feature | Visual Description | Reference Link |
 | :--- | :--- | :--- |
-| **Login Page** | Split-screen with navy branding and white form | [Login View](file:///C:/Users/LENOVO/.gemini/antigravity/brain/0323d5aa-b670-4c75-8ba3-d29d1f867036/login_page_screenshot_1773418879003.png) |
-| **Main Dashboard** | Quick Actions and Visit Website link | [Dashboard View](file:///C:/Users/LENOVO/.gemini/antigravity/brain/0323d5aa-b670-4c75-8ba3-d29d1f867036/admin_dashboard_1773418211284.png) |
-| **Standardized Lists** | Unified spacing and high-fidelity tables | [Module Spacing](file:///C:/Users/LENOVO/.gemini/antigravity/brain/0323d5aa-b670-4c75-8ba3-d29d1f867036/admin_enquiries_spacing_1773418232355.png) |
+| **Login Page** | Split-screen with navy branding and white form | [Login View]() |
+| **Main Dashboard** | Quick Actions and Visit Website link | [Dashboard View]() |
+| **Standardized Lists** | Unified spacing and high-fidelity tables | [Module Spacing]() |
 
 ## 6. Branding & Assets
 - **Logo Integration**: Standardized college logo usage across the Login page, Sidebar, and Dashboard header using the path `/images/VCET logo.jpeg`.
