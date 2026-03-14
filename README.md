@@ -358,7 +358,9 @@ Output goes to `dist/`. See [DEPLOYMENT.md](./DEPLOYMENT.md) for full hosting in
 
 ## API & Dynamic Data
 
-The backend is a **separate Laravel 12 REST API** at [ivory-26/vcet](https://github.com/ivory-26/vcet).
+*(**Note:** See [wiki/Backend-Integration-Status.md](./wiki/Backend-Integration-Status.md) for details on the current implementation differences between the frontend expectations and backend Laravel Inertia monolith).*
+
+The backend is intended to be a **separate Laravel 12 REST API** at [ivory-26/vcet](https://github.com/ivory-26/vcet).
 This frontend consumes it via `VITE_API_URL` — see `.env.example`.
 
 ### Data flow
@@ -390,6 +392,7 @@ Backend (Laravel) → services/ → hooks/ → components/
 | `POST /api/enquiries` | `useEnquiryForm` | Admissions / contact form |
 
 See [wiki/API-Endpoint-Map.md](./wiki/API-Endpoint-Map.md) for the full 38-endpoint reference including all admin CRUD routes.
+Also, review the internal [Backend Architecture Data Flow](./wiki/Backend-Architecture.md) to understand the current routing mechanics of the Laravel repository.
 
 ---
 
