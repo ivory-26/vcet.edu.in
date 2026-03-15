@@ -8,6 +8,7 @@ import ceFacultyMap from '../ComputerEngineering/ceFacultyMap';
 import itFacultyMap from '../IT/itFacultyMap';
 import aidsFacultyMap from '../AIDS/aidsFacultyMap';
 import mechanicalFacultyMap from '../mechanical/mechanicalFacultyMap';
+import EXTCFacultyMap from '../EXTC/EXTCFacultyMap';
 import { basicFacultyMaps } from '../basicFacultyMaps';
 
 const toList = (value?: string): string[] =>
@@ -134,7 +135,7 @@ export default function FacultyProfilePage() {
     { prefix: '/information-technology/faculty/', backPath: '/information-technology', map: itFacultyMap },
     { prefix: '/ai-data-science/faculty/', backPath: '/ai-data-science', map: aidsFacultyMap },
     { prefix: '/mechanical-engineering/faculty/', backPath: '/mechanical-engineering', map: mechanicalFacultyMap },
-    { prefix: '/electronics-telecommunication/faculty/', backPath: '/electronics-telecomm', map: basicFacultyMaps['electronics-telecommunication'] ?? {} },
+    { prefix: '/electronics-telecommunication/faculty/', backPath: '/electronics-telecomm', map: EXTCFacultyMap },
     { prefix: '/civil-engineering/faculty/', backPath: '/civil-engineering', map: basicFacultyMaps['civil-engineering'] ?? {} },
     { prefix: '/first-year-engineering/faculty/', backPath: '/first-year-engineering', map: basicFacultyMaps['first-year-engineering'] ?? {} },
   ] as const;
