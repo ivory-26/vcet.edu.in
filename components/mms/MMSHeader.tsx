@@ -50,8 +50,8 @@ export default function MMSHeader() {
 
   return (
     <header className="sticky top-[64px] z-40 border-t border-[#111827] border-b border-brand-gold/45 bg-[#fff6db]">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center gap-2 px-4 py-2.5">
-        <nav className="flex flex-1 flex-wrap items-center gap-1 text-xs sm:text-sm">
+      <div className="mx-auto flex w-full max-w-[1360px] flex-wrap items-center gap-2 px-3 py-2 sm:px-5 lg:px-7">
+        <nav className="flex flex-1 flex-wrap items-center gap-1 text-[11px] sm:text-sm">
           <Link
             to="/mms"
             className="inline-flex rounded-none bg-brand-gold px-2.5 py-1 font-bold uppercase tracking-[0.12em] text-brand-navy"

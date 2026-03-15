@@ -74,10 +74,10 @@ export default function MMSEnquirePopup() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/70 p-2 backdrop-blur-sm sm:p-4">
-          <div className="w-full max-w-[760px] rounded-2xl border border-brand-gold/45 bg-gradient-to-br from-[#071d39] via-[#0b2f58] to-[#0d4888] p-5 shadow-[0_26px_80px_-30px_rgba(0,0,0,0.9)] sm:p-6">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center bg-slate-950/70 p-2 pt-5 backdrop-blur-sm sm:items-center sm:p-4 sm:pt-4">
+          <div className="max-h-[94vh] w-full max-w-[760px] overflow-y-auto rounded-2xl border border-brand-gold/45 bg-gradient-to-br from-[#071d39] via-[#0b2f58] to-[#0d4888] p-4 shadow-[0_26px_80px_-30px_rgba(0,0,0,0.9)] sm:p-6">
             <div className="mb-5 flex items-start justify-between">
-              <h3 className="text-5xl font-display font-bold leading-none text-brand-gold sm:text-6xl">Enquire Now</h3>
+              <h3 className="text-4xl font-display font-bold leading-none text-brand-gold sm:text-5xl">Enquire Now</h3>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -90,73 +90,73 @@ export default function MMSEnquirePopup() {
 
             <form className="space-y-4 rounded-xl border border-brand-gold/30 bg-white/95 p-4 sm:p-5" onSubmit={onSubmit}>
               <label className="block">
-                <span className="mb-1 block text-2xl font-medium text-brand-navy">Student Name</span>
+                <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Student Name</span>
                 <input
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-lg text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
+                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-base text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-2xl font-medium text-brand-navy">Student Email Address</span>
+                <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Student Email Address</span>
                 <input
                   required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-lg text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
+                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-base text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-2xl font-medium text-brand-navy">Student Phone Number</span>
+                <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Student Phone Number</span>
                 <input
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-lg text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
+                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-base text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-2xl font-medium text-brand-navy">Enter State</span>
+                <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Enter State</span>
                 <input
                   required
                   value={stateName}
                   onChange={(e) => setStateName(e.target.value)}
-                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-lg text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
+                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-base text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-2xl font-medium text-brand-navy">Enter City</span>
+                <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Enter City</span>
                 <input
                   required
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-lg text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
+                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-base text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-2xl font-medium text-brand-navy">Enter Program</span>
+                <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Enter Program</span>
                 <input
                   required
                   value={program}
                   onChange={(e) => setProgram(e.target.value)}
-                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-lg text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
+                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-base text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
                 />
               </label>
 
               <label className="block">
-                <span className="mb-1 block text-2xl font-medium text-brand-navy">Enter Course</span>
+                <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Enter Course</span>
                 <input
                   required
                   value={course}
                   onChange={(e) => setCourse(e.target.value)}
-                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-lg text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
+                  className="w-full rounded-lg border border-brand-blue/25 bg-white px-4 py-3 text-base text-slate-800 outline-none transition focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25"
                 />
               </label>
 

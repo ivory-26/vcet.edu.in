@@ -1,5 +1,6 @@
 import React from 'react';
 import MMSLayout from '../../../components/mms/MMSLayout';
+import HorizontalTableShell from '../../../components/mms/HorizontalTableShell';
 
 const guidancePoints = [
   'Seminars on Higher Studies',
@@ -37,13 +38,14 @@ export default function MMSTrainingCareerGuidance() {
         </article>
 
         <section className="overflow-hidden rounded-none border border-brand-navy/25 bg-white shadow-[0_18px_36px_-26px_rgba(11,61,145,0.6)]">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] border-collapse">
+          <div className="px-3 py-3 sm:px-4 sm:py-4 md:px-5">
+            <HorizontalTableShell storageKey="mms-table-hint-career-guidance" scrollerClassName="border border-brand-navy/20 bg-white">
+              <table className="w-full min-w-[980px] snap-start border-collapse">
               <thead>
-                <tr className="bg-[#0d4888] text-white">
-                  <th className="w-[70px] border border-[#0a325f] px-3 py-3 text-left text-xl font-bold uppercase">Sr.</th>
-                  <th className="w-[300px] border border-[#0a325f] px-3 py-3 text-left text-xl font-bold">Event</th>
-                  <th className="border border-[#0a325f] px-3 py-3 text-left text-xl font-bold">Resource Person</th>
+                <tr className="text-white">
+                  <th className="sticky top-0 z-20 w-[70px] border border-[#0a325f] bg-[#0d4888] px-3 py-3 text-left text-xl font-bold uppercase">Sr.</th>
+                  <th className="sticky top-0 z-20 w-[300px] border border-[#0a325f] bg-[#0d4888] px-3 py-3 text-left text-xl font-bold">Event</th>
+                  <th className="sticky top-0 z-20 border border-[#0a325f] bg-[#0d4888] px-3 py-3 text-left text-xl font-bold">Resource Person</th>
                 </tr>
               </thead>
               <tbody>
@@ -158,7 +160,8 @@ export default function MMSTrainingCareerGuidance() {
                   </td>
                 </tr>
               </tbody>
-            </table>
+              </table>
+            </HorizontalTableShell>
           </div>
         </section>
       </section>

@@ -126,7 +126,7 @@ export default function MMSLayout({ title, children }: MMSLayoutProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-slate-800">
+    <div className="min-h-screen overflow-x-hidden bg-white text-slate-800">
       <div className="sticky top-0 z-[100] md:contents">
         <TopBanner />
         <Header />
@@ -134,10 +134,10 @@ export default function MMSLayout({ title, children }: MMSLayoutProps) {
 
       <MMSHeader />
 
-      <main className="mx-auto w-full max-w-[1520px] px-4 py-6 sm:px-6 sm:py-8">
-        <div className={`flex flex-col gap-6 ${activeMenu ? 'lg:flex-row lg:items-start lg:gap-10' : ''}`}>
+      <main className="mx-auto w-full max-w-[1360px] px-3 py-5 sm:px-5 sm:py-7 lg:px-7">
+        <div className={`flex flex-col gap-5 sm:gap-6 ${activeMenu ? 'lg:flex-row lg:items-start lg:gap-7 xl:gap-8' : ''}`}>
           {activeMenu ? (
-            <aside className="hidden lg:block lg:-ml-16 lg:mr-4 lg:w-[290px] lg:flex-shrink-0">
+            <aside className="hidden lg:block lg:w-[250px] lg:flex-shrink-0 xl:w-[280px]">
               <nav className="overflow-hidden rounded-none border border-brand-navy/30 bg-white shadow-[0_14px_34px_-22px_rgba(11,61,145,0.45)]">
                 <div className="p-3">
                   {activeMenu.items.map((item) => {
@@ -167,9 +167,9 @@ export default function MMSLayout({ title, children }: MMSLayoutProps) {
             </aside>
           ) : null}
 
-          <div className="min-w-0 flex-1 text-[17px] leading-8 text-slate-700 lg:pl-4 xl:pl-6">
+          <div className="min-w-0 w-full flex-1 text-base leading-7 text-slate-700 sm:text-[17px] sm:leading-8 lg:pl-1 xl:pl-2">
             {title ? (
-              <h2 className="mb-4 text-4xl font-display font-bold leading-[1.2] tracking-[-0.01em] text-brand-navy sm:text-5xl">
+              <h2 className="mb-4 text-3xl font-display font-bold leading-[1.2] tracking-[-0.01em] text-brand-navy sm:text-4xl lg:text-5xl">
                 {title}
               </h2>
             ) : null}

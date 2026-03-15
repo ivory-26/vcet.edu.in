@@ -1,18 +1,20 @@
 import React from 'react';
 import MMSLayout from '../../../components/mms/MMSLayout';
+import HorizontalTableShell from '../../../components/mms/HorizontalTableShell';
 
 export default function MMSTrainingEvents() {
   return (
     <MMSLayout title="Events">
       <section className="overflow-hidden rounded-none border border-brand-navy/25 bg-white shadow-[0_18px_36px_-26px_rgba(11,61,145,0.6)]">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[980px] border-collapse">
+        <div className="px-3 py-3 sm:px-4 sm:py-4 md:px-5">
+          <HorizontalTableShell storageKey="mms-table-hint-events" scrollerClassName="border border-brand-navy/20 bg-white">
+            <table className="w-full min-w-[980px] snap-start border-collapse">
             <thead>
-              <tr className="bg-[#0d4888] text-white">
-                <th className="w-[70px] border border-[#0a325f] px-3 py-3 text-left text-xl font-bold uppercase">SR.</th>
-                <th className="w-[260px] border border-[#0a325f] px-3 py-3 text-left text-xl font-bold">Name of the Event</th>
-                <th className="border border-[#0a325f] px-3 py-3 text-left text-xl font-bold">Company Name / Resource Person</th>
-                <th className="w-[190px] border border-[#0a325f] px-3 py-3 text-left text-xl font-bold">Date of conduction</th>
+              <tr className="text-white">
+                <th className="sticky top-0 z-20 w-[70px] border border-[#0a325f] bg-[#0d4888] px-3 py-3 text-left text-xl font-bold uppercase">SR.</th>
+                <th className="sticky top-0 z-20 w-[260px] border border-[#0a325f] bg-[#0d4888] px-3 py-3 text-left text-xl font-bold">Name of the Event</th>
+                <th className="sticky top-0 z-20 border border-[#0a325f] bg-[#0d4888] px-3 py-3 text-left text-xl font-bold">Company Name / Resource Person</th>
+                <th className="sticky top-0 z-20 w-[190px] border border-[#0a325f] bg-[#0d4888] px-3 py-3 text-left text-xl font-bold">Date of conduction</th>
               </tr>
             </thead>
             <tbody>
@@ -66,7 +68,8 @@ export default function MMSTrainingEvents() {
                 <td className="border border-slate-700/80 px-3 py-3 text-xl leading-[1.45] text-slate-900">Every Year</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </HorizontalTableShell>
         </div>
       </section>
     </MMSLayout>
