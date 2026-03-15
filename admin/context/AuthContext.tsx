@@ -4,7 +4,7 @@ import type { LoginPayload } from '../api/auth';
 import type { User } from '../types';
 
 const TOKEN_KEY = 'admin_token';
-const USER_KEY  = 'admin_user';
+const USER_KEY = 'admin_user';
 
 // ── Dev bypass ───────────────────────────────────────────────────────────────
 // When the backend is offline, seed localStorage so ProtectedRoute lets you in.
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const logout = useCallback(async () => {
-    await authApi.logout().catch(() => {});
+    await authApi.logout().catch(() => { });
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setUser(null);

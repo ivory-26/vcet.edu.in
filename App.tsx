@@ -132,26 +132,26 @@ const NAACScore = lazy(() => import('./pages/naac/NAACScore'));
 const ContactUs = lazy(() => import('./pages/contact/ContactUs'));
 
 /* ── Admin Panel Pages (lazy) ── */
-const AdminLogin      = lazy(() => import('./admin/pages/Login'));
-const AdminDashboard  = lazy(() => import('./admin/pages/Dashboard'));
-const NoticesList     = lazy(() => import('./admin/pages/notices/NoticesList'));
-const NoticeForm      = lazy(() => import('./admin/pages/notices/NoticeForm'));
-const EventsList      = lazy(() => import('./admin/pages/events/EventsList'));
-const EventForm       = lazy(() => import('./admin/pages/events/EventForm'));
-const PlacementsList  = lazy(() => import('./admin/pages/placements/PlacementsList'));
-const PlacementForm   = lazy(() => import('./admin/pages/placements/PlacementForm'));
-const HeroSlidesList       = lazy(() => import('./admin/pages/hero-slides/HeroSlidesList'));
-const HeroSlideForm        = lazy(() => import('./admin/pages/hero-slides/HeroSlideForm'));
-const NewsTickerList       = lazy(() => import('./admin/pages/news-ticker/NewsTickerList'));
-const NewsTickerForm       = lazy(() => import('./admin/pages/news-ticker/NewsTickerForm'));
-const AchievementsList     = lazy(() => import('./admin/pages/achievements/AchievementsList'));
-const AchievementsForm     = lazy(() => import('./admin/pages/achievements/AchievementsForm'));
-const TestimonialsList     = lazy(() => import('./admin/pages/testimonials/TestimonialsList'));
-const TestimonialsForm     = lazy(() => import('./admin/pages/testimonials/TestimonialsForm'));
-const GalleryPage          = lazy(() => import('./admin/pages/gallery/GalleryPage'));
+const AdminLogin = lazy(() => import('./admin/pages/Login'));
+const AdminDashboard = lazy(() => import('./admin/pages/Dashboard'));
+const NoticesList = lazy(() => import('./admin/pages/notices/NoticesList'));
+const NoticeForm = lazy(() => import('./admin/pages/notices/NoticeForm'));
+const EventsList = lazy(() => import('./admin/pages/events/EventsList'));
+const EventForm = lazy(() => import('./admin/pages/events/EventForm'));
+const PlacementsList = lazy(() => import('./admin/pages/placements/PlacementsList'));
+const PlacementForm = lazy(() => import('./admin/pages/placements/PlacementForm'));
+const HeroSlidesList = lazy(() => import('./admin/pages/hero-slides/HeroSlidesList'));
+const HeroSlideForm = lazy(() => import('./admin/pages/hero-slides/HeroSlideForm'));
+const NewsTickerList = lazy(() => import('./admin/pages/news-ticker/NewsTickerList'));
+const NewsTickerForm = lazy(() => import('./admin/pages/news-ticker/NewsTickerForm'));
+const AchievementsList = lazy(() => import('./admin/pages/achievements/AchievementsList'));
+const AchievementsForm = lazy(() => import('./admin/pages/achievements/AchievementsForm'));
+const TestimonialsList = lazy(() => import('./admin/pages/testimonials/TestimonialsList'));
+const TestimonialsForm = lazy(() => import('./admin/pages/testimonials/TestimonialsForm'));
+const GalleryPage = lazy(() => import('./admin/pages/gallery/GalleryPage'));
 const PlacementPartnersList = lazy(() => import('./admin/pages/placement-partners/PlacementPartnersList'));
 const PlacementPartnersForm = lazy(() => import('./admin/pages/placement-partners/PlacementPartnersForm'));
-const EnquiriesList        = lazy(() => import('./admin/pages/enquiries/EnquiriesList'));
+const EnquiriesList = lazy(() => import('./admin/pages/enquiries/EnquiriesList'));
 
 /* ── Loading Spinner ── */
 const PageLoader = () => (
@@ -208,166 +208,166 @@ const HomePage: React.FC = () => {
 function App() {
   return (
     <AuthProvider>
-    <BrowserRouter>
-      <ScrollToTop />
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          {/* Homepage */}
-          <Route path="/" element={<HomePage />} />
+      <BrowserRouter>
+        <ScrollToTop />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* Homepage */}
+            <Route path="/" element={<HomePage />} />
 
-          {/* About Us */}
-          <Route path="/about-us" element={<AboutVCET />} />
-          <Route path="/presidents-desk" element={<PresidentsDesk />} />
-          <Route path="/principals-desk" element={<PrincipalsDesk />} />
-          <Route path="/governing-council" element={<GoverningCouncil />} />
-          <Route path="/organizational-structure" element={<OrganizationalStructure />} />
-          <Route path="/administration" element={<Administration />} />
-          <Route path="/strategic-plan" element={<StrategicPlan />} />
-          <Route path="/code-of-conduct" element={<CodeOfConduct />} />
+            {/* About Us */}
+            <Route path="/about-us" element={<AboutVCET />} />
+            <Route path="/presidents-desk" element={<PresidentsDesk />} />
+            <Route path="/principals-desk" element={<PrincipalsDesk />} />
+            <Route path="/governing-council" element={<GoverningCouncil />} />
+            <Route path="/organizational-structure" element={<OrganizationalStructure />} />
+            <Route path="/administration" element={<Administration />} />
+            <Route path="/strategic-plan" element={<StrategicPlan />} />
+            <Route path="/code-of-conduct" element={<CodeOfConduct />} />
 
-          {/* Admission */}
-          <Route path="/courses-and-intake" element={<CoursesIntake />} />
-          <Route path="/fees-structure" element={<FeesStructure />} />
-          <Route path="/scholarships" element={<Scholarships />} />
-          <Route path="/brochure" element={<Brochure />} />
-          <Route path="/documents-required" element={<DocumentsRequired />} />
-          <Route path="/cut-off" element={<CutOff />} />
+            {/* Admission */}
+            <Route path="/courses-and-intake" element={<CoursesIntake />} />
+            <Route path="/fees-structure" element={<FeesStructure />} />
+            <Route path="/scholarships" element={<Scholarships />} />
+            <Route path="/brochure" element={<Brochure />} />
+            <Route path="/documents-required" element={<DocumentsRequired />} />
+            <Route path="/cut-off" element={<CutOff />} />
 
-          {/* Departments */}
-          <Route path="/computer-engineering" element={<DeptComputerEngg />} />
-          <Route path="/computer-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
-          <Route path="/cs-data-science" element={<DeptCSDS />} />
-          <Route path="/cs-data-science/faculty/:slug" element={<CSDSFacultyProfile />} />
-          <Route path="/information-technology" element={<DeptIT />} />
-          <Route path="/information-technology/faculty/:slug" element={<CSDSFacultyProfile />} />
-          <Route path="/ai-data-science" element={<DeptAIDS />} />
-          <Route path="/ai-data-science/faculty/:slug" element={<CSDSFacultyProfile />} />
-          <Route path="/mechanical-engineering" element={<DeptMech />} />
-          <Route path="/mechanical-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
-          <Route path="/electronics-telecomm" element={<DeptENTC />} />
-          <Route path="/electronics-telecommunication/faculty/:slug" element={<CSDSFacultyProfile />} />
-          <Route path="/civil-engineering" element={<DeptCivil />} />
-          <Route path="/civil-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
-          <Route path="/first-year-engineering" element={<DeptFE />} />
-          <Route path="/first-year-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            {/* Departments */}
+            <Route path="/computer-engineering" element={<DeptComputerEngg />} />
+            <Route path="/computer-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/cs-data-science" element={<DeptCSDS />} />
+            <Route path="/cs-data-science/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/information-technology" element={<DeptIT />} />
+            <Route path="/information-technology/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/ai-data-science" element={<DeptAIDS />} />
+            <Route path="/ai-data-science/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/mechanical-engineering" element={<DeptMech />} />
+            <Route path="/mechanical-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/electronics-telecomm" element={<DeptENTC />} />
+            <Route path="/electronics-telecommunication/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/civil-engineering" element={<DeptCivil />} />
+            <Route path="/civil-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/first-year-engineering" element={<DeptFE />} />
+            <Route path="/first-year-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
 
-          {/* Academics */}
-          <Route path="/dean-academics" element={<DeanAcademics />} />
-          <Route path="/academic-calendar" element={<AcademicCalendar />} />
-          <Route path="/teaching-learning" element={<TeachingLearning />} />
-          <Route path="/swayam-nptel" element={<SwayamNPTEL />} />
-          <Route path="/honours-minor" element={<HonoursMinor />} />
+            {/* Academics */}
+            <Route path="/dean-academics" element={<DeanAcademics />} />
+            <Route path="/academic-calendar" element={<AcademicCalendar />} />
+            <Route path="/teaching-learning" element={<TeachingLearning />} />
+            <Route path="/swayam-nptel" element={<SwayamNPTEL />} />
+            <Route path="/honours-minor" element={<HonoursMinor />} />
 
-          {/* Research */}
-          <Route path="/research" element={<ResearchIntro />} />
-          <Route path="/funded-research" element={<FundedResearch />} />
-          <Route path="/publications" element={<Publications />} />
-          <Route path="/patents" element={<ResearchPatents />} />
-          <Route path="/parents" element={<Patents />} />
-          <Route path="/consultancy-projects" element={<ConsultancyProjects />} />
-          <Route path="/research-facility" element={<ResearchFacility />} />
-          <Route path="/research-conventions" element={<ResearchConventions />} />
-          <Route path="/research-policy" element={<ResearchPolicy />} />
-          <Route path="/iic" element={<ResearchIIC />} />
-          <Route path="/nirf" element={<NIRF />} />
-          <Route path="/research-downloads" element={<ResearchDownloads />} />
-          <Route path="/downloads" element={<Downloads />} />
+            {/* Research */}
+            <Route path="/research" element={<ResearchIntro />} />
+            <Route path="/funded-research" element={<FundedResearch />} />
+            <Route path="/publications" element={<Publications />} />
+            <Route path="/patents" element={<ResearchPatents />} />
+            <Route path="/parents" element={<Patents />} />
+            <Route path="/consultancy-projects" element={<ConsultancyProjects />} />
+            <Route path="/research-facility" element={<ResearchFacility />} />
+            <Route path="/research-conventions" element={<ResearchConventions />} />
+            <Route path="/research-policy" element={<ResearchPolicy />} />
+            <Route path="/iic" element={<ResearchIIC />} />
+            <Route path="/nirf" element={<NIRF />} />
+            <Route path="/research-downloads" element={<ResearchDownloads />} />
+            <Route path="/downloads" element={<Downloads />} />
 
-          {/* Facilities */}
-          <Route path="/central-computing" element={<CentralComputing />} />
-          <Route path="/library" element={<LibraryPage />} />
-          <Route path="/counseling-cell" element={<CounselingCell />} />
-          <Route path="/ladies-common-room" element={<LadiesCommonRoom />} />
-          <Route path="/sports-gymkhana" element={<SportsGymkhana />} />
-          <Route path="/health-facilities" element={<HealthFacilities />} />
-          <Route path="/differently-abled" element={<DifferentlyAbled />} />
+            {/* Facilities */}
+            <Route path="/central-computing" element={<CentralComputing />} />
+            <Route path="/library" element={<LibraryPage />} />
+            <Route path="/counseling-cell" element={<CounselingCell />} />
+            <Route path="/ladies-common-room" element={<LadiesCommonRoom />} />
+            <Route path="/sports-gymkhana" element={<SportsGymkhana />} />
+            <Route path="/health-facilities" element={<HealthFacilities />} />
+            <Route path="/differently-abled" element={<DifferentlyAbled />} />
 
-          {/* Student Life */}
-          <Route path="/career-at-vcet" element={<CareerAtVCET />} />
-          <Route path="/students-council" element={<StudentsCouncil />} />
-          <Route path="/cultural-committee" element={<CulturalCommittee />} />
-          <Route path="/sports-committee" element={<SportsCommittee />} />
-          <Route path="/literati" element={<Literati />} />
-          <Route path="/nss" element={<NSS />} />
-          <Route path="/ebsb" element={<EBSB />} />
-          <Route path="/ieee" element={<IEEE />} />
-          <Route path="/students-club" element={<StudentsClub />} />
-          <Route path="/csi" element={<CSI />} />
-          <Route path="/iete" element={<IETE />} />
-          <Route path="/ishrae" element={<ISHRAE />} />
-          <Route path="/vmea" element={<VMEA />} />
-          <Route path="/hackathon" element={<Hackathon />} />
-          <Route path="/nsdc" element={<NSDC />} />
-          <Route path="/igbc" element={<IGBC />} />
+            {/* Student Life */}
+            <Route path="/career-at-vcet" element={<CareerAtVCET />} />
+            <Route path="/students-council" element={<StudentsCouncil />} />
+            <Route path="/cultural-committee" element={<CulturalCommittee />} />
+            <Route path="/sports-committee" element={<SportsCommittee />} />
+            <Route path="/literati" element={<Literati />} />
+            <Route path="/nss" element={<NSS />} />
+            <Route path="/ebsb" element={<EBSB />} />
+            <Route path="/ieee" element={<IEEE />} />
+            <Route path="/students-club" element={<StudentsClub />} />
+            <Route path="/csi" element={<CSI />} />
+            <Route path="/iete" element={<IETE />} />
+            <Route path="/ishrae" element={<ISHRAE />} />
+            <Route path="/vmea" element={<VMEA />} />
+            <Route path="/hackathon" element={<Hackathon />} />
+            <Route path="/nsdc" element={<NSDC />} />
+            <Route path="/igbc" element={<IGBC />} />
 
-          {/* Committees */}
-          <Route path="/college-development-committee" element={<CollegeDevelopmentCommittee />} />
-          <Route path="/iqac" element={<IQAC />} />
-          <Route path="/grievance-redressal" element={<GrievanceRedressal />} />
-          <Route path="/srgc-committee" element={<SRGCCommittee />} />
-          <Route path="/anti-ragging" element={<AntiRagging />} />
-          <Route path="/sc-st-committee" element={<SCSTCommittee />} />
-          <Route path="/internal-complaint" element={<InternalComplaint />} />
-          <Route path="/equal-opportunity" element={<EqualOpportunity />} />
-          <Route path="/sedg-cell" element={<SEDGCell />} />
+            {/* Committees */}
+            <Route path="/college-development-committee" element={<CollegeDevelopmentCommittee />} />
+            <Route path="/iqac" element={<IQAC />} />
+            <Route path="/grievance-redressal" element={<GrievanceRedressal />} />
+            <Route path="/srgc-committee" element={<SRGCCommittee />} />
+            <Route path="/anti-ragging" element={<AntiRagging />} />
+            <Route path="/sc-st-committee" element={<SCSTCommittee />} />
+            <Route path="/internal-complaint" element={<InternalComplaint />} />
+            <Route path="/equal-opportunity" element={<EqualOpportunity />} />
+            <Route path="/sedg-cell" element={<SEDGCell />} />
 
-          {/* NAAC */}
-          <Route path="/sss" element={<SSS />} />
-          <Route path="/sss-report" element={<SSSReport />} />
-          <Route path="/ssr-cycle-1" element={<SSRCycle1 />} />
-          <Route path="/ssr-cycle-2" element={<SSRCycle2 />} />
-          <Route path="/best-practices" element={<BestPractices />} />
-          <Route path="/naac-score" element={<NAACScore />} />
+            {/* NAAC */}
+            <Route path="/sss" element={<SSS />} />
+            <Route path="/sss-report" element={<SSSReport />} />
+            <Route path="/ssr-cycle-1" element={<SSRCycle1 />} />
+            <Route path="/ssr-cycle-2" element={<SSRCycle2 />} />
+            <Route path="/best-practices" element={<BestPractices />} />
+            <Route path="/naac-score" element={<NAACScore />} />
 
-          {/* Contact & Others */}
-          <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/training" element={<Training />} />
-          <Route path="/e-cell" element={<ECell />} />
-          <Route path="/iiic" element={<IIIC />} />
-          <Route path="/exam-cell" element={<ExamCell />} />
+            {/* Contact & Others */}
+            <Route path="/contact-us" element={<ContactUs />} />
+            <Route path="/training" element={<Training />} />
+            <Route path="/e-cell" element={<ECell />} />
+            <Route path="/iiic" element={<IIIC />} />
+            <Route path="/exam-cell" element={<ExamCell />} />
 
-          {/* ─── Admin Panel ─── */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="notices" element={<NoticesList />} />
-            <Route path="notices/new" element={<NoticeForm />} />
-            <Route path="notices/:id/edit" element={<NoticeForm />} />
-            <Route path="events" element={<EventsList />} />
-            <Route path="events/new" element={<EventForm />} />
-            <Route path="events/:id/edit" element={<EventForm />} />
-            <Route path="placements" element={<PlacementsList />} />
-            <Route path="placements/new" element={<PlacementForm />} />
-            <Route path="placements/:id/edit" element={<PlacementForm />} />
-            <Route path="hero-slides" element={<HeroSlidesList />} />
-            <Route path="hero-slides/new" element={<HeroSlideForm />} />
-            <Route path="hero-slides/:id/edit" element={<HeroSlideForm />} />
-            <Route path="news-ticker" element={<NewsTickerList />} />
-            <Route path="news-ticker/new" element={<NewsTickerForm />} />
-            <Route path="news-ticker/:id/edit" element={<NewsTickerForm />} />
-            <Route path="achievements" element={<AchievementsList />} />
-            <Route path="achievements/new" element={<AchievementsForm />} />
-            <Route path="achievements/:id/edit" element={<AchievementsForm />} />
-            <Route path="testimonials" element={<TestimonialsList />} />
-            <Route path="testimonials/new" element={<TestimonialsForm />} />
-            <Route path="testimonials/:id/edit" element={<TestimonialsForm />} />
-            <Route path="gallery" element={<GalleryPage />} />
-            <Route path="placement-partners" element={<PlacementPartnersList />} />
-            <Route path="placement-partners/new" element={<PlacementPartnersForm />} />
-            <Route path="placement-partners/:id/edit" element={<PlacementPartnersForm />} />
-            <Route path="enquiries" element={<EnquiriesList />} />
-          </Route>
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+            {/* ─── Admin Panel ─── */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<Navigate to="/admin" replace />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="notices" element={<NoticesList />} />
+              <Route path="notices/new" element={<NoticeForm />} />
+              <Route path="notices/:id/edit" element={<NoticeForm />} />
+              <Route path="events" element={<EventsList />} />
+              <Route path="events/new" element={<EventForm />} />
+              <Route path="events/:id/edit" element={<EventForm />} />
+              <Route path="placements" element={<PlacementsList />} />
+              <Route path="placements/new" element={<PlacementForm />} />
+              <Route path="placements/:id/edit" element={<PlacementForm />} />
+              <Route path="hero-slides" element={<HeroSlidesList />} />
+              <Route path="hero-slides/new" element={<HeroSlideForm />} />
+              <Route path="hero-slides/:id/edit" element={<HeroSlideForm />} />
+              <Route path="news-ticker" element={<NewsTickerList />} />
+              <Route path="news-ticker/new" element={<NewsTickerForm />} />
+              <Route path="news-ticker/:id/edit" element={<NewsTickerForm />} />
+              <Route path="achievements" element={<AchievementsList />} />
+              <Route path="achievements/new" element={<AchievementsForm />} />
+              <Route path="achievements/:id/edit" element={<AchievementsForm />} />
+              <Route path="testimonials" element={<TestimonialsList />} />
+              <Route path="testimonials/new" element={<TestimonialsForm />} />
+              <Route path="testimonials/:id/edit" element={<TestimonialsForm />} />
+              <Route path="gallery" element={<GalleryPage />} />
+              <Route path="placement-partners" element={<PlacementPartnersList />} />
+              <Route path="placement-partners/new" element={<PlacementPartnersForm />} />
+              <Route path="placement-partners/:id/edit" element={<PlacementPartnersForm />} />
+              <Route path="enquiries" element={<EnquiriesList />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
