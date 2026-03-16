@@ -80,7 +80,15 @@ const Placement: React.FC = () => {
             <section className="reveal bg-white rounded-2xl p-8 lg:p-12 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100">
               <div className="space-y-6 text-[#5b6574] leading-relaxed text-[15px]">
                 <h3 className="text-2xl font-bold text-[#183a68] border-b border-slate-100 pb-3 mb-6">Objectives</h3>
-                <p>Content for Objectives is coming soon.</p>
+                <ul className="list-disc pl-5 space-y-3">
+                  <li>To provide necessary support for implementing the mandate of providing excellent career opportunities for the students.</li>
+                  <li>To plan and execute tasks like student skills development, soft skills training and career guidance.</li>
+                  <li>To plan and implement campus interview process.</li>
+                  <li>To equip students with necessary technical and behavioral competencies by rigorous and meticulously designed skills and aptitude practical trainings.</li>
+                  <li>To provide all necessary facilities essential for the conduct of campus recruitment.</li>
+                  <li>To formulate the strategy for roll-out of campus recruitment and placement policy for the campus eligible students.</li>
+                  <li>To develop and sustain a long term mutually beneficial relationship with the industry.</li>
+                </ul>
               </div>
             </section>
           )}
@@ -90,7 +98,74 @@ const Placement: React.FC = () => {
             <section className="reveal bg-white rounded-2xl p-8 lg:p-12 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-slate-100">
               <div className="space-y-6 text-[#5b6574] leading-relaxed text-[15px]">
                 <h3 className="text-2xl font-bold text-[#183a68] border-b border-slate-100 pb-3 mb-6">Placement Cell</h3>
-                <p>Content for Placement Cell is coming soon.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  {/* Manager Card */}
+                  <div className="flex flex-col">
+                    <div className="w-full aspect-[4/3] bg-slate-100 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-slate-400 mb-4 overflow-hidden">
+                      <i className="ph ph-image text-4xl mb-2 opacity-50"></i>
+                      <span className="text-sm font-medium">Image Placeholder</span>
+                    </div>
+                    <h4 className="text-[#64b5f6] text-2xl font-bold mb-1">Mr. Prafulla Patil</h4>
+                    <p className="text-slate-600 mb-4">Placement Manager</p>
+                    
+                    <div className="space-y-2 text-slate-600">
+                      <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <i className="ph-fill ph-envelope text-[#183a68]"></i>
+                        <a href="mailto:placements@vcet.edu.in" className="hover:text-[#183a68] transition-colors hover:underline">placements@vcet.edu.in</a>
+                      </div>
+                      <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <i className="ph-fill ph-device-mobile text-[#183a68]"></i>
+                        <a href="tel:+917710070966" className="hover:text-[#183a68] transition-colors hover:underline">7710070966</a>
+                      </div>
+                      <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <i className="ph-fill ph-phone text-[#183a68]"></i>
+                        <span>0250-2338234 (Extn:228)</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* TPO Card */}
+                  <div className="flex flex-col">
+                    <div className="w-full aspect-[4/3] bg-slate-100 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-slate-400 mb-4 overflow-hidden">
+                      <i className="ph ph-image text-4xl mb-2 opacity-50"></i>
+                      <span className="text-sm font-medium">Image Placeholder</span>
+                    </div>
+                    <h4 className="text-[#64b5f6] text-2xl font-bold mb-1">Mr. Sanket Patil</h4>
+                    <p className="text-slate-600 mb-4">Training And Placement Officer</p>
+                    
+                    <div className="space-y-2 text-slate-600">
+                      <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <i className="ph-fill ph-envelope text-[#183a68]"></i>
+                        <a href="mailto:placements@vcet.edu.in" className="hover:text-[#183a68] transition-colors hover:underline">placements@vcet.edu.in</a>
+                      </div>
+                      <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <i className="ph-fill ph-device-mobile text-[#183a68]"></i>
+                        <span>7710070970 / 9987173606</span>
+                      </div>
+                      <div className="flex items-center gap-3 justify-center md:justify-start">
+                        <i className="ph-fill ph-phone text-[#183a68]"></i>
+                        <span>0250-2338234 (Extn:228)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-12">
+                  <h4 className="text-[#64b5f6] text-2xl font-bold mb-4">Training &amp; Placement</h4>
+                  <div className="flex items-center justify-center md:justify-start">
+                    <a 
+                      href="https://vcet.edu.in/wp-content/uploads/2024/04/Training-and-Placement-Committee_1-2.pdf" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-slate-700 hover:text-[#183a68] transition-colors group"
+                    >
+                      <i className="ph-fill ph-book-open text-lg"></i>
+                      <span className="font-medium group-hover:underline">Committee</span>
+                    </a>
+                  </div>
+                </div>
+
               </div>
             </section>
           )}
