@@ -51,6 +51,8 @@ export interface Notice {
   is_new: boolean;
   is_active: boolean;
   sort_order: number;
+  expiry_date: string | null;
+  expiry_time: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -63,6 +65,8 @@ export interface NoticePayload {
   is_new?: boolean;
   is_active?: boolean;
   sort_order?: number;
+  expiry_date?: string;
+  expiry_time?: string;
   attachment?: File;
 }
 
@@ -81,6 +85,8 @@ export interface Event {
   status: 'Upcoming' | 'Completed' | 'Cancelled' | null;
   is_featured: boolean;
   is_active: boolean;
+  expiry_date: string | null;
+  expiry_time: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -96,7 +102,10 @@ export interface EventPayload {
   status?: 'Upcoming' | 'Completed' | 'Cancelled';
   is_featured?: boolean;
   is_active?: boolean;
+  expiry_date?: string;
+  expiry_time?: string;
   image?: File;
+  attachment?: File;
 }
 
 // ── Placements ────────────────────────────────────────────────────────────────
