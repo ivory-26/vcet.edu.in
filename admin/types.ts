@@ -44,25 +44,41 @@ export interface DeleteResponse {
 export interface Notice {
   id: number;
   title: string;
-  category: string | null;
-  description: string | null;
-  attachment: string | null;
-  external_link: string | null;
-  is_new: boolean;
+  body: string;
+  type: 'general' | 'info' | 'warning' | 'urgent';
+  link_url: string | null;
+  link_label: string | null;
+  pdf_name: string | null;
+  pdf_mime_type: string | null;
+  pdf_size: number | null;
+  has_pdf: boolean;
+  pdf_url: string | null;
+  admin_pdf_url: string | null;
   is_active: boolean;
   sort_order: number;
+  expiry_date: string | null;
+  expiry_time: string | null;
   created_at: string;
   updated_at: string;
+  author?: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 export interface NoticePayload {
   title: string;
-  category?: string;
-  description?: string;
-  external_link?: string;
-  is_new?: boolean;
+  body: string;
+  type?: 'general' | 'info' | 'warning' | 'urgent';
+  link_url?: string | null;
+  link_label?: string | null;
+  pdf?: File | null;
+  remove_pdf?: boolean;
   is_active?: boolean;
   sort_order?: number;
+  expiry_date?: string;
+  expiry_time?: string;
   attachment?: File;
 }
 
@@ -81,6 +97,9 @@ export interface Event {
   status: 'Upcoming' | 'Completed' | 'Cancelled' | null;
   is_featured: boolean;
   is_active: boolean;
+  expiry_date: string | null;
+  expiry_time: string | null;
+  attachment: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -96,7 +115,10 @@ export interface EventPayload {
   status?: 'Upcoming' | 'Completed' | 'Cancelled';
   is_featured?: boolean;
   is_active?: boolean;
+  expiry_date?: string;
+  expiry_time?: string;
   image?: File;
+  attachment?: File;
 }
 
 // ── Placements ────────────────────────────────────────────────────────────────

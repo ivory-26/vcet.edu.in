@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -78,6 +78,7 @@ const menuGroups: MenuGroup[] = [
       { label: 'Electronics & Telecommunication Engineering',       href: '/electronics-telecomm' },
       { label: 'Civil Engineering',                           href: '/civil-engineering' },
       { label: 'First Year Engineering',                      href: '/first-year-engineering' },
+      { label: 'MMS (MBA)',                                   href: '/mms' },
     ],
   },
 
@@ -85,7 +86,7 @@ const menuGroups: MenuGroup[] = [
   {
     label: 'Academics',
     dropdown: [
-      { label: "Dean Academic's Desk",       href: '/dean-academics' },
+      { label: "Dean Academics Desk",       href: '/dean-academics' },
       {
         label: 'Academic Calendar',
         href: '/academic-calendar',
@@ -102,7 +103,7 @@ const menuGroups: MenuGroup[] = [
         ],
       },
       { label: 'Teaching Learning Process',  href: '/teaching-learning' },
-      { label: 'Swayam - NPTEL',             href: '/swayam-nptel' },
+      { label: 'Swayam - NPTEL',             href: 'https://nptel.ac.in/' },
       {
         label: 'Honours / Minor Degree Program',
         href:'/honours-minor',
@@ -223,7 +224,7 @@ const menuGroups: MenuGroup[] = [
   {
     label: 'Training & Placement',
     dropdown: [
-      { label: 'Placement', href: '#placements' },
+      { label: 'Placement', href: '/placement' },
       { label: 'Training',  href: '/training' },
       { label: 'E-CELL',    href: '/e-cell' },
       { label: 'IIIC',      href: '/iiic' },
