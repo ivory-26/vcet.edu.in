@@ -573,9 +573,30 @@ const Hero: React.FC = () => {
                                     {year}
                                   </span>
                                 </div>
-                                <p className="text-[15px] font-medium text-white leading-snug">
-                                  {ev.title}
-                                </p>
+                                {ev.image ? (
+                                  <button
+                                    onClick={() => {
+                                      setSelectedImageUrl(ev.image);
+                                      setImageModalOpen(true);
+                                    }}
+                                    className="text-left text-[15px] font-medium text-white leading-snug hover:text-brand-gold transition-colors"
+                                  >
+                                    {ev.title}
+                                  </button>
+                                ) : ev.attachment ? (
+                                  <a
+                                    href={ev.attachment}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[15px] font-medium text-white leading-snug hover:text-brand-gold transition-colors"
+                                  >
+                                    {ev.title}
+                                  </a>
+                                ) : (
+                                  <p className="text-[15px] font-medium text-white leading-snug">
+                                    {ev.title}
+                                  </p>
+                                )}
                                 {ev.description && (
                                   <p className="text-xs text-white/60 leading-relaxed mt-1 line-clamp-2">
                                     {ev.description}

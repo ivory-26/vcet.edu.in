@@ -31,8 +31,10 @@ const EventForm: React.FC = () => {
   const [form, setForm] = useState<EventPayload>(empty);
   
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [existingImageUrl, setExistingImageUrl] = useState<string | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [existingPdfUrl, setExistingPdfUrl] = useState<string | null>(null);
+  const [localImagePreviewUrl, setLocalImagePreviewUrl] = useState<string | null>(null);
   
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(isEdit);
@@ -62,11 +64,24 @@ const EventForm: React.FC = () => {
           external_link: ev.external_link ?? '',
           external_link_label: ev.external_link_label ?? '',
         });
+        if (ev.image) setExistingImageUrl(ev.image);
         if (ev.attachment) setExistingPdfUrl(ev.attachment);
       })
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));
   }, [id, isEdit]);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setLocalImagePreviewUrl(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(imageFile);
+    setLocalImagePreviewUrl(previewUrl);
+
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [imageFile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const target = e.target as HTMLInputElement;
@@ -129,6 +144,7 @@ const EventForm: React.FC = () => {
   }
 
   const pdfPreviewToUse = pdfFile ? URL.createObjectURL(pdfFile) : existingPdfUrl;
+  const imagePreviewToUse = localImagePreviewUrl ?? existingImageUrl;
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-12">
@@ -270,6 +286,28 @@ const EventForm: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {imagePreviewToUse && (
+            <div className="mt-2 w-full flex items-center justify-between bg-white border border-amber-100 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-xs font-black tracking-tight">IMG</span>
+                </div>
+                <div className="text-left truncate">
+                  <p className="text-sm font-bold text-slate-900 truncate">{imageFile ? imageFile.name : (form.title || 'Event Poster')}</p>
+                  <p className="text-xs text-emerald-600 font-bold uppercase tracking-wide">Poster available</p>
+                </div>
+              </div>
+              <a
+                href={imagePreviewToUse}
+                target="_blank"
+                rel="noreferrer"
+                className="ml-4 px-4 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-xs font-bold transition-colors flex items-center gap-2 whitespace-nowrap"
+              >
+                Preview
+              </a>
+            </div>
+          )}
 
           {/* Display Existing PDF or Selected PDF Preview Button */}
           {pdfPreviewToUse && (
