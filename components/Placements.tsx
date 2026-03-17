@@ -21,7 +21,33 @@ function toChartEntries(stats: PlacementStat[]): ChartEntry[] {
 
 const CHART_H = 260; // px — usable bar area height
 
+const COVID_YEARS = [2019, 2020, 2021];
+
 const Placements: React.FC = () => {
+  const { placements } = usePlacements();
+  
+  const finalData = React.useMemo(() => {
+    if (!placements || placements.length === 0) return DEFAULT_PLACEMENT_DATA;
+    
+    const CURRENT_YEAR = new Date().getFullYear();
+    const grouped = placements.reduce((acc, curr) => {
+      acc[curr.year] = (acc[curr.year] || 0) + curr.student_count;
+      return acc;
+    }, {} as Record<number, number>);
+
+    return Object.entries(grouped)
+      .map(([yrStr, count]) => {
+        const y = parseInt(yrStr, 10);
+        const suffix = y >= CURRENT_YEAR ? '*' : '';
+        return {
+          year: `${y}-${(y + 1).toString().slice(2)}${suffix}`,
+          count,
+          isCovid: COVID_YEARS.includes(y),
+        };
+      })
+      .sort((a, b) => parseInt(a.year) - parseInt(b.year));
+  }, [placements]);
+
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +80,10 @@ const Placements: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    setAnimatedCounts(finalData.map(() => 0));
+  }, [finalData]);
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
       { threshold: 0.15 }
@@ -63,12 +93,12 @@ const Placements: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible || finalData.length === 0) return;
     const duration = 1800;
     const steps = 72;
     const stepDuration = duration / steps;
     const timers: ReturnType<typeof setInterval>[] = [];
-    placementData.forEach((item, index) => {
+    finalData.forEach((item, index) => {
       const delay = index * 100;
       setTimeout(() => {
         let currentStep = 0;
@@ -213,7 +243,7 @@ const Placements: React.FC = () => {
                       </div>
                     );
                   })()}
-                {placementData.map((item, index) => {
+                {finalData.map((item, index) => {
                     const barH = (item.count / maxCount) * CHART_H * 0.92;
                     const isPeak = index === maxIdx;
                     const isCurrent = item.year.includes('*');
@@ -308,7 +338,7 @@ const Placements: React.FC = () => {
                   className="absolute bottom-0 flex items-center gap-5 md:gap-8 px-2 pl-12"
                   style={{ height: '36px' }}
                 >
-                  {placementData.map((item, index) => (
+                  {finalData.map((item, index) => (
                     <div
                       key={index}
                       style={{

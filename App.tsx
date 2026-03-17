@@ -94,6 +94,7 @@ const StudentsClub = lazy(() => import('./pages/student-life/StudentsClub'));
 const Hackathon = lazy(() => import('./pages/student-life/Hackathon'));
 const NSDC = lazy(() => import('./pages/student-life/NSDC'));
 const Training = lazy(() => import('./pages/student-life/Training'));
+const Placement = lazy(() => import('./pages/student-life/Placement'));
 const ECell = lazy(() => import('./pages/student-life/ECell'));
 const IIIC = lazy(() => import('./pages/student-life/IIIC'));
 const Parents = lazy(() => import('./pages/student-life/Parents'));
@@ -128,6 +129,16 @@ const NaacPage = lazy(() => import('./pages/naac/NAACPage'));
 
 // pages/contact
 const ContactUs = lazy(() => import('./pages/contact/ContactUs'));
+
+// pages/footer
+const GermanLanguageClubLayout = lazy(() => import('./pages/footer/german-language-club/GermanLanguageClubLayout'));
+const GermanClubAbout = lazy(() => import('./pages/footer/german-language-club/GermanClubAbout'));
+const GermanClubCourseObjectives = lazy(() => import('./pages/footer/german-language-club/GermanClubCourseObjectives'));
+const GermanClubCourseContent = lazy(() => import('./pages/footer/german-language-club/GermanClubCourseContent'));
+const GermanClubActivities = lazy(() => import('./pages/footer/german-language-club/GermanClubActivities'));
+const GermanClubGallery = lazy(() => import('./pages/footer/german-language-club/GermanClubGallery'));
+const GermanClubFaculty = lazy(() => import('./pages/footer/german-language-club/GermanClubFaculty'));
+const HelplineForDivyangjan = lazy(() => import('./pages/footer/HelplineForDivyangjan'));
 
 // pages/mms
 const MMSHome = lazy(() => import('./pages/mms/MMSHome'));
@@ -175,6 +186,10 @@ const MMSStudentsLifeOscillations = lazy(() => import('./pages/mms/students-life
 const MMSStudentsLifeIdeathon = lazy(() => import('./pages/mms/students-life/MMSStudentsLifeIdeathon'));
 const MMSStudentsLifeRankers = lazy(() => import('./pages/mms/students-life/MMSStudentsLifeRankers'));
 const MMSFacilities = lazy(() => import('./pages/mms/facilities/MMSFacilities'));
+const MMSFacilitiesLibrary = lazy(() => import('./pages/mms/facilities/MMSFacilitiesLibrary'));
+const MMSFacilitiesSeminarHall = lazy(() => import('./pages/mms/facilities/MMSFacilitiesSeminarHall'));
+const MMSFacilitiesClassroom = lazy(() => import('./pages/mms/facilities/MMSFacilitiesClassroom'));
+const MMSFacilitiesGymkhana = lazy(() => import('./pages/mms/facilities/MMSFacilitiesGymkhana'));
 const MMSFAQs = lazy(() => import('./pages/mms/faqs/MMSFAQs'));
 
 /* ── Admin Panel Pages (lazy) ── */
@@ -371,9 +386,22 @@ function App() {
             {/* Contact & Others */}
             <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/training" element={<Training />} />
+            <Route path="/placement" element={<Placement />} />
             <Route path="/e-cell" element={<ECell />} />
             <Route path="/iiic" element={<IIIC />} />
             <Route path="/exam-cell" element={<ExamCell />} />
+            <Route path="/helpline-for-divyangjan" element={<HelplineForDivyangjan />} />
+
+            {/* Footer Pages */}
+            <Route path="/german-language-club" element={<GermanLanguageClubLayout />}>
+              <Route index element={<Navigate to="about" replace />} />
+              <Route path="about" element={<GermanClubAbout />} />
+              <Route path="course-objectives" element={<GermanClubCourseObjectives />} />
+              <Route path="course-content" element={<GermanClubCourseContent />} />
+              <Route path="activities" element={<GermanClubActivities />} />
+              <Route path="gallery" element={<GermanClubGallery />} />
+              <Route path="faculty" element={<GermanClubFaculty />} />
+            </Route>
 
           {/* MMS mini-site */}
           <Route path="/mms" element={<MMSHome />} />
@@ -427,6 +455,10 @@ function App() {
           <Route path="/mms/students-life/ideathon-1-0" element={<MMSStudentsLifeIdeathon />} />
           <Route path="/mms/students-life/rankers" element={<MMSStudentsLifeRankers />} />
           <Route path="/mms/facilities" element={<MMSFacilities />} />
+          <Route path="/mms/facilities/library" element={<MMSFacilitiesLibrary />} />
+          <Route path="/mms/facilities/seminar-hall" element={<MMSFacilitiesSeminarHall />} />
+          <Route path="/mms/facilities/classroom" element={<MMSFacilitiesClassroom />} />
+          <Route path="/mms/facilities/gymkhana" element={<MMSFacilitiesGymkhana />} />
           <Route path="/mms/faqs" element={<MMSFAQs />} />
 
           {/* ─── Admin Panel ─── */}
