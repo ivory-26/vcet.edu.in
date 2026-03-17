@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { newsTickerApi } from '../../api/newsTicker';
-import type { NewsTicker } from '../../types';
+import { galleriesApi } from '../../api/galleries';
+import type { Gallery } from '../../types';
 
-const NewsTickerList: React.FC = () => {
-  const [items, setItems] = useState<NewsTicker[]>([]);
+const GalleryList: React.FC = () => {
+  const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const fetchItems = () => {
     setLoading(true);
-    newsTickerApi.list()
-      .then((r) => setItems(r.data))
+    galleriesApi.list()
+      .then((r) => setGalleries(r.data))
       .catch(console.error)
       .finally(() => setLoading(false));
   };
 
   useEffect(() => { fetchItems(); }, []);
 
-  const handleDelete = async (item: NewsTicker) => {
-    if (!window.confirm(`Delete ticker: "${item.text.substring(0, 60)}…"?`)) return;
-    setDeletingId(item.id);
+  const handleDelete = async (gallery: Gallery) => {
+    if (!confirm(`Delete gallery "${gallery.title}"?`)) return;
+    setDeletingId(gallery.id);
     try {
-      await newsTickerApi.delete(item.id);
-      setItems((prev) => prev.filter((i) => i.id !== item.id));
+      await galleriesApi.delete(gallery.id);
+      setGalleries((prev) => prev.filter((s) => s.id !== gallery.id));
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Delete failed');
     } finally {
@@ -32,21 +33,65 @@ const NewsTickerList: React.FC = () => {
     }
   };
 
-  const handleToggleStatus = async (item: NewsTicker) => {
-    const newStatus = !item.is_active;
+  const handleToggleStatus = async (gallery: Gallery) => {
+    const newStatus = !gallery.is_active;
     try {
-      setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_active: newStatus } : i));
-      await newsTickerApi.update(item.id, { text: item.text, is_active: newStatus });
+      setGalleries(prev => prev.map(s => s.id === gallery.id ? { ...s, is_active: newStatus } : s));
+      await galleriesApi.update(gallery.id, { is_active: newStatus });
     } catch (e) {
-      setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_active: !newStatus } : i));
+      setGalleries(prev => prev.map(s => s.id === gallery.id ? { ...s, is_active: !newStatus } : s));
       alert('Failed to update status');
     }
   };
 
-  const filteredItems = items.filter(item => 
-    item.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (item.link && item.link.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredgalleries = galleries.filter(gallery => {
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      const matchesSearch = (gallery.title && gallery.title.toLowerCase().includes(term)) ||
+                            (gallery.subtitle && gallery.subtitle.toLowerCase().includes(term)) ||
+                            false;
+      if (!matchesSearch) return false;
+    }
+    
+    if (statusFilter === 'active' && !gallery.is_active) return false;
+    if (statusFilter === 'inactive' && gallery.is_active) return false;
+    
+    return true;
+  });
+
+  const toggleFilter = () => {
+    setStatusFilter(prev => prev === 'all' ? 'active' : prev === 'active' ? 'inactive' : 'all');
+  };
+
+  const handleExport = () => {
+    if (filteredgalleries.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    const headers = ["ID", "Title", "Subtitle", "Sort Order", "Status", "Created At"];
+    const rows = filteredgalleries.map(s => [
+      s.id,
+      `"${(s.title || '').replace(/"/g, '""')}"`,
+      `"${(s.subtitle || '').replace(/"/g, '""')}"`,
+      s.sort_order,
+      s.is_active ? 'Active' : 'Inactive',
+      `"${(s.title || '').replace(/"/g, '""')}"`,
+      `"${(s.title || '').replace(/"/g, '""')}"`,
+      new Date(s.created_at).toLocaleDateString()
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map(row => row.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `hero_slides_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="space-y-10 pb-12">
@@ -56,16 +101,16 @@ const NewsTickerList: React.FC = () => {
           <div className="flex items-center gap-2 text-[11px] font-bold text-slate-400 mb-1 uppercase tracking-widest">
             <Link to="/admin" className="hover:text-slate-600 transition-colors">Dashboard</Link>
             <span className="text-slate-300 font-normal">/</span>
-            <span className="text-slate-600">News Ticker</span>
+            <span className="text-slate-600">Hero galleries</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-[#111827]">News Ticker</h1>
+          <h1 className="text-3xl font-extrabold text-[#111827]">Hero galleries</h1>
         </div>
         <Link 
-          to="/admin/news-ticker/new" 
+          to="/admin/hero-galleries/new" 
           className="bg-[#1e293b] hover:bg-[#0f172a] text-white font-bold px-6 py-3 rounded-full text-sm transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-          Add Item
+          Add gallery
         </Link>
       </div>
 
@@ -74,7 +119,7 @@ const NewsTickerList: React.FC = () => {
         <div className="relative w-full sm:max-w-md">
           <input
             type="text"
-            placeholder="Search news ticker..."
+            placeholder="Search galleries..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-white border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#1e293b] rounded-2xl px-12 py-4 text-sm transition-all shadow-sm outline-none"
@@ -82,11 +127,17 @@ const NewsTickerList: React.FC = () => {
           <svg className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 bg-white ring-1 ring-slate-200 px-6 py-4 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+          <button 
+            onClick={toggleFilter}
+            className={`flex items-center gap-2 ring-1 px-6 py-4 rounded-2xl text-xs font-bold transition-all shadow-sm ${statusFilter !== 'all' ? 'bg-[#1e293b] text-white ring-[#1e293b]' : 'bg-white text-slate-600 ring-slate-200 hover:bg-slate-50'}`}
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4.5h18m-18 5h18m-18 5h18m-18 5h18" /></svg>
-            Filter
+            Filter: {statusFilter === 'all' ? 'All' : statusFilter === 'active' ? 'Active' : 'Inactive'}
           </button>
-          <button className="flex items-center gap-2 bg-white ring-1 ring-slate-200 px-6 py-4 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-2 bg-white ring-1 ring-slate-200 px-6 py-4 rounded-2xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
             Export
           </button>
@@ -97,52 +148,53 @@ const NewsTickerList: React.FC = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <div className="w-10 h-10 border-4 border-slate-100 border-t-[#1e293b] rounded-full animate-spin" />
-            <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Loading Items...</p>
+            <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Loading galleries...</p>
           </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="text-center py-24 text-slate-400 text-sm font-bold uppercase tracking-widest">No ticker items found.</div>
+        ) : filteredgalleries.length === 0 ? (
+          <div className="text-center py-24 text-slate-400 text-sm font-bold">No hero galleries found.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] bg-slate-50/30">
-                  <th className="text-left px-8 py-5">Ticker Message</th>
-                  <th className="text-left px-8 py-5">Internal Link</th>
+                  <th className="text-left px-8 py-5">gallery Content</th>
                   <th className="text-center px-8 py-5">Sort Order</th>
                   <th className="text-right px-8 py-5">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {filteredItems.map((item) => (
-                  <tr key={item.id} className="group hover:bg-slate-50/50 transition-all duration-300">
-                    <td className="px-8 py-6 max-w-md">
-                      <div className="flex flex-col">
-                        <span className="text-slate-900 font-extrabold text-sm leading-relaxed group-hover:text-[#1e293b] transition-colors">{item.text}</span>
-                      </div>
-                    </td>
+                {filteredgalleries.map((gallery) => (
+                  <tr key={gallery.id} className="group hover:bg-slate-50/50 transition-all duration-300">
                     <td className="px-8 py-6">
-                      {item.link ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1e293b] bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200/50 truncate max-w-[150px]">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                          {item.link}
-                        </span>
-                      ) : (
-                        <span className="text-slate-300 text-xs italic font-semibold">—</span>
-                      )}
+                      <div className="flex items-center gap-6">
+                        <div className="w-32 h-18 rounded-2xl bg-slate-100 border-2 border-white shadow-sm overflow-hidden shrink-0 group-hover:scale-105 transition-transform aspect-video">
+                          {gallery.image_url ? (
+                            <img src={gallery.image_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-slate-900 font-extrabold text-base leading-tight group-hover:text-[#1e293b] transition-colors">{gallery.title}</span>
+                          <span className="text-slate-400 text-xs font-semibold mt-1">{gallery.subtitle || 'No subtitle'}</span>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-8 py-6 text-center">
                       <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-50 text-slate-600 font-bold text-xs border border-slate-100 ring-2 ring-white shadow-sm">
-                        {item.sort_order}
+                        {gallery.sort_order}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex items-center justify-end gap-3">
                         <button 
-                          onClick={() => handleToggleStatus(item)}
-                          className={`p-2 transition-colors rounded-xl ${item.is_active ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-100' : 'text-red-400 hover:text-red-600 hover:bg-red-50'}`}
-                          title={item.is_active ? "Hide from Website" : "Show on Website"}
+                          onClick={() => handleToggleStatus(gallery)}
+                          className={`p-2 transition-colors rounded-xl ${gallery.is_active ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-100' : 'text-red-400 hover:text-red-600 hover:bg-red-50'}`}
+                          title={gallery.is_active ? "Hide from Website" : "Show on Website"}
                         >
-                          {item.is_active ? (
+                          {gallery.is_active ? (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -153,12 +205,12 @@ const NewsTickerList: React.FC = () => {
                             </svg>
                           )}
                         </button>
-                        <Link to={`/admin/news-ticker/${item.id}/edit`} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all" title="Edit">
+                        <Link to={`/admin/hero-galleries/${gallery.id}/edit`} className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all" title="Edit">
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                         </Link>
                         <button 
-                          onClick={() => handleDelete(item)} 
-                          disabled={deletingId === item.id} 
+                          onClick={() => handleDelete(gallery)} 
+                          disabled={deletingId === gallery.id} 
                           className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all disabled:opacity-40" 
                           title="Delete"
                         >
@@ -177,4 +229,4 @@ const NewsTickerList: React.FC = () => {
   );
 };
 
-export default NewsTickerList;
+export default GalleryList;

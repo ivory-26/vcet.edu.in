@@ -16,7 +16,7 @@ const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({
 }) => {
   if (!isOpen || !imageUrl) return null;
 
-  const handleBackdropClick = (e: React.MouseEvent<div>) => {
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }

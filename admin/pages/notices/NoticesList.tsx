@@ -62,7 +62,8 @@ const NoticesList: React.FC = () => {
     try {
       // payload sends the toggle
       await noticesApi.update(notice.id, { 
-        title: notice.title, 
+        title: notice.title,
+        body: notice.body, 
         is_active: !notice.is_active 
       });
       setNotices(prev => prev.map(n => n.id === notice.id ? { ...n, is_active: !n.is_active } : n));
