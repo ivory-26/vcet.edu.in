@@ -1,60 +1,155 @@
 import React from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
-import { BookOpen, Mic2, PenTool, Brain, MessageSquare, Award, Sparkles, Users } from 'lucide-react';
+import {
+  ContentSection,
+  DataTable,
+  EventGrid,
+  GalleryGrid,
+  IntroSection,
+  ProfileHighlight,
+  ResourceGrid,
+} from './studentLifeShared';
 
-const stats = [
-  { icon: BookOpen, value: '15+', label: 'Events / Year' },
-  { icon: Users, value: '200+', label: 'Active Members' },
-  { icon: Award, value: '30+', label: 'Awards Won' },
-  { icon: Sparkles, value: '5+', label: 'Years Active' },
+const events = [
+  {
+    title: "Inauguration Of 'VISTA' :",
+    description:
+      'We start our year with publishing our annual college magazine VISTA which is inaugurated by our Principal. VISTA is our annual college magazine, which consists of articles, letters, poems written by our very own college students which motivate our young talent. The magazine is inaugurated by our Principal, followed by a small competition for the students to kick start their year. These magazines are then distributed to the entire college.',
+  },
+  {
+    title: 'VCET Podcast Powered By LITERATI :',
+    description:
+      'VCET Podcast powered by Literati is the latest venture by the team of Literati 2019. Famous personalities from different walks of life are invited to share their life experience which are inspiring and informative. Sharing their advice and life lessons and entertaining us with their fun life experiences, we invite over 12 guests.',
+  },
+  {
+    title: 'Unscripted - Extempore :',
+    description:
+      'Extempore is a speech competition where the topics are given on the spot so the students have to give their best in a limited period of time. This event never fails to leave the audience speechless as they witness the great speakers unleash themselves to bring out the artist in them. This event brings out some of the most creative people from the students of VCET.',
+  },
+  {
+    title: 'Marathi and Hindi Kavi Sammelan :',
+    description:
+      'Marathi and Hindi Kavi Sammelan are two poetry recitation competition which are hosted consecutively. These competitions motivate our young and skilled poets to express their self written or other famous poems on stage. This helps them in facing the crowd and builds their confidence. The competition brings out some of the finest poets in the college and their creations are music to ears.',
+  },
+  {
+    title: 'Faceoff :',
+    description:
+      'The college hosts an interdepartmental debate competition, elevating the debate discourse to new heights and marking a proud achievement for the institution. Teams from all departments compete, with representatives chosen based on their abilities by departmental judges from the winners of internal debates. This event promises to be grand and captivating, showcasing the best of collegiate debate talent.',
+  },
+  {
+    title: 'Faceoff - Intercollegiate :',
+    description:
+      'Taking the debate to another level, an intercollegiate debate competition is held which is a proud success for the college. Debate enthusiasts from over 10 colleges participate. The team represented by our very own college are selected based on their abilities by the judges of departmental debate competition from the winners of the debate. This event is truly grand and worth watching.',
+  },
+  {
+    title: 'Lit Fest :',
+    description:
+      'Lit Fest is an one week literature festival. The event consist of many subevents namely : Writing Prompt, Literature Quiz, Dialogue writing, Look into the book & Choose your anime. Students actively take part through online submissions. The committee keeps on adding new competition and games every year to make it more fascinating. All the events Organized in the Lit fest clearly depicts the importance of literature. The fest is worth adoring and is a remarkable one',
+  },
+  {
+    title: 'Marathi Bhasha Diwas :',
+    description:
+      'This propitious event is organized for the teaching as well as non teaching staff of VCET to celebrate the glory of our beautiful Maharashtrian culture.The inter-departmental teams vigorously show their competitive spirits to win the various competition in marathi language like extempore, guess the marathi word for the given english word and many such fun games. Best dressed departmental competition is also held on this day. It is always a memorable event for both staff as well as students working in the committee.',
+  },
+  {
+    title: 'Seminar :',
+    description:
+      "The Literati Club at VCET hosted the captivating seminar at the Academic Year in seminar hall, drawing literature enthusiasts, academics, and students for a dynamic exchange. Featuring renowned speakers covering diverse literary topics and fostering interactive sessions, the event provided a platform for learning, networking, and showcasing emerging talents. Attendees left with renewed enthusiasm for literature, highlighting the seminar's success in fostering intellectual discourse and community engagement, celebrating the profound impact of literature and ideas.",
+  },
 ];
 
-const activities = [
+const gallery = [
   {
-    icon: MessageSquare,
-    title: 'Debates',
-    description: 'Regular debating sessions on contemporary topics, nurturing critical thinking, public speaking, and the art of persuasion among students.',
+    src: '/images/student-life/literati/gallery-01.jpg',
+    alt: 'Literati gallery image 1',
+    placeholder: true,
   },
   {
-    icon: Mic2,
-    title: 'Elocution Competitions',
-    description: 'Public speaking and elocution events that help students develop confidence, clarity of expression, and oratory skills.',
+    src: '/images/student-life/literati/gallery-02.jpg',
+    alt: 'Literati gallery image 2',
+    placeholder: true,
   },
   {
-    icon: PenTool,
-    title: 'Essay Writing',
-    description: 'Creative and academic essay writing competitions that sharpen analytical thinking and articulate written expression.',
+    src: '/images/student-life/literati/gallery-03.jpg',
+    alt: 'Literati gallery image 3',
+    placeholder: true,
   },
   {
-    icon: Brain,
-    title: 'Quiz Competitions',
-    description: 'Inter-class and inter-college quiz events covering science, technology, general knowledge, and current affairs.',
+    src: '/images/student-life/literati/gallery-04.jpg',
+    alt: 'Literati gallery image 4',
+    placeholder: true,
   },
   {
-    icon: BookOpen,
-    title: 'Poetry & Creative Writing',
-    description: 'Workshops and contests encouraging students to explore poetry, storytelling, and creative writing in multiple languages.',
+    src: '/images/student-life/literati/gallery-05.jpg',
+    alt: 'Literati gallery image 5',
+    placeholder: true,
   },
   {
-    icon: Sparkles,
-    title: 'Workshops & Seminars',
-    description: 'Expert-led workshops on communication skills, creative writing techniques, and literary appreciation for all-round development.',
+    src: '/images/student-life/literati/gallery-06.jpg',
+    alt: 'Literati gallery image 6',
+    placeholder: true,
+  },
+  {
+    src: '/images/student-life/literati/gallery-07.jpg',
+    alt: 'Literati gallery image 7',
+    placeholder: true,
+  },
+  {
+    src: '/images/student-life/literati/gallery-08.jpg',
+    alt: 'Literati gallery image 8',
+    placeholder: true,
+  },
+  {
+    src: '/images/student-life/literati/gallery-09.jpg',
+    alt: 'Literati gallery image 9',
+    placeholder: true,
   },
 ];
 
-const highlights = [
+const teamRows = [
+  ['Chairperson', 'Adithya Jayakumar'],
+  ['Co - Chairperson', 'Siddharth Chakravarty\nPreeti Prajapati'],
+  ['Treasurer', 'Krithik Pandey'],
+  ['Secretary', 'Rutuja Pednekar'],
+  ['Organising Head', 'Raj Mor\nJay Patil'],
+  ['Admin Head', 'Sumit Mali\nTushar Rathod'],
+  ['Editorial Head', 'Rutuja Gadhave\nWajiha Kulsum\nJyoti Dhangada'],
+  ['Media Head', 'Meenakshi Kshirsagar\nShardul Brid'],
+  ['Visual Media Head', 'Meet Mistry\nPranali Rane\nAbhishek Mishra'],
+  ['Sponsorship Head', 'Ganesh Joshi'],
+];
+
+const magazineLinks = [
   {
-    title: 'Annual Literary Fest',
-    description: 'A flagship event featuring debates, quizzes, poetry slams, storytelling, and creative writing that draws participation from colleges across the region.',
+    title: 'VISTA 2024',
+    href: 'https://vcet.edu.in/wp-content/uploads/2025/02/VISTA24-PratibimbLow-Quality.pdf',
+    description: 'Official magazine link published on the Literati page.',
+    icon: 'file' as const,
   },
   {
-    title: 'Inter-College Debate Championships',
-    description: 'VCET Literati members regularly participate and win laurels at prestigious inter-college and university-level debate contests.',
+    title: 'VISTA 2023',
+    href: "http://vcet.edu.in/VISTA/Vista'23_Ekam(final).pdf",
+    description: 'Official magazine link published on the Literati page.',
+    icon: 'file' as const,
   },
   {
-    title: 'College Magazine',
-    description: 'The literary club curates and publishes the annual college magazine, showcasing the best of student writing, art, and photography.',
+    title: 'VISTA 2022',
+    href: "https://vcet.edu.in/VISTA/VISTA'22_Atraaf.pdf",
+    description: 'Official magazine link published on the Literati page.',
+    icon: 'file' as const,
+  },
+  {
+    title: 'VISTA 2021',
+    href: 'https://vcet.edu.in/wp-content/uploads/2022/02/Vista21-Allagi.pdf',
+    description: 'Official magazine link published on the Literati page.',
+    icon: 'file' as const,
+  },
+  {
+    title: 'VISTA 2020',
+    href: 'https://vcet.edu.in/wp-content/uploads/2022/02/VISTA-2020.pdf',
+    description: 'Official magazine link published on the Literati page.',
+    icon: 'file' as const,
   },
 ];
 
@@ -63,140 +158,97 @@ const Literati: React.FC = () => {
     <PageLayout>
       <PageBanner
         title="Literati"
-        breadcrumbs={[
-          { label: 'Student Life', href: '/student-life' },
-          { label: 'Literati' },
+        breadcrumbs={[{ label: 'Literati' }]}
+      />
+
+      <IntroSection
+        id="intro"
+        title="Literati"
+        description="The magazine committee was remoulded and renamed and took its form as the LITERATI - THE LITERARY CLUB. The sole responsibility of this committee is to spread the light of knowledge about literature, art and display the outstanding work of our creative-minded vcetians through our annual college magazine 'VISTA'. We begin each year by welcoming new talented members for our committee who put their heart and enthusiasm into making the year an insightful one."
+        image="/images/student-life/literati/hero.jpg"
+        imageAlt="Literati"
+        hideImage
+        imagePlaceholderLabel="Literati Hero Image"
+        chips={[
+          { label: 'Objectives', href: '#objectives' },
+          { label: 'Events', href: '#events' },
+          { label: 'Gallery', href: '#gallery' },
+          { label: 'Team', href: '#team' },
+          { label: 'Magazine', href: '#magazine' },
+        ]}
+        links={[
+          {
+            label: 'Literati Instagram',
+            href: 'https://www.instagram.com/literativcet?igsh=Ym9sZzU1NjI3eGZ4',
+            icon: 'instagram',
+          },
         ]}
       />
 
-      {/* Overview */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="reveal">
-                <div className="bg-brand-light rounded-2xl aspect-[4/3] flex items-center justify-center border border-brand-blue/10">
-                  <span className="text-sm font-semibold text-brand-blue/40 tracking-wide">
-                    literati.jpg
-                  </span>
-                </div>
-              </div>
+      <ContentSection
+        id="objectives"
+        title="Objectives"
+        subtitle="Official objective published on the Literati page."
+        backgroundClassName="bg-brand-light"
+      >
+        <div className="reveal rounded-[28px] border border-brand-blue/10 bg-white p-8 md:p-10 shadow-sm">
+          <p className="text-slate-600 leading-relaxed text-base md:text-lg">
+            The magazine committee was remoulded and renamed and took its form as the LITERATI - THE LITERARY CLUB. The sole responsibility of this committee is to spread the light of knowledge about literature, art and display the outstanding work of our creative-minded vcetians through our annual college magazine 'VISTA'. We begin each year by welcoming new talented members for our committee who put their heart and enthusiasm into making the year an insightful one.
+          </p>
+        </div>
+      </ContentSection>
 
-              <div className="reveal" style={{ transitionDelay: '0.1s' }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-0.5 bg-brand-gold" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-brand-gold">
-                    Words That Inspire
-                  </span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-display font-bold text-brand-navy mb-6">
-                  Literati – The Literary Club
-                </h2>
-                <p className="text-slate-500 leading-relaxed mb-4">
-                  Literati is the literary club of VCET, dedicated to fostering a love for language,
-                  literature, and creative expression. The club provides a platform for students to
-                  hone their skills in public speaking, writing, and critical thinking through a
-                  variety of engaging activities throughout the year.
-                </p>
-                <p className="text-slate-500 leading-relaxed">
-                  From fiery debates to thoughtful essays, from enchanting poetry to challenging
-                  quizzes, Literati ensures that every student finds their voice and develops the
-                  communication skills essential for professional success.
-                </p>
-              </div>
+      <ContentSection
+        id="events"
+        title="Events"
+        subtitle="Official Literati events and activities from the VCET website."
+        backgroundClassName="bg-white"
+      >
+        <EventGrid items={events} />
+      </ContentSection>
+
+      <ContentSection
+        id="gallery"
+        title="Gallery"
+        subtitle="Official VCET Literati gallery images."
+        backgroundClassName="bg-brand-light"
+      >
+        <GalleryGrid items={gallery} />
+      </ContentSection>
+
+      <ContentSection
+        id="team"
+        title="Team"
+        subtitle="Staff Incharge :"
+        backgroundClassName="bg-white"
+      >
+        <div className="space-y-8">
+          <ProfileHighlight
+            title="Staff Incharge :"
+            image="/images/student-life/literati/staff-incharge.jpg"
+            imageAlt="Dr. Swati Varma"
+            hideImage
+            imagePlaceholderLabel="Staff Incharge Image"
+            heading="Dr. Swati Varma"
+            lines={['Computer Engineering', 'swati.saigaonkar@vcet.edu.in']}
+          />
+          <div>
+            <div className="mb-6 reveal">
+              <h3 className="text-2xl font-display font-bold text-brand-navy">Student Committee 2025-26 :</h3>
             </div>
+            <DataTable columns={['Position', 'Name']} rows={teamRows} />
           </div>
         </div>
-      </section>
+      </ContentSection>
 
-      {/* Stats */}
-      <section className="py-14 bg-gradient-to-br from-brand-dark via-brand-blue to-brand-navy">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {stats.map((stat, idx) => (
-              <div
-                key={idx}
-                className="reveal text-center p-6"
-                style={{ transitionDelay: `${0.1 * idx}s` }}
-              >
-                <div className="w-12 h-12 mx-auto mb-4 bg-white/10 rounded-xl flex items-center justify-center">
-                  <stat.icon className="w-6 h-6 text-brand-gold" />
-                </div>
-                <div className="text-2xl md:text-3xl font-display font-bold text-white mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-xs uppercase tracking-widest text-white/50 font-semibold">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Activities */}
-      <section className="py-16 md:py-24 bg-brand-light">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto text-center mb-14 reveal">
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-brand-navy mb-4">
-              Club Activities
-            </h2>
-            <p className="text-slate-500 text-lg leading-relaxed">
-              Engaging literary pursuits that sharpen minds and inspire creativity.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {activities.map((activity, idx) => (
-              <div
-                key={idx}
-                className="reveal group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg p-6 transition-all duration-500 hover:-translate-y-1 hover:border-brand-gold/30"
-                style={{ transitionDelay: `${0.05 * idx}s` }}
-              >
-                <div className="w-12 h-12 bg-brand-light rounded-xl flex items-center justify-center mb-4 group-hover:bg-brand-gold/10 transition-colors duration-300">
-                  <activity.icon className="w-6 h-6 text-brand-blue group-hover:text-brand-gold transition-colors duration-300" />
-                </div>
-                <h3 className="text-lg font-display font-bold text-brand-navy mb-2 group-hover:text-brand-blue transition-colors duration-300">
-                  {activity.title}
-                </h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{activity.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Highlights */}
-      <section className="py-16 md:py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto text-center mb-14 reveal">
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-brand-navy mb-4">
-              Highlights
-            </h2>
-            <p className="text-slate-500 text-lg leading-relaxed">
-              Flagship events and achievements of the literary club.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {highlights.map((item, idx) => (
-              <div
-                key={idx}
-                className="reveal group bg-gradient-to-br from-brand-dark via-brand-blue to-brand-navy rounded-xl p-6 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
-                style={{ transitionDelay: `${0.1 * idx}s` }}
-              >
-                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="w-5 h-5 text-brand-gold" />
-                </div>
-                <h3 className="text-lg font-display font-bold text-white mb-2">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-white/60 leading-relaxed">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ContentSection
+        id="magazine"
+        title="Magazine"
+        subtitle="Vista Magazine :"
+        backgroundClassName="bg-brand-light"
+      >
+        <ResourceGrid items={magazineLinks} />
+      </ContentSection>
     </PageLayout>
   );
 };

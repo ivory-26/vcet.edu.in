@@ -2,6 +2,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, ChevronDown, ChevronRight } from 'lucide-react';
 
+const CAREER_AT_VCET_PDF_URL =
+  'https://drive.google.com/file/d/1grwZ4_QIjC23c4HHFCM4xPJuFywsWtgw/view?usp=sharing';
+
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    TYPE DEFINITIONS
 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
@@ -150,9 +153,8 @@ const menuGroups: MenuGroup[] = [
   {
     label: 'Student & Career',
     dropdown: [
-      { label: 'Career @ VCET',          href: '/career-at-vcet' },
+      { label: 'Career @ VCET',          href: CAREER_AT_VCET_PDF_URL },
       { label: 'Extra-Curricular',       isGroupLabel: true },
-      { label: "Student's Council",      href: '/students-council' },
       { label: 'Cultural Committee',     href: '/cultural-committee' },
       { label: 'Sports Committee',       href: '/sports-committee' },
       { label: 'Literati',               href: '/literati' },
@@ -290,7 +292,7 @@ const keywordMap: Record<string, string[]> = {
   '/health-facilities':    ['health', 'medical', 'doctor', 'first aid'],
   '/differently-abled':    ['differently abled', 'disability', 'accessible', 'divyang'],
   '/career-at-vcet':       ['career', 'jobs', 'recruitment', 'vacancies', 'work at vcet'],
-  '/students-council':     ['student council', 'student body'],
+  [CAREER_AT_VCET_PDF_URL]: ['career', 'jobs', 'recruitment', 'vacancies', 'work at vcet'],
   '/cultural-committee':   ['cultural', 'fest', 'events', 'annual day'],
   '/sports-committee':     ['sports committee', 'games'],
   '/literati':             ['literati', 'magazine', 'literary'],

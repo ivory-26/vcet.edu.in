@@ -22,6 +22,9 @@ import Facilities from './components/Facilities';
 import Footer from './components/Footer';
 import SplashScreen from './components/SplashScreen';
 
+const CAREER_AT_VCET_PDF_URL =
+  'https://drive.google.com/file/d/1grwZ4_QIjC23c4HHFCM4xPJuFywsWtgw/view?usp=sharing';
+
 /* ── Lazy-loaded Pages ── */
 
 // pages/about
@@ -84,8 +87,6 @@ const HealthFacilities = lazy(() => import('./pages/facilities/HealthFacilities'
 const DifferentlyAbled = lazy(() => import('./pages/facilities/DifferentlyAbled'));
 
 // pages/student-life
-const CareerAtVCET = lazy(() => import('./pages/student-life/CareerAtVCET'));
-const StudentsCouncil = lazy(() => import('./pages/student-life/StudentsCouncil'));
 const CulturalCommittee = lazy(() => import('./pages/student-life/CulturalCommittee'));
 const SportsCommittee = lazy(() => import('./pages/student-life/SportsCommittee'));
 const Literati = lazy(() => import('./pages/student-life/Literati'));
@@ -163,6 +164,14 @@ const PageLoader = () => (
 );
 
 /* ── Homepage Component ── */
+const ExternalRedirect: React.FC<{ to: string }> = ({ to }) => {
+  useEffect(() => {
+    window.location.replace(to);
+  }, [to]);
+
+  return <PageLoader />;
+};
+
 const HomePage: React.FC = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -283,8 +292,8 @@ function App() {
           <Route path="/differently-abled" element={<DifferentlyAbled />} />
 
           {/* Student Life */}
-          <Route path="/career-at-vcet" element={<CareerAtVCET />} />
-          <Route path="/students-council" element={<StudentsCouncil />} />
+          <Route path="/career-at-vcet" element={<ExternalRedirect to={CAREER_AT_VCET_PDF_URL} />} />
+          <Route path="/students-council" element={<Navigate to="/" replace />} />
           <Route path="/cultural-committee" element={<CulturalCommittee />} />
           <Route path="/sports-committee" element={<SportsCommittee />} />
           <Route path="/literati" element={<Literati />} />
