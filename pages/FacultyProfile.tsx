@@ -1,10 +1,30 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { facultyApi } from '../admin/api/faculty';
 import type { Faculty } from '../admin/types';
 import PageLayout from '../components/PageLayout';
 import './departments/csds/FacultyProfile.css';
 import fallbackFacultyData from '../components/fallbackFaculty.json';
+
+const getInitials = (name: string) => {
+  const cleanName = name.replace(/^(Dr\.|Mr\.|Ms\.|Mrs\.|Prof\.)\s*/i, '').trim();
+  const parts = cleanName.split(' ').filter(Boolean);
+  return (parts[0]?.[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '').toUpperCase();
+};
+
+const ImageWithFallback: React.FC<{ url?: string; name: string; altText: string }> = ({ url, name, altText }) => {
+  const [error, setError] = useState(false);
+
+  if (url && !error) {
+    return <img src={url} alt={altText} onError={() => setError(true)} />;
+  }
+
+  return (
+    <div style={{ width: '100%', height: '100%', backgroundColor: '#1a4b7c', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '3rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+      {getInitials(name)}
+    </div>
+  );
+};
 
 const FacultyProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -89,12 +109,8 @@ const FacultyProfile: React.FC = () => {
           <div className="hero">
             <div className="hero-g">
               <div className="ph-wrap">
-                <div className="ph-circle">
-                  {profileImage?.url ? (
-                    <img src={profileImage.url} alt={basicInfo.fullName} />
-                  ) : (
-                    <span>{basicInfo.fullName.split(' ').map(n => n[0]).join('').substring(0, 2)}</span>
-                  )}
+                <div className="ph-circle" style={{ overflow: 'hidden' }}>
+                  <ImageWithFallback url={profileImage?.url} name={basicInfo.fullName} altText={basicInfo.fullName} />
                 </div>
                 <div className="ph-badge">VCET Faculty</div>
               </div>
@@ -384,3 +400,6 @@ const FacultyProfile: React.FC = () => {
 };
 
 export default FacultyProfile;
+
+
+
