@@ -1,4 +1,4 @@
-wdimport React, { useEffect, lazy, Suspense } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 import { PageTitleUpdater } from './components/PageTitleUpdater';
@@ -140,6 +140,7 @@ const GermanClubActivities = lazy(() => import('./pages/footer/german-language-c
 const GermanClubGallery = lazy(() => import('./pages/footer/german-language-club/GermanClubGallery'));
 const GermanClubFaculty = lazy(() => import('./pages/footer/german-language-club/GermanClubFaculty'));
 const HelplineForDivyangjan = lazy(() => import('./pages/footer/HelplineForDivyangjan'));
+const FacultyProfile = lazy(() => import('./pages/FacultyProfile'));
 
 // pages/mms
 const MMSHome = lazy(() => import('./pages/mms/MMSHome'));
@@ -329,6 +330,7 @@ function App() {
             <Route path="/civil-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
             <Route path="/first-year-engineering" element={<DeptFE />} />
             <Route path="/first-year-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/faculty/:id" element={<FacultyProfile />} />
 
           {/* Academics */}
           <Route path="/dean-academics" element={<DeanAcademics />} />
