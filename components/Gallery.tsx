@@ -1,6 +1,7 @@
 import React from 'react';
 import { PixelImage } from '../ui/pixel-image';
 import { useGalleries } from '../hooks/useGalleries';
+import { Link } from 'react-router-dom';
 
 interface FallbackGalleryItem {
   title: string;
@@ -98,6 +99,8 @@ const Gallery: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[200px] sm:auto-rows-[260px]">
           {displayGalleries.map((item, idx) => {
             const isFeatured = idx === 0;
+            const linkTo = item.title === 'AICTE IDEA Lab' ? '/aicte-idea-vcet' : null;
+            
             return (
               <div
                 key={item.id}
@@ -106,6 +109,11 @@ const Gallery: React.FC = () => {
                   isFeatured ? 'sm:col-span-2 lg:col-span-2 md:row-span-2 lg:row-span-2' : '',
                 ].join(' ')}
               >
+                {linkTo ? (
+                  <Link to={linkTo} className="absolute inset-0 z-20">
+                    <span className="sr-only">View {item.title}</span>
+                  </Link>
+                ) : null}
                 {/* Pixel-reveal image — load for featured item or specific labs with images */}
                 {isFeatured || item.title === 'AICTE IDEA Lab' || item.title === 'Texas Instruments Lab' ? (
                   <PixelImage
