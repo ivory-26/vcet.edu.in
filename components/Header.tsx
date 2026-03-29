@@ -150,29 +150,32 @@ const menuGroups: MenuGroup[] = [
     ],
   },
 
-  // 7. STUDENT & CAREER
-  {
-    label: 'Student & Career',
-    dropdown: [
-      { label: 'Career @ VCET',          href: CAREER_AT_VCET_PDF_URL },
-      { label: 'Extra-Curricular',       isGroupLabel: true },
-      { label: 'Cultural Committee',     href: '/cultural-committee' },
-      { label: 'Sports Committee',       href: '/sports-committee' },
-      { label: 'Literati',               href: '/literati' },
-      { label: 'NSS',                    href: '/nss' },
-      { label: 'EBSB',                   href: '/ebsb' },
-      { label: 'Co-Curricular',          isGroupLabel: true },
-      { label: 'IEEE',                   href: '/ieee' },
-      { label: 'Students Club',          href: '/students-club' },
-      { label: 'CSI',                    href: '/csi' },
-      { label: 'IETE',                   href: '/iete' },
-      { label: 'ISHRAE',                 href: '/ishrae' },
-      { label: 'VMEA',                   href: '/vmea' },
-      { label: 'Hackathon',              href: '/hackathon' },
-      { label: 'NSDC',                   href: '/nsdc' },
-      { label: 'IGBC',                   href: '/igbc' },
-    ],
-  },
+ // 7. STUDENT & CAREER
+{
+  label: 'Student & Career',
+  dropdown: [
+    { label: 'Career @ VCET', href: CAREER_AT_VCET_PDF_URL },
+
+    { label: 'Extra-Curricular', isGroupLabel: true },
+    { label: 'Students Council', href: '/students-council' },
+    { label: 'Cultural Committee', href: '/cultural-committee' },
+    { label: 'Sports Committee', href: '/sports-committee' },
+    { label: 'Literati', href: '/literati' },
+    { label: 'NSS', href: '/nss' },
+    { label: 'EBSB', href: '/ebsb' },
+
+    { label: 'Co-Curricular', isGroupLabel: true },
+    { label: 'IEEE', href: '/ieee' },
+    { label: 'Students Club', href: '/students-club' },
+    { label: 'CSI', href: '/csi' },
+    { label: 'IETE', href: '/iete' },
+    { label: 'ISHRAE', href: '/ishrae' },
+    { label: 'VMEA', href: '/vmea' },
+    { label: 'Hackathon', href: '/hackathon' },
+    { label: 'NSDC', href: '/nsdc' },
+    { label: 'IGBC', href: '/igbc' },
+  ],
+},
 
   // 8. COMMITTEES
   {
