@@ -985,3 +985,27 @@ export interface MMSFaqData {
   updatedAt?: string;
 }
 export type MMSFaqPayload = Partial<MMSFaqData>;
+export interface CommitteeData {
+  id?: string;
+  slug?: string;
+  name?: string;
+  description?: string;
+  responsibilities?: string[];
+  objectives?: string[];
+  guidelines?: string[];
+  members?: any[];
+  reports?: any[];
+  documents?: any[];
+}
+
+export type CommitteePayload = Partial<CommitteeData>;
+
+export interface CommitteeReport {
+  id?: string;
+  year?: string;
+  fileName?: string | null;
+  fileUrl?: string | null;
+  title?: string;
+  url?: string;
+  date?: string;
+}
