@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { sssReportUploadsApi } from '../../api/sssReportUploads';
+import type { SssReportUpload } from '../../types';
 
 /* ── Toast Component ────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -97,6 +99,104 @@ const AdvancedTableManager: React.FC<{ items: any[]; fields: { key: string; labe
   );
 };
 
+type SSSUploadFormItem = {
+  id?: number;
+  title: string;
+  fileName: string | null;
+  fileUrl: string | null;
+  file?: File;
+  isNew?: boolean;
+};
+
+const SSSPdfUploadManager: React.FC<{ items: SSSUploadFormItem[]; onChange: (val: SSSUploadFormItem[]) => void }> = ({ items, onChange }) => {
+  const add = () =>
+    onChange([
+      ...(items || []),
+      { title: 'SSS REPORT 2021-22', fileName: null, fileUrl: null, file: undefined },
+    ]);
+
+  const upd = (i: number, u: any) => {
+    const n = [...(items || [])];
+    n[i] = { ...n[i], ...u };
+    onChange(n);
+  };
+
+  const del = (i: number) => onChange((items || []).filter((_: SSSUploadFormItem, idx: number) => idx !== i));
+
+  const openPreview = (item: SSSUploadFormItem) => {
+    const href = item?.file ? URL.createObjectURL(item.file) : item?.fileUrl;
+    if (!href) return;
+    window.open(href, '_blank', 'noopener,noreferrer');
+    if (item?.file) setTimeout(() => URL.revokeObjectURL(href), 2000);
+  };
+
+  return (
+    <div className="space-y-4">
+      {(items || []).map((item, idx) => (
+        <div key={idx} className="p-5 bg-slate-50 border border-slate-100 rounded-3xl space-y-4">
+          <div>
+            <label className={labelBase}>Title</label>
+            <input
+              value={item.title || ''}
+              onChange={e => upd(idx, { title: e.target.value })}
+              className={inputBase}
+              placeholder="SSS REPORT 2021-22"
+            />
+          </div>
+
+          <div>
+            <label className={labelBase}>Upload PDF</label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                upd(idx, { file, fileName: file.name });
+              }}
+              className={`${inputBase} file:mr-4 file:rounded-xl file:border-0 file:bg-slate-200 file:px-4 file:py-2 file:text-xs file:font-black file:text-slate-700`}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => openPreview(item)}
+              disabled={!item?.file && !item?.fileUrl}
+              className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-black uppercase tracking-wider disabled:opacity-50"
+            >
+              Preview PDF
+            </button>
+
+            {(item?.fileName || item?.fileUrl) && (
+              <span className="text-xs font-bold text-slate-500 truncate max-w-full">
+                {item.fileName || item.fileUrl}
+              </span>
+            )}
+
+            <button
+              type="button"
+              onClick={() => del(idx)}
+              className="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-black uppercase tracking-wider hover:bg-red-100"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ))}
+
+      <button
+        type="button"
+        onClick={add}
+        className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all flex items-center justify-center gap-2"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+        Add New Item
+      </button>
+    </div>
+  );
+};
+
 /* ── Main Form ── */
 interface NaacFormProps {
   slug: string;
@@ -106,115 +206,131 @@ interface NaacFormProps {
 const NaacForm: React.FC<NaacFormProps> = ({ slug, onBack }) => {
   const [data, setData] = useState<any>({ name: slug.replace(/-/g, ' ').toUpperCase() });
   const [payload, setPayload] = useState<any>({});
+  const [sssOriginalIds, setSssOriginalIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
-    // Simulate fetching
-    setTimeout(() => {
-      setLoading(false);
-    }, 400);
+    let isMounted = true;
+    const load = async () => {
+      setLoading(true);
+      if (slug !== 'sss-report') {
+        if (isMounted) setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await sssReportUploadsApi.list();
+        if (!isMounted) return;
+        const items = response.data.map((item: SssReportUpload) => ({
+          id: item.id,
+          title: item.title,
+          fileName: item.pdf_name,
+          fileUrl: item.pdf_url,
+          isNew: false,
+        }));
+        setPayload((prev: any) => ({ ...prev, sssUploads: items }));
+        setSssOriginalIds(items.map((item) => item.id).filter((id): id is number => typeof id === 'number'));
+      } catch (error) {
+        if (!isMounted) return;
+        setToast({ message: error instanceof Error ? error.message : 'Failed to load SSS reports', type: 'error' });
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      isMounted = false;
+    };
   }, [slug]);
 
   const handleSubmit = async () => {
+    if (slug !== 'sss-report') {
+      setSaving(true);
+      setTimeout(() => {
+        setSaving(false);
+        setToast({ message: 'Saved successfully', type: 'success' });
+      }, 800);
+      return;
+    }
+
+    const currentItems: SSSUploadFormItem[] = payload.sssUploads || [];
+
+    for (const item of currentItems) {
+      if (!item.title?.trim()) {
+        setToast({ message: 'Each SSS item must have a title.', type: 'error' });
+        return;
+      }
+      if (!item.id && !item.file) {
+        setToast({ message: `Upload PDF required for "${item.title}".`, type: 'error' });
+        return;
+      }
+    }
+
     setSaving(true);
-    // Simulate saving
-    setTimeout(() => {
+    try {
+      const currentIds = currentItems.map((item) => item.id).filter((id): id is number => typeof id === 'number');
+      const removedIds = sssOriginalIds.filter((id) => !currentIds.includes(id));
+
+      for (const id of removedIds) {
+        await sssReportUploadsApi.delete(id);
+      }
+
+      const savedItems: SSSUploadFormItem[] = [];
+
+      for (const item of currentItems) {
+        if (item.id) {
+          const updated = await sssReportUploadsApi.update(item.id, {
+            title: item.title.trim(),
+            pdf: item.file ?? null,
+          });
+          savedItems.push({
+            id: updated.data.id,
+            title: updated.data.title,
+            fileName: updated.data.pdf_name,
+            fileUrl: updated.data.pdf_url,
+            isNew: false,
+          });
+        } else {
+          const created = await sssReportUploadsApi.create({
+            title: item.title.trim(),
+            pdf: item.file ?? null,
+          });
+          savedItems.push({
+            id: created.data.id,
+            title: created.data.title,
+            fileName: created.data.pdf_name,
+            fileUrl: created.data.pdf_url,
+            isNew: false,
+          });
+        }
+      }
+
+      setPayload((prev: any) => ({ ...prev, sssUploads: savedItems }));
+      setSssOriginalIds(savedItems.map((item) => item.id).filter((id): id is number => typeof id === 'number'));
+      setToast({ message: 'SSS report uploads saved successfully', type: 'success' });
+    } catch (error) {
+      setToast({ message: error instanceof Error ? error.message : 'Failed to save SSS uploads', type: 'error' });
+    } finally {
       setSaving(false);
-      setToast({ message: 'Saved successfully', type: 'success' });
-    }, 800);
+    }
   };
 
   if (loading) return <div className="p-12 text-center text-slate-400 font-bold animate-pulse">LOADING...</div>;
 
   const renderContent = () => {
     switch (slug) {
-      case 'sss':
-        return (
-          <div className="space-y-8">
-            <SectionCard title="1. SSS Overview" icon="📊">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
-                  <label className={labelBase}>Section Name (Max 50 chars)</label>
-                  <input maxLength={50} value={payload.sectionName} onChange={e => setPayload({...payload, sectionName: e.target.value})} className={inputBase} placeholder="e.g. Student Satisfaction Survey (SSS)" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className={labelBase}>Purpose of Survey (Max 150 chars)</label>
-                  <textarea maxLength={150} value={payload.purpose} onChange={e => setPayload({...payload, purpose: e.target.value})} className={`${inputBase} h-24 resize-none`} placeholder="Describe the purpose..." />
-                </div>
-                <div>
-                  <label className={labelBase}>Target Audience (Max 50 chars)</label>
-                  <input maxLength={50} value={payload.audience} onChange={e => setPayload({...payload, audience: e.target.value})} className={inputBase} placeholder="e.g. All Students" />
-                </div>
-              </div>
-            </SectionCard>
-            <SectionCard title="2. Survey Platform & Link" icon="🔗">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className={labelBase}>Platform Type</label>
-                  <input maxLength={50} value={payload.platformType} onChange={e => setPayload({...payload, platformType: e.target.value})} className={inputBase} placeholder="e.g. Google Form" />
-                </div>
-                <div>
-                  <label className={labelBase}>Form Title</label>
-                  <input maxLength={100} value={payload.formTitle} onChange={e => setPayload({...payload, formTitle: e.target.value})} className={inputBase} placeholder="Form title..." />
-                </div>
-                <div className="md:col-span-2">
-                  <label className={labelBase}>Survey Link URL</label>
-                  <input maxLength={150} value={payload.link} onChange={e => setPayload({...payload, link: e.target.value})} className={inputBase} placeholder="https://..." />
-                </div>
-                <div className="md:col-span-2">
-                  <label className={labelBase}>Description</label>
-                  <textarea maxLength={150} value={payload.formDesc} onChange={e => setPayload({...payload, formDesc: e.target.value})} className={`${inputBase} h-24 resize-none`} placeholder="Short description..." />
-                </div>
-              </div>
-            </SectionCard>
-            <SectionCard title="4. Participation & Data Handling" icon="🛡️">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className={labelBase}>Eligible Participants</label>
-                  <input maxLength={100} value={payload.participants} onChange={e => setPayload({...payload, participants: e.target.value})} className={inputBase} placeholder="..." />
-                </div>
-                <div>
-                  <label className={labelBase}>Participation Requirement</label>
-                  <input maxLength={50} value={payload.requirement} onChange={e => setPayload({...payload, requirement: e.target.value})} className={inputBase} placeholder="Mandatory / Optional" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className={labelBase}>Data Collection Purpose & Confidentiality</label>
-                  <textarea maxLength={300} value={payload.dataHandling} onChange={e => setPayload({...payload, dataHandling: e.target.value})} className={`${inputBase} h-24 resize-none`} placeholder="State confidentiality..." />
-                </div>
-              </div>
-            </SectionCard>
-            <SectionCard title="6. SSS Details (PDF)" icon="📄">
-              <PDFListManager items={payload.sssPdfs || []} onChange={val => setPayload({...payload, sssPdfs: val})} />
-            </SectionCard>
-          </div>
-        );
-
       case 'sss-report':
         return (
           <div className="space-y-8">
-            <SectionCard title="SSS Report Overview" icon="📑">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className={labelBase}>Section Name</label>
-                  <input maxLength={50} value={payload.sectionName} onChange={e => setPayload({...payload, sectionName: e.target.value})} className={inputBase} />
-                </div>
-                <div>
-                  <label className={labelBase}>Description</label>
-                  <input maxLength={120} value={payload.desc} onChange={e => setPayload({...payload, desc: e.target.value})} className={inputBase} />
-                </div>
-              </div>
-            </SectionCard>
-            <SectionCard title="Year-wise SSS Reports" icon="🗓️">
-              <AdvancedTableManager items={payload.reports} fields={[
-                {key: 'year', label: 'Academic Year', placeholder: 'e.g. 2018-19'},
-                {key: 'desc', label: 'Short Description', placeholder: 'Optional description...'},
-                {key: 'url', label: 'PDF URL', placeholder: 'https://...'}
-              ]} onChange={val => setPayload({...payload, reports: val})} />
-            </SectionCard>
-            <SectionCard title="SSS Reports Collection (Cumulative)" icon="📚">
-              <PDFListManager items={payload.collectionPdfs || []} onChange={val => setPayload({...payload, collectionPdfs: val})} />
+            <SectionCard title="SSS Report Upload" icon="📄">
+              <SSSPdfUploadManager
+                items={payload.sssUploads || []}
+                onChange={val => setPayload({ ...payload, sssUploads: val })}
+              />
             </SectionCard>
           </div>
         );

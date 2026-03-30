@@ -5,6 +5,8 @@ import { academicsService, type AcademicDocument } from '../services/academics';
 
 const CAREER_AT_VCET_PDF_URL =
   'https://drive.google.com/file/d/1grwZ4_QIjC23c4HHFCM4xPJuFywsWtgw/view?usp=sharing';
+const SSS_GOOGLE_FORM_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSeR3qTw2AO0xsDYkuzJ8dnrJyi4EGuYJAupBqLqlS2cQPLlYg/viewform';
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    TYPE DEFINITIONS
@@ -244,7 +246,7 @@ const menuGroups: MenuGroup[] = [
   {
     label: 'NAAC',
     dropdown: [
-      { label: 'SSS', href: '/sss' },
+      { label: 'SSS', href: SSS_GOOGLE_FORM_URL },
       { label: 'SSS Report', href: '/sss-report' },
       { label: 'SSR Cycle 1', href: '/ssr-cycle-1' },
       {
@@ -394,7 +396,7 @@ const keywordMap: Record<string, string[]> = {
   '/internal-complaint': ['icc', 'internal complaint', 'harassment'],
   '/equal-opportunity': ['equal opportunity', 'obc', 'minority'],
   '/sedg-cell': ['sedg', 'disadvantaged', 'economically weaker'],
-  '/sss': ['sss', 'student satisfaction survey'],
+  [SSS_GOOGLE_FORM_URL]: ['sss', 'student satisfaction survey', 'google form'],
   '/sss-report': ['sss report', 'satisfaction report'],
   '/ssr-cycle-1': ['ssr', 'self study report', 'cycle 1', 'naac ssr'],
   '/ssr-cycle-2': ['ssr cycle 2', 'naac cycle 2'],
@@ -1415,3 +1417,4 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+

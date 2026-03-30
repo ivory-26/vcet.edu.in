@@ -34,6 +34,7 @@ export async function post<T>(path: string, body: unknown): Promise<T> {
 
 export async function get<T>(path: string): Promise<T> {
     const response = await fetch(`${API_BASE}/api${path}`, {
+        cache: 'no-store',
         headers: { Accept: 'application/json' },
     });
 
