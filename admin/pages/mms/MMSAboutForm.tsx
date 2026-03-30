@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Plus, Trash2, Image as ImageIcon, CheckCircle, AlertTriangle } from 'lucide-react';
 import type { MMSAboutPayload } from '../../types';
 import { mmsAboutApi } from '../../api/mmsAboutApi';
+import { resolveApiUrl } from '../../api/client';
 
 const emptyForm: MMSAboutPayload = {
   aboutMMS: { description: '', image: null },
@@ -366,7 +367,7 @@ const ImageUploader = ({ image, onChange, compact = false }: { image: any, onCha
       setPreview(u);
       return () => URL.revokeObjectURL(u);
     } else if (typeof image === 'string') {
-      setPreview(image);
+        setPreview(resolveApiUrl(image));
     } else {
       setPreview(null);
     }
