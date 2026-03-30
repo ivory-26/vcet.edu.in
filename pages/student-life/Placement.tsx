@@ -411,7 +411,10 @@ const Placement: React.FC = () => {
             <section className="reveal bg-white p-8 lg:p-12 border border-[#E5E7EB] shadow-[4px_4px_0_#E5E7EB]">
               <div className="space-y-6 text-[#5b6574] leading-relaxed text-[15px]">
                 <h3 className="text-2xl font-bold text-[#1a4b7c] border-b border-slate-100 pb-3 mb-6">Our Recruiters</h3>
-                <p>Content for Our Recruiters is coming soon.</p>
+                <div className="mt-8 w-full bg-slate-100 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-slate-400 overflow-hidden min-h-[400px] hover:shadow-md transition-shadow">
+                  <i className="ph ph-image text-5xl mb-4" />
+                  <span className="text-base font-medium">Image Placeholder</span>
+                </div>
               </div>
             </section>
           )}
