@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Plus, Trash2, Image as ImageIcon, CheckCircle, AlertTriangle, ArrowLeft, FileText, User, Star } from 'lucide-react';
 import type { MMSStudentsLifePayload, GalleryItem } from '../../types';
 import { mmsStudentsLifeApi } from '../../api/mmsStudentsLifeApi';
+import { resolveApiUrl } from '../../../services/api';
 
 const emptyForm: MMSStudentsLifePayload = {
   overview: { description: '', highlights: [] },
