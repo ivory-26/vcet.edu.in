@@ -276,6 +276,9 @@ const MMSStudentsLifeForm: React.FC = () => {
           <>
             {renderSectionHeader('NSIM Training', 'SKILL DEVELOPMENT')}
             <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+              {renderTextArea('Description', form.nsimTraining?.description || '', 120, 200, (v) => setForm({...form, nsimTraining: { ...form.nsimTraining, description: v, images: form.nsimTraining?.images || [] }} as any))}
+              {renderGalleryEditor('Training Gallery', form.nsimTraining?.images || [], 5, 45, (g) => setForm({...form, nsimTraining: { ...form.nsimTraining, images: g, description: form.nsimTraining?.description || '' }} as any))}
+            </div>
           </>
         )}
 
