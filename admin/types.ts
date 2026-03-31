@@ -1024,8 +1024,7 @@ export interface MMSStudentsLifeData {
   rankers: {
     name: string;
     rank: string;
-    year: string;
-    image: string | File | null;
+    semester: string;
   }[];
   pdfs: {
     title: string;

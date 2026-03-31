@@ -1,45 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import MMSLayout from '../../../components/mms/MMSLayout';
-import { get, resolveApiUrl } from '../../../services/api';
+import { get } from '../../../services/api';
 import type { MMSStudentsLifeData } from '../../../admin/types';
 
-const semesterIRankers = [
-  { student: 'VINAY MAHENDRA MAYEKAR', rank: '1st' },
-  { student: 'VAKEKAR', rank: '2nd' },
-  { student: 'SANKE MANSI SANJAY', rank: '3rd' },
+// Fallback Data
+const fallbackData = [
+  ...[
+    { name: 'VINAY MAHENDRA MAYEKAR', rank: '1st' },
+    { name: 'VAKEKAR', rank: '2nd' },
+    { name: 'SANKE MANSI SANJAY', rank: '3rd' },
+  ].map(r => ({ ...r, semester: 'Semester I Rankers' })),
+  ...[
+    { name: 'VINAY MAHENDRA MAYEKAR', rank: '1st' },
+    { name: 'SHAIKH SHIRFANA SAYEED', rank: '2nd' },
+    { name: 'SANKE MANSI SANJAY', rank: '3rd' },
+  ].map(r => ({ ...r, semester: 'Semester II Rankers' })),
+  ...[
+    { name: 'VINAY MAHENDRA MAYEKAR', rank: '1st' },
+    { name: 'RAUT NEHA MAHESH', rank: '2nd' },
+    { name: 'SHAIKH SHIRFANA SAYEED', rank: '2nd' },
+    { name: 'AMBOKAR ANKITA SUBHASH', rank: '3rd' },
+    { name: 'PUJARI OMKAR BHASKAR', rank: '3rd' },
+  ].map(r => ({ ...r, semester: 'Semester III Rankers' })),
 ];
 
-const semesterIIRankers = [
-  { student: 'VINAY MAHENDRA MAYEKAR', rank: '1st' },
-  { student: 'SHAIKH SHIRFANA SAYEED', rank: '2nd' },
-  { student: 'SANKE MANSI SANJAY', rank: '3rd' },
-];
-
-const semesterIIIRankers = [
-  { student: 'VINAY MAHENDRA MAYEKAR', rank: '1st' },
-  { student: 'RAUT NEHA MAHESH', rank: '2nd' },
-  { student: 'SHAIKH SHIRFANA SAYEED', rank: '2nd' },
-  { student: 'AMBOKAR ANKITA SUBHASH', rank: '3rd' },
-  { student: 'PUJARI OMKAR BHASKAR', rank: '3rd' },
-];
-
-function RankersTable({ title, rows }: { title: string; rows: Array<{ student: string; rank: string }> }) {
+function RankersTable({ title, rows }: { title: string; rows: Array<{ name: string; rank: string }> }) {
   return (
-    <section className="space-y-3">
-      <h3 className="text-center text-3xl font-display font-bold text-brand-navy sm:text-4xl">{title}</h3>
-      <div className="overflow-hidden border border-brand-navy/25 bg-white shadow-[0_14px_30px_-22px_rgba(11,61,145,0.5)]">
+    <section className="space-y-4">
+      <h3 className="text-center text-2xl font-display font-bold text-brand-navy sm:text-3xl uppercase tracking-wider">{title}</h3>
+      <div className="overflow-hidden border-2 border-[#1e3a5f] bg-white shadow-xl rounded-sm">
         <table className="w-full border-collapse">
           <thead>
             <tr className="text-white">
-              <th className="w-[78%] border border-[#0a325f] bg-[#2d4f78] px-3 py-3 text-center text-sm font-bold sm:text-lg">NAME OF THE STUDENT</th>
-              <th className="w-[22%] border border-[#0a325f] bg-[#2d4f78] px-3 py-3 text-center text-sm font-bold sm:text-lg">RANK</th>
+              <th className="w-[75%] border-b-2 border-r-2 border-[#1e3a5f] bg-[#2d4f78] px-4 py-4 text-left sm:text-center text-sm font-bold sm:text-[17px] tracking-wider">NAME OF THE STUDENT</th>
+              <th className="w-[25%] border-b-2 border-[#1e3a5f] bg-[#2d4f78] px-4 py-4 text-center text-sm font-bold sm:text-[17px] tracking-wider">RANK</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={`${title}-${row.student}`} className="bg-[#efefef]">     
-                <td className="border border-slate-700/85 px-3 py-3 text-center text-sm text-slate-900 sm:text-[31px]">{row.student}</td>
-                <td className="border border-slate-700/85 px-3 py-3 text-center text-sm text-slate-900 sm:text-[34px]">{row.rank}</td>
+            {rows.map((row, idx) => (
+              <tr key={`${title}-${idx}`} className="bg-[#f8f9fa] hover:bg-slate-100 transition-colors">
+                <td className="border-b border-r border-[#1e3a5f]/30 px-5 py-3 text-left sm:text-center text-sm font-bold text-slate-800 sm:text-[18px] uppercase">{row.name}</td>
+                <td className="border-b border-[#1e3a5f]/30 px-5 py-3 text-center text-[16px] font-black text-[#8b6914] sm:text-[19px] drop-shadow-sm">{row.rank}</td>
               </tr>
             ))}
           </tbody>
@@ -66,44 +67,38 @@ export default function MMSStudentsLifeRankers() {
 
   const dynamicRankers = data?.rankers || [];
 
+  const groupedRankers = useMemo(() => {
+    // Determine whether to use dynamic CMS list or default static fallbacks
+    const list = dynamicRankers.length > 0 ? dynamicRankers : fallbackData;
+    
+    // Group records by semester key
+    const map = new Map<string, Array<{ name: string; rank: string }>>();
+    list.forEach(r => {
+      const s = r.semester || 'Achievers';
+      if (!map.has(s)) map.set(s, []);
+      map.get(s)!.push({ name: r.name, rank: r.rank });
+    });
+
+    // Return preserved order grouping array
+    return Array.from(map.entries()).map(([title, rows]) => ({ title, rows }));
+  }, [dynamicRankers]);
+
   return (
-    <MMSLayout title="RANKERS">
-      <section className="space-y-6">
-        <h2 className="text-center text-4xl font-display font-bold text-brand-navy sm:text-5xl">RANKERS</h2>
-
-        <div className="grid grid-cols-1 gap-7 xl:grid-cols-2">
-          <div className="space-y-7">
-            <RankersTable title="Semester I Rankers" rows={semesterIRankers} /> 
-            <RankersTable title="Semester II Rankers" rows={semesterIIRankers} />
-          </div>
-
-          <div>
-            <RankersTable title="Semester III Rankers" rows={semesterIIIRankers} />
-          </div>
+    <MMSLayout title="RANKERS & ACHIEVEMENTS">
+      <div className="pt-8 pb-16 space-y-12 animate-fade-in max-w-7xl mx-auto">
+        <div className="text-center space-y-4">
+          <h2 className="text-4xl font-display font-black text-brand-navy sm:text-5xl uppercase tracking-tight">RANKERS & ACHIEVEMENTS</h2>
+          <div className="w-24 h-1.5 bg-brand-gold mx-auto rounded-full"></div>
         </div>
 
-        {dynamicRankers.length > 0 && (
-          <div className="pt-8">
-            <h3 className="text-center text-3xl font-display font-bold text-brand-navy sm:text-4xl mb-6">Recent Achievers & Rankers</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {dynamicRankers.map((ranker, i) => (
-                <div key={i} className="flex flex-col items-center p-6 bg-white border border-brand-blue/20 rounded-none shadow-[0_8px_20px_-12px_rgba(11,61,145,0.4)]">
-                  {ranker.image ? (
-                    <img src={resolveApiUrl(ranker.image) || ''} alt={ranker.name} className="w-24 h-24 rounded-full object-cover border-4 border-[#2d4f78] mb-4" />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-slate-200 border-4 border-[#2d4f78] mb-4 flex items-center justify-center">
-                      <span className="text-slate-400 font-bold text-xl">{ranker.name.charAt(0)}</span>
-                    </div>
-                  )}
-                  <h4 className="text-lg font-bold text-slate-800 text-center uppercase">{ranker.name}</h4>
-                  <p className="text-brand-gold font-bold text-md mt-1">{ranker.rank}</p>
-                  {ranker.year && <p className="text-xs font-bold text-slate-400 mt-2 tracking-widest">{ranker.year}</p>}
-                </div>
-              ))}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 items-start">
+          {groupedRankers.map((group, idx) => (
+            <div key={idx} className={idx === groupedRankers.length - 1 && groupedRankers.length % 2 !== 0 ? 'lg:col-span-2 lg:max-w-2xl lg:mx-auto w-full' : 'w-full'}>
+              <RankersTable title={group.title} rows={group.rows} />
             </div>
-          </div>
-        )}
-      </section>
+          ))}
+        </div>
+      </div>
     </MMSLayout>
   );
 }
