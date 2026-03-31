@@ -1,43 +1,49 @@
 # Student Life Editability Report
 
-**Section Name [pages -> student-life]**
-*   **Editable Content:**
-    *   Page Intro Text/Paragraphs
-    *   Objective Items (list of key goals)
-    *   Event Titles & Descriptions
-    *   Program Titles & Descriptions
-    *   Statistics (values and labels, e.g., "500+" and "Students Trained")
-    *   Gallery Images (event photos)
-    *   PDF file (main document content – edited separately and replaced) and PDF URL/link (for rules, brochures, reports)
-*   **Character Limits:**
-    *   Intro/Descriptions: 400 characters
-    *   Event/Program Titles: 40 characters
-    *   Event/Program Descriptions: 300 characters
-    *   Statistic Values: 8 characters
-    *   Statistic Labels: 25 characters
-*   **Item Limits:**
-    *   Objective Items: 6 items per list
-    *   Events/Programs: 8 items per page
-    *   Statistics: 4 items (for balanced 4-column layout)
-    *   Gallery Images: 8 images
-*   **Reason:**
-    *   Maintains structured grid layouts, prevents text overload, ensures readability on mobile devices, and keeps the page visually balanced without overwhelming the user.
+**CSI, IGBC, VMEA, EBSB (Team Only)**
+*   **Editable Content:** Team Member Names, Roles, and Photos
+*   **Character Limits:** Names/Roles: 30 characters
+*   **Item Limits:** Team Members: 8-12 members
+*   **Reason:** Ensures consistent grid alignment and clean presentation.
 
----
+**IEEE (About & Team)**
+*   **Editable Content:** About/Description Text, Team Details
+*   **Character Limits:** About Text: 400 characters; Names/Roles: 30 characters
+*   **Item Limits:** Team Members: 8-12 members bounds
+*   **Reason:** Maintains structured layout and prevents long scrolling.
 
-**Section Name [pages -> student-life -> Specific Sub-pages (Clubs, Committees, E-Cell)]**
-*   **Editable Content:**
-    *   Club/Committee Name & Description
-    *   Core Team Member Names & Roles
-    *   Achievements/Highlights
-    *   PDF file (main document content – edited separately and replaced) and PDF URL/link (for annual reports or certificates)
-*   **Character Limits:**
-    *   Club/Committee Description: 400 characters
-    *   Team Member Names: 30 characters
-    *   Roles: 30 characters
-    *   Achievement Text: 200 characters
-*   **Item Limits:**
-    *   Core Team Members: 8 members
-    *   Achievements: 5 items
-*   **Reason:**
-    *   Ensures consistent profile highlight grids, allows distinct focus on key achievements, and provides a polished, professional look for council/committee representations.
+**IETE, ISHRAE, NSS (Gallery & Team)**
+*   **Editable Content:** Gallery Images, Team Member Details
+*   **Character Limits:** Names/Roles: 30 characters
+*   **Item Limits:** Gallery Images: 8-12 photos; Team Members: 8-12 members
+*   **Reason:** Optimizes page load times and mobile readability.
+
+**Airnova (About Competition & Team)**
+*   **Editable Content:** Competition Description, Team Details
+*   **Character Limits:** Competition Details: 400 characters; Names: 30 characters
+*   **Item Limits:** Team Members: 8-12 members
+*   **Reason:** Keeps competition details and team intro concise and organized.
+
+**CENTURION (Sponsors & Team)**
+*   **Editable Content:** Sponsor Logos/Names, Team Details
+*   **Character Limits:** Sponsor Names: 30 characters; Names: 30 characters
+*   **Item Limits:** Sponsors: 8-12 logos; Team Members: 8-12 members
+*   **Reason:** Provides professional layout for external partners.
+
+**Cultural Committee (Events & Objectives)**
+*   **Editable Content:** Event Titles, Descriptions, Objective Items
+*   **Character Limits:** Event Titles: 40 characters; Descriptions: 200 characters
+*   **Item Limits:** Events: 6-8 per page; Objectives: 5 items
+*   **Reason:** Prevents text overload and maintains visual hierarchy.
+
+**Sports Committee (Events)**
+*   **Editable Content:** Event Titles, Descriptions, Event Images
+*   **Character Limits:** Event Titles: 40 characters; Descriptions: 200 characters
+*   **Item Limits:** Events: 6-8 per page
+*   **Reason:** Allows quick scanning of upcoming/past sport activities.
+
+**Literati (Magazine & Team)**
+*   **Editable Content:** PDF file (main document content – edited separately and replaced) and PDF URL/link, Team Member Details
+*   **Character Limits:** Magazine Summaries: 200 characters; Names: 30 characters
+*   **Item Limits:** Magazines: 4-6 entries; Team Members: 8-12 members
+*   **Reason:** Directs focus to publications while cleanly displaying team members.
