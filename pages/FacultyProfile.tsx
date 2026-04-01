@@ -4,7 +4,6 @@ import { facultyApi } from '../admin/api/faculty';
 import type { Faculty } from '../admin/types';
 import PageLayout from '../components/PageLayout';
 import './departments/csds/FacultyProfile.css';
-import fallbackFacultyData from '../components/fallbackFaculty.json';
 
 const getInitials = (name: string) => {
   const cleanName = name.replace(/^(Dr\.|Mr\.|Ms\.|Mrs\.|Prof\.)\s*/i, '').trim();
@@ -45,19 +44,24 @@ const FacultyProfile: React.FC = () => {
         }
       })
       .catch((e) => {
-        console.warn("Failed to fetch from backend, using fallback data...", e);
-        const allFallback = Array.isArray(fallbackFacultyData) 
-          ? fallbackFacultyData as unknown as Faculty[] 
-          : ((fallbackFacultyData as any).data as Faculty[]) || [];
-          
-        const fallbackMatch = allFallback.find(
-          (f) => String(f.id) === String(id) || f.slug === id
-        );
-        
-        setFaculty(fallbackMatch || null);
+        console.warn("Failed to fetch faculty profile from backend API", e);
+        setFaculty(null);
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  const backToDepartment = (department?: string) => {
+    const normalized = (department || '').toLowerCase();
+    if (normalized.includes('computer engineering')) return '/computer-engineering';
+    if (normalized.includes('information technology')) return '/information-technology';
+    if (normalized.includes('artificial intelligence')) return '/ai-data-science';
+    if (normalized.includes('computer science & data science')) return '/cs-data-science';
+    if (normalized.includes('electronics & telecommunication')) return '/electronics-telecomm';
+    if (normalized.includes('civil engineering')) return '/civil-engineering';
+    if (normalized.includes('mechanical engineering')) return '/mechanical-engineering';
+    if (normalized.includes('first year engineering')) return '/first-year-engineering';
+    return '/';
+  };
 
   if (loading) {
     return (
@@ -122,6 +126,11 @@ const FacultyProfile: React.FC = () => {
                 <div className="hero-meta">
                   <div className="m-item"><i className="fa-solid fa-envelope" /> {basicInfo.email}</div>
                   <div className="m-item"><i className="fa-solid fa-calendar-check" /> Joined {new Date(basicInfo.joinDate).toLocaleDateString()}</div>
+                </div>
+                <div className="mt-4">
+                  <Link to={backToDepartment(basicInfo.department)} className="text-sm text-blue-600 font-bold hover:underline">
+                    Back to Department
+                  </Link>
                 </div>
               </div>
             </div>

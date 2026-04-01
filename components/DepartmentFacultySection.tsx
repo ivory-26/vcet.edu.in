@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { get } from '../services/api';
+import { facultyApi } from '../admin/api/faculty';
 import type { Faculty } from '../admin/types';
-import fallbackFacultyData from './fallbackFaculty.json';
 
 interface DepartmentFacultySectionProps {
   departmentName: string;
@@ -41,24 +40,15 @@ const DepartmentFacultySection: React.FC<DepartmentFacultySectionProps> = ({ dep
 
   useEffect(() => {
     setLoading(true);
-    get<{ data: Faculty[] }>('/faculty')
+    facultyApi.publicList()
       .then(r => {
         const all = Array.isArray(r.data) ? r.data : [];
-        if (all.length > 0) {
-          const filtered = all.filter(f => f.basicInfo.department === departmentName);
-          setFaculty(filtered);
-        } else {
-          throw new Error("Empty data from backend");
-        }
+        const filtered = all.filter(f => f?.basicInfo?.department === departmentName);
+        setFaculty(filtered);
       })
       .catch((e) => {
-        console.warn("Failed to fetch from backend, using fallback data...", e);
-        const allFallback = Array.isArray(fallbackFacultyData) 
-          ? fallbackFacultyData as unknown as Faculty[] 
-          : ((fallbackFacultyData as any).data as Faculty[]) || [];
-          
-        const filtered = allFallback.filter(f => f?.basicInfo?.department === departmentName);
-        setFaculty(filtered);
+        console.warn('Failed to fetch faculty from backend API', e);
+        setFaculty([]);
       })
       .finally(() => setLoading(false));
   }, [departmentName]);
