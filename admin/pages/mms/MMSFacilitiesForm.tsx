@@ -115,10 +115,10 @@ const MMSFacilitiesForm: React.FC = () => {
         <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold text-slate-800">Gallery Items</h3>
-            <p className="text-sm text-slate-500 font-medium mt-1">Manage images for this facility. Max {config.max} images.</p>
+            <p className="text-sm text-slate-500 font-medium mt-1">Manage images for this facility. </p>
           </div>
           <div className="px-4 py-2 bg-white rounded-xl border border-slate-200 text-sm font-bold text-slate-600 shadow-sm">
-            {items.length} / {config.max} Slots Used
+            {items.length} Images Added
           </div>
         </div>
 
@@ -183,7 +183,7 @@ const MMSFacilitiesForm: React.FC = () => {
               </div>
             ))}
 
-            {items.length < config.max && (
+            {true && (
               <button 
                 type="button" 
                 onClick={() => {
