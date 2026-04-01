@@ -21,11 +21,11 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 const DEPARTMENTS = [
   'Computer Engineering',
   'Information Technology',
-  'Electronics & Telecommunication Engineering',
+  'Electronics & Telecommunication',
   'Mechanical Engineering',
   'Civil Engineering',
-  'AI & Data Science',
-  'CS & Data Science',
+  'Artificial Intelligence & Data Science',
+  'Computer Science & Data Science',
   'First Year Engineering'
 ];
 
@@ -72,6 +72,7 @@ const FacultyList: React.FC = () => {
       fullName.toLowerCase().includes(searchLower) ||
       departmentStr.toLowerCase().includes(searchLower);
     const matchesDept = deptFilter === 'all' || departmentStr === deptFilter;
+    return matchesSearch && matchesDept;
   });
 
   return (

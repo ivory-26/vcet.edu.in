@@ -46,7 +46,6 @@ const CutOff = lazy(() => import('./pages/admissions/CutOff'));
 // pages/departments
 const DeptComputerEngg = lazy(() => import('./pages/departments/DeptComputerEngg'));
 const DeptCSDS = lazy(() => import('./pages/departments/DeptCSDS'));
-const CSDSFacultyProfile = lazy(() => import('./pages/departments/csds/FacultyProfilePage'));
 const DeptIT = lazy(() => import('./pages/departments/DeptIT'));
 const DeptAIDS = lazy(() => import('./pages/departments/DeptAIDS'));
 const DeptMech = lazy(() => import('./pages/departments/DeptMech'));
@@ -362,21 +361,21 @@ function App() {
 
             {/* Departments */}
             <Route path="/computer-engineering" element={<DeptComputerEngg />} />
-            <Route path="/computer-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/computer-engineering/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/cs-data-science" element={<DeptCSDS />} />
-            <Route path="/cs-data-science/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/cs-data-science/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/information-technology" element={<DeptIT />} />
-            <Route path="/information-technology/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/information-technology/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/ai-data-science" element={<DeptAIDS />} />
-            <Route path="/ai-data-science/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/ai-data-science/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/mechanical-engineering" element={<DeptMech />} />
-            <Route path="/mechanical-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/mechanical-engineering/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/electronics-telecomm" element={<DeptENTC />} />
-            <Route path="/electronics-telecommunication/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/electronics-telecommunication/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/civil-engineering" element={<DeptCivil />} />
-            <Route path="/civil-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/civil-engineering/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/first-year-engineering" element={<DeptFE />} />
-            <Route path="/first-year-engineering/faculty/:slug" element={<CSDSFacultyProfile />} />
+            <Route path="/first-year-engineering/faculty/:slug" element={<FacultyProfile />} />
             <Route path="/faculty/:id" element={<FacultyProfile />} />
 
             {/* Academics */}

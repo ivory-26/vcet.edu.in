@@ -36,11 +36,11 @@ const labelBase = 'block text-xs font-black text-slate-400 uppercase tracking-wi
 const DEPARTMENTS = [
   'Computer Engineering',
   'Information Technology',
-  'Electronics & Telecommunication Engineering',
+  'Electronics & Telecommunication',
   'Mechanical Engineering',
   'Civil Engineering',
-  'AI & Data Science',
-  'CS & Data Science',
+  'Artificial Intelligence & Data Science',
+  'Computer Science & Data Science',
   'First Year Engineering'
 ];
 
