@@ -273,18 +273,9 @@ const mmsEditables = [
   },
   {
     title: "FAQ's (Information Hub)",
-    description: 'Manage frequently asked questions, course structure, specializations, intake, and general program information.',
+    description: 'Manage frequently asked questions and their answers.',
     links: [
-      { label: 'FAQ List', to: '/admin/pages/mms/faqs/main-list/edit' },
-      { label: 'Course Structure', to: '/admin/pages/mms/faqs/course-structure/edit' },
-      { label: 'Specializations', to: '/admin/pages/mms/faqs/specializations/edit' },
-      { label: 'Key Features (USP)', to: '/admin/pages/mms/faqs/key-features/edit' },
-      { label: 'Intake & Seats', to: '/admin/pages/mms/faqs/intake-seats/edit' },
-      { label: 'Course Timings', to: '/admin/pages/mms/faqs/timings/edit' },
-      { label: 'Fee Structure Info', to: '/admin/pages/mms/faqs/fees/edit' },
-      { label: 'Scholarship Details', to: '/admin/pages/mms/faqs/scholarship/edit' },
-      { label: 'Admission Steps', to: '/admin/pages/mms/faqs/admission/edit' },
-      { label: 'PDF Resources', to: '/admin/pages/mms/faqs/pdfs/edit' },
+      { label: 'Manage FAQs', to: '/admin/pages/mms/faqs/edit' },
     ],
   },
 ];

@@ -620,7 +620,7 @@ element={<MMSStudentsLifeCustomEvent />} />
             <Route path="pages/mms/students-life/:section/edit" element={<MMSStudentsLifeForm />} />
             <Route path="pages/mms/syllabus/:section/edit" element={<MMSSyllabusForm />} />
             <Route path="pages/mms/facilities/:section/edit" element={<MMSFacilitiesForm />} />
-            <Route path="pages/mms/faqs/:section/edit" element={<MMSFaqsForm />} />
+              <Route path="pages/mms/faqs/edit" element={<MMSFaqsForm />} />
             <Route path="pages/:pageKey" element={<SitePages />} />
           </Route>
           </Routes>
