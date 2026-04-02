@@ -26,7 +26,7 @@ export default function MMSAbout() {
   }, []);
 
   const rawImage = data?.aboutMMS?.image;
-  const imageStr: string | null = rawImage && typeof rawImage === 'object' && 'url' in rawImage
+  const imageStr: string | null = rawImage != null && typeof rawImage === 'object' && 'url' in (rawImage as any)
     ? (rawImage as any).url
     : (typeof rawImage === 'string' ? rawImage : null);
   const aboutImageUrl = imageStr ? resolveApiUrl(imageStr) : null;

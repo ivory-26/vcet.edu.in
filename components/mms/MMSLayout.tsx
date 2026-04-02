@@ -118,7 +118,7 @@ export default function MMSLayout({ title, children }: MMSLayoutProps) {
   useEffect(() => {
     if (pathname.startsWith('/mms/students-life')) {
       get('/pages/mms-students-life').then(res => {
-        const evs = (res.data)?.customEvents || [];
+        const evs = (res as any).data?.customEvents || [];
         setCustomEventsMenu(evs.map((e) => ({ label: e.name, href: `/mms/students-life/event/${e.slug}` })));
       }).catch(e => console.warn(e));
     }

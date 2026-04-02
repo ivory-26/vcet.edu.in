@@ -46,7 +46,7 @@ const ResearchFacility: React.FC = () => {
         const data = await getResearchSection<any>('research-facility');
         const facilities = Array.isArray(data?.facilities) ? data.facilities : [];
         const mapped = facilities
-          .map<ResearchFacilityItem>((facility: any, index: number) => ({
+          .map((facility: any, index: number): ResearchFacilityItem => ({
             id: index + 1,
             title: String(facility?.title ?? '').trim() || `Research Facility ${index + 1}`,
             description: String(facility?.description ?? '').trim() || 'Description will be updated soon.',

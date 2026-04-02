@@ -161,7 +161,7 @@ const MMSStudentsLifeForm: React.FC = () => {
                  if (file) { const newItems = [...items]; newItems[i].image = file; onChange(newItems); }
                }}/>
                {item.image ? (
-                 <img src={typeof item.image === 'string' ? item.image : (item.image instanceof File || item.image instanceof Blob ? URL.createObjectURL(item.image) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} className="w-full h-full object-cover" alt="" />
+                  <img src={typeof item.image === 'string' ? item.image : ((item.image as any) instanceof File || (item.image as any) instanceof Blob ? URL.createObjectURL(item.image as any) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} className="w-full h-full object-cover" alt="" />
                ) : (
                 <ImageIcon className="w-6 h-6 text-slate-300" />
                )}

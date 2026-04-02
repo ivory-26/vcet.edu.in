@@ -12,7 +12,7 @@ export default function MMSTrainingEvents() {
     const fetchData = async () => {
       try {
         const response = await get('/pages/mms-training-placement');
-        setData(response.data);
+        setData((response as any).data);
       } catch (err) {
         console.error('Failed to fetch training placement data:', err);
       } finally {

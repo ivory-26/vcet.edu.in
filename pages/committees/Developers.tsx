@@ -145,7 +145,7 @@ const Developers: React.FC = () => {
       <PageBanner
         title="VCET Dev Team"
         breadcrumbs={[
-          { label: 'Home', path: '/' },
+          { label: 'Home', href: '/' },
           { label: 'Developers' }
         ]}
       />
