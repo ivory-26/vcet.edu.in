@@ -838,22 +838,23 @@ export interface FacilityData {
   name: string;
   description: string;
   stats?: { label: string; value: string }[];
-  staff?: { name: string; role: string; desc?: string }[];
-  labs?: { name: string; pcCount: string; specs: string; image: string | null; specLine: string }[];
-  general?: { title: string; description: string };
+  staff?: { name: string; role: string; desc?: string; imageUrl?: string | File | null }[];
+  labs?: { name: string; pcCount: string; specs: string; image: string | File | null; imageUrl?: string | File | null; specLine: string }[];
+  general?: { title: string; description: string; imageUrl?: string | File | null };
   mentors?: { title: string; description: string }[];
-  items?: { name: string; description: string; icon?: string }[];
-  activities?: { name: string; description: string }[];
+  items?: { name: string; description: string; icon?: string; imageUrl?: string | File | null }[];
+  activities?: { name: string; description: string; imageUrl?: string | File | null }[];
   librarySections?: { heading: string; paragraph: string }[];
   facilitiesList?: string[];
   rules?: string[];
   memberships?: string[];
   tabs?: { label: string; content?: string }[];
+  committee?: { name: string; role: string; sub?: string }[];
   contact?: { phone: string; email: string; address: string };
-  gallery?: string[];
+  gallery?: { label?: string; imageUrl?: string | File | null }[];
   sports?: { name: string; icon: string }[];
   achievements?: string[];
-  results?: { year: string; entry: string }[];
+  results?: { year: string; entry?: string; cricket?: string; football?: string; kabaddi?: string }[];
 }
 
 export type FacilityPayload = Partial<FacilityData>;
@@ -1153,4 +1154,30 @@ export interface NewsletterPayload {
 
 
 
+
+
+
+// -- MMS Homepage Types --
+export interface MMSHomeSlider { title: string; subtitle: string; image: File | string | null; }
+export interface MMSHomeAdmission { heading: string; description: string; banner: File | string | null; }
+export interface MMSHomeNotice { title: string; label: string; text: string; }
+export interface MMSHomeNotification { title: string; text: string; }
+export interface MMSHomeInternship { title: string; altText: string; logo: File | string | null; }
+export interface MMSHomeEvent { title: string; eventTitle: string; altText: string; image: File | string | null; }
+export interface MMSHomeTestimonial { sectionTitle: string; name: string; role: string; quote: string; }
+export interface MMSHomeVideo { sectionTitle: string; videoTitle: string; posterAlt: string; videoFile: File | null; videoUrl: string; poster: File | string | null; }
+export interface MMSHomeDocument { label: string; url: string; pdfFile: File | null; }
+
+export interface MMSHomeData {
+  sliders: MMSHomeSlider[];
+  admission: MMSHomeAdmission;
+  notices: MMSHomeNotice[];
+  notifications: MMSHomeNotification[];
+  internships: MMSHomeInternship[];
+  events: MMSHomeEvent[];
+  testimonials: MMSHomeTestimonial[];
+  videos: MMSHomeVideo[];
+  documents: MMSHomeDocument[];
+}
+export type MMSHomePayload = MMSHomeData;
 
