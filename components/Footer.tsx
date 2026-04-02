@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
               Stay updated with the latest news, events, and announcements from VCET.
             </p>
             <div className="flex rounded-lg overflow-hidden bg-white/5 border border-white/10 focus-within:border-brand-gold/40 transition-colors">
-              <input 
+              <input id="footer-1" name="footer-1" aria-label="footer field" 
                 type="email" 
                 placeholder="Your email" 
                 className="bg-transparent w-full px-4 py-3 outline-none text-sm text-white placeholder-white/20" 

@@ -1315,7 +1315,7 @@ const Header: React.FC = () => {
               What are you looking for?
             </label>
             <div className="relative">
-              <input
+              <input name="header-1" aria-label="header field"
                 ref={searchInputRef}
                 type="text"
                 id="site-search"

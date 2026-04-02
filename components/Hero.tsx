@@ -127,7 +127,7 @@ const AdmissionForm: React.FC = () => {
             {/* Name */}
             <div>
               <label className={labelCls}>Full Name</label>
-              <input
+              <input id="hero-1" aria-label="hero field"
                 name="name"
                 value={form.name}
                 onChange={handle}
@@ -140,7 +140,7 @@ const AdmissionForm: React.FC = () => {
             {/* Email */}
             <div>
               <label className={labelCls}>Email Address</label>
-              <input
+              <input id="hero-2" aria-label="hero field"
                 name="email"
                 type="email"
                 value={form.email}
@@ -158,7 +158,7 @@ const AdmissionForm: React.FC = () => {
                 <span className="flex items-center px-2.5 bg-white/[0.06] border border-white/20 rounded-lg text-sm text-white/60 font-semibold flex-shrink-0">
                   +91
                 </span>
-                <input
+                <input id="hero-3" aria-label="hero field"
                   name="phone"
                   type="tel"
                   value={form.phone}
@@ -175,7 +175,7 @@ const AdmissionForm: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label className={labelCls}>State</label>
-                <input
+                <input id="hero-4" aria-label="hero field"
                   name="state"
                   value={form.state}
                   onChange={handle}
@@ -185,7 +185,7 @@ const AdmissionForm: React.FC = () => {
               </div>
               <div>
                 <label className={labelCls}>City</label>
-                <input
+                <input id="hero-5" aria-label="hero field"
                   name="city"
                   value={form.city}
                   onChange={handle}
@@ -199,7 +199,7 @@ const AdmissionForm: React.FC = () => {
             <div>
               <label className={labelCls}>Department</label>
               <div className="relative">
-                <select
+                <select id="hero-select-1" aria-label="hero select field"
                   name="department"
                   value={form.department}
                   onChange={handle}
@@ -224,7 +224,7 @@ const AdmissionForm: React.FC = () => {
               <div>
                 <label className={labelCls}>Course</label>
                 <div className="relative">
-                  <select
+                  <select id="hero-select-2" aria-label="hero select field"
                     name="course"
                     value={form.course}
                     onChange={handle}
@@ -246,7 +246,7 @@ const AdmissionForm: React.FC = () => {
               <div>
                 <label className={labelCls}>Specialization</label>
                 <div className="relative">
-                  <select
+                  <select id="hero-select-3" aria-label="hero select field"
                     name="specialization"
                     value={form.specialization}
                     onChange={handle}
@@ -268,7 +268,7 @@ const AdmissionForm: React.FC = () => {
 
             {/* Consent */}
             <label className="flex items-start gap-2 cursor-pointer group">
-              <input
+              <input id="hero-6" aria-label="hero field"
                 type="checkbox"
                 name="consent"
                 checked={form.consent}

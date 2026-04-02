@@ -124,7 +124,7 @@ const ContactUs: React.FC = () => {
                       <label htmlFor="name" className="block text-xs font-semibold text-brand-navy mb-2">
                         Full Name
                       </label>
-                      <input
+                      <input name="contactus-1" aria-label="contactus field"
                         type="text"
                         id="name"
                         placeholder="Enter your full name"
@@ -135,7 +135,7 @@ const ContactUs: React.FC = () => {
                       <label htmlFor="email" className="block text-xs font-semibold text-brand-navy mb-2">
                         Email Address
                       </label>
-                      <input
+                      <input name="contactus-2" aria-label="contactus field"
                         type="email"
                         id="email"
                         placeholder="Enter your email address"
@@ -146,7 +146,7 @@ const ContactUs: React.FC = () => {
                       <label htmlFor="subject" className="block text-xs font-semibold text-brand-navy mb-2">
                         Subject
                       </label>
-                      <input
+                      <input name="contactus-3" aria-label="contactus field"
                         type="text"
                         id="subject"
                         placeholder="Enter subject"
@@ -157,7 +157,7 @@ const ContactUs: React.FC = () => {
                       <label htmlFor="message" className="block text-xs font-semibold text-brand-navy mb-2">
                         Message
                       </label>
-                      <textarea
+                      <textarea name="contactus-textarea-1" aria-label="contactus textarea field"
                         id="message"
                         rows={5}
                         placeholder="Type your message here..."
