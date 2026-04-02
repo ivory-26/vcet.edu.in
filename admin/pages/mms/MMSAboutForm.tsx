@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Plus, Trash2, Image as ImageIcon, CheckCircle, AlertTriangle } from 'lucide-react';
 import type { MMSAboutPayload } from '../../types';
 import { mmsAboutApi } from '../../api/mmsAboutApi';
 import { resolveApiUrl } from '../../api/client';
+import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 
 const emptyForm: MMSAboutPayload = {
   aboutMMS: { description: '', image: null },
@@ -14,6 +15,7 @@ const emptyForm: MMSAboutPayload = {
 };
 
 const MMSAboutForm: React.FC = () => {
+  const navigate = useNavigate();
   const { section } = useParams<{ section: string }>();
   const [form, setForm] = useState<MMSAboutPayload>(emptyForm);
   const [loading, setLoading] = useState(true);
@@ -52,8 +54,8 @@ const MMSAboutForm: React.FC = () => {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setSaving(true);
     setError('');
     setSuccessMsg('');
@@ -105,27 +107,22 @@ const MMSAboutForm: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-fade-in relative">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/admin/pages/mms" className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-extrabold text-[#111827]">
-              {section === 'overview' ? 'About MMS' : 
-               section === 'principal' ? "Principal's Desk" : 
-               section === 'hod' ? "HOD's Desk" : 
-               section === 'faculty' ? 'MMS Faculty' : 
-               section === 'dab' ? 'Advisory Board (DAB)' : 'MMS About'}
-            </h1>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">ABOUT US EDITOR</p>
-          </div>
-        </div>
-        <button onClick={handleSave} disabled={saving} className="px-8 py-3.5 bg-[#2563EB] text-white rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2">
-          {saving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-      </div>
+      <PageEditorHeader
+        title={
+          section === 'overview' ? 'About MMS' :
+          section === 'principal' ? "Principal's Desk" :
+          section === 'hod' ? "HOD's Desk" :
+          section === 'faculty' ? 'MMS Faculty' :
+          section === 'dab' ? 'Advisory Board (DAB)' : 'MMS About'
+        }
+        description="About Us Editor"
+        onSave={() => {
+          void handleSave();
+        }}
+        isSaving={saving}
+        showBackButton
+        onBack={() => navigate('/admin/pages/mms')}
+      />
 
       {error && (
         <div className="bg-red-50 border border-red-100 rounded-xl px-5 py-4 text-sm text-red-600 font-medium flex items-center gap-3">
@@ -155,7 +152,7 @@ const MMSAboutForm: React.FC = () => {
             </div>
             <div className="col-span-1 md:col-span-2 relative">
                <label className="admin-label">Description Text <span className="text-slate-400 normal-case">({form.aboutMMS?.description?.length || 0}/1200)</span></label>
-               <textarea 
+               <textarea id="mmsaboutform-textarea-1" name="mmsaboutform-textarea-1" aria-label="mmsaboutform textarea field" 
                   className="admin-input-small h-48 resize-none" 
                   placeholder="Enter detailed description here... (max 1200 chars)"
                   value={form.aboutMMS?.description || ''}
@@ -181,7 +178,7 @@ const MMSAboutForm: React.FC = () => {
             </div>
             <div className="col-span-1 md:col-span-2 relative">
                <label className="admin-label">Message <span className="text-slate-400 normal-case">({form.principalDesk?.message?.length || 0}/1500)</span></label>
-               <textarea 
+               <textarea id="mmsaboutform-textarea-2" name="mmsaboutform-textarea-2" aria-label="mmsaboutform textarea field" 
                   className="admin-input-small h-48 resize-none" 
                   placeholder="Principal's message... (max 1500 chars)"
                   value={form.principalDesk?.message || ''}
@@ -207,7 +204,7 @@ const MMSAboutForm: React.FC = () => {
             </div>
             <div className="col-span-1 md:col-span-2 relative">
                <label className="admin-label">Message <span className="text-slate-400 normal-case">({form.hodDesk?.message?.length || 0}/1500)</span></label>
-               <textarea 
+               <textarea id="mmsaboutform-textarea-3" name="mmsaboutform-textarea-3" aria-label="mmsaboutform textarea field" 
                   className="admin-input-small h-48 resize-none" 
                   placeholder="HOD's message... (max 1500 chars)" 
                   value={form.hodDesk?.message || ''}
@@ -242,19 +239,19 @@ const MMSAboutForm: React.FC = () => {
                 <div className="flex-1 space-y-3">
                   <div className="relative">
                      <label className="admin-label">Name <span className="text-slate-400 normal-case">({member.name.length}/40)</span></label>
-                     <input className="admin-input-small font-bold" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
+                     <input id="mmsaboutform-1" name="mmsaboutform-1" aria-label="mmsaboutform field" className="admin-input-small font-bold" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
                          const c = [...form.faculty!]; c[i].name = val; setForm({...form, faculty: c});
                      })}/>
                   </div>
                   <div className="relative">
                      <label className="admin-label">Designation <span className="text-slate-400 normal-case">({member.designation.length}/60)</span></label>
-                     <input className="admin-input-small text-slate-600" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
+                     <input id="mmsaboutform-2" name="mmsaboutform-2" aria-label="mmsaboutform field" className="admin-input-small text-slate-600" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
                          const c = [...form.faculty!]; c[i].designation = val; setForm({...form, faculty: c});
                      })}/>
                   </div>
                   <div className="relative">
                      <label className="admin-label">Email <span className="text-slate-400 normal-case">({member.email?.length || 0}/50)</span></label>
-                     <input className="admin-input-small text-[#2563EB] font-medium" type="email" value={member.email || ''} onChange={e => handleTextChange(e.target.value, 50, val => {
+                     <input id="mmsaboutform-3" name="mmsaboutform-3" aria-label="mmsaboutform field" className="admin-input-small text-[#2563EB] font-medium" type="email" value={member.email || ''} onChange={e => handleTextChange(e.target.value, 50, val => {
                          const c = [...form.faculty!]; c[i].email = val; setForm({...form, faculty: c});
                      })}/>
                   </div>
@@ -284,25 +281,25 @@ const MMSAboutForm: React.FC = () => {
                    <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3 px-2">
                       <div className="relative">
                         <label className="admin-label">Name (Max 40)</label>
-                        <input className="admin-input-small" placeholder="Name" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
+                        <input id="mmsaboutform-4" name="mmsaboutform-4" aria-label="mmsaboutform field" className="admin-input-small" placeholder="Name" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
                            const c = [...form.dabMembers!]; c[i].name = val; setForm({...form, dabMembers: c});
                         })}/>
                       </div>
                       <div className="relative">
                         <label className="admin-label">Designation (Max 60)</label>
-                        <input className="admin-input-small" placeholder="Designation" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
+                        <input id="mmsaboutform-5" name="mmsaboutform-5" aria-label="mmsaboutform field" className="admin-input-small" placeholder="Designation" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
                            const c = [...form.dabMembers!]; c[i].designation = val; setForm({...form, dabMembers: c});
                         })}/>
                       </div>
                       <div className="relative">
                         <label className="admin-label">Organization (Max 70)</label>
-                        <input className="admin-input-small" placeholder="Organization" value={member.organization} onChange={e => handleTextChange(e.target.value, 70, val => {
+                        <input id="mmsaboutform-6" name="mmsaboutform-6" aria-label="mmsaboutform field" className="admin-input-small" placeholder="Organization" value={member.organization} onChange={e => handleTextChange(e.target.value, 70, val => {
                            const c = [...form.dabMembers!]; c[i].organization = val; setForm({...form, dabMembers: c});
                         })}/>
                       </div>
                       <div className="relative">
                         <label className="admin-label">Role in DAB (Max 30)</label>
-                        <input className="admin-input-small" placeholder="e.g. Chairman" value={member.role} onChange={e => handleTextChange(e.target.value, 30, val => {
+                        <input id="mmsaboutform-7" name="mmsaboutform-7" aria-label="mmsaboutform field" className="admin-input-small" placeholder="e.g. Chairman" value={member.role} onChange={e => handleTextChange(e.target.value, 30, val => {
                            const c = [...form.dabMembers!]; c[i].role = val; setForm({...form, dabMembers: c});
                         })}/>
                       </div>
@@ -372,7 +369,7 @@ const ImageUploader = ({ image, onChange, compact = false }: { image: any, onCha
 
     return (
       <div className={`relative rounded-xl border-2 border-dashed ${preview ? 'border-blue-300' : 'border-slate-300'} bg-slate-50 overflow-hidden flex items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer group ${compact ? 'h-24' : 'h-48'}`}>
-        <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
+        <input id="mmsaboutform-8" name="mmsaboutform-8" aria-label="mmsaboutform field" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
           if (e.target.files && e.target.files.length > 0) onChange(e.target.files[0]);
         }} />      {preview ? (
         <img src={preview} alt="preview" className="w-full h-full object-cover" />

@@ -11,7 +11,7 @@ export default function MMSTrainingInternship() {
     const fetchData = async () => {
       try {
         const response = await get('/pages/mms-training-placement');
-        setData(response.data);
+        setData((response as any).data);
       } catch (err) {
         console.error('Failed to fetch training internship data:', err);
       } finally {

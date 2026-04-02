@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Image as ImageIcon, Plus, Trash2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Image as ImageIcon, Plus, Trash2, CheckCircle, AlertTriangle } from 'lucide-react';
 import type { MMSFacilitiesPayload, GalleryItem } from '../../types';
 import { mmsFacilitiesApi } from '../../api/mmsFacilitiesApi';
 import { resolveApiUrl } from '../../api/client';
+import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 
 const resolvePreviewImage = (image: unknown): string => {
   if (typeof image === 'string') return image;
@@ -23,6 +24,7 @@ const emptyForm: MMSFacilitiesPayload = {
 };
 
 const MMSFacilitiesForm: React.FC = () => {
+  const navigate = useNavigate();
   const { section } = useParams<{ section: string }>();
   const [form, setForm] = useState<MMSFacilitiesPayload>(emptyForm);
   const [loading, setLoading] = useState(true);
@@ -47,8 +49,8 @@ const MMSFacilitiesForm: React.FC = () => {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setSaving(true);
     setError('');
     setSuccessMsg('');
@@ -84,7 +86,7 @@ const MMSFacilitiesForm: React.FC = () => {
       <div className="p-10 text-center">
         <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-4" />
         <h2 className="text-xl font-bold">Invalid Section</h2>
-        <Link to="/admin/pages/mms" className="text-blue-500 hover:underline mt-4 inline-block">Back to MMS Hub</Link>
+        <button type="button" onClick={() => navigate('/admin/pages/mms')} className="text-blue-500 hover:underline mt-4 inline-block">Back to MMS Hub</button>
       </div>
     );
   }
@@ -93,20 +95,16 @@ const MMSFacilitiesForm: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12 animate-fade-in relative pt-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/admin/pages/mms" className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h1 className="text-3xl font-extrabold text-[#111827]">{config.title}</h1>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">FACILITIES GALLERY EDITOR</p>
-          </div>
-        </div>
-        <button onClick={handleSave} disabled={saving} className="px-8 py-3.5 bg-[#2563EB] text-white rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2">
-          {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Save Changes'}
-        </button>
-      </div>
+      <PageEditorHeader
+        title={config.title}
+        description="Facilities Gallery Editor"
+        onSave={() => {
+          void handleSave();
+        }}
+        isSaving={saving}
+        showBackButton
+        onBack={() => navigate('/admin/pages/mms')}
+      />
 
       {/* MESSAGES */}
       {error && (
@@ -147,7 +145,7 @@ const MMSFacilitiesForm: React.FC = () => {
                 </button>
 
                 <div className="relative aspect-video rounded-2xl overflow-hidden bg-white border border-slate-200 mb-4 group-hover:border-blue-200 transition-colors shadow-sm">
-                  <input 
+                  <input id="mmsfacilitiesform-1" name="mmsfacilitiesform-1" aria-label="mmsfacilitiesform field" 
                     type="file" 
                     accept="image/*" 
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
@@ -161,7 +159,7 @@ const MMSFacilitiesForm: React.FC = () => {
                     }}
                   />
                   {item.image ? (
-                    <img src={resolvePreviewImage(item.image)} alt="" className="w-full h-full object-cover" />
+                    <img src={typeof item.image === 'string' ? item.image : ((item.image as any) instanceof File || (item.image as any) instanceof Blob ? URL.createObjectURL(item.image as any) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                        <ImageIcon className="w-8 h-8 text-slate-200 group-hover:text-blue-500 transition-colors" />
@@ -177,7 +175,7 @@ const MMSFacilitiesForm: React.FC = () => {
                       {item.label?.length || 0} / {config.limit}
                     </span>
                   </div>
-                  <input 
+                  <input id="mmsfacilitiesform-2" name="mmsfacilitiesform-2" aria-label="mmsfacilitiesform field" 
                     className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100 transition-all placeholder:text-slate-300"
                     placeholder="e.g. Modern Lab..."
                     value={item.label || ''}

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { pagesApi } from '../../api/pagesApi';
 import { resolveApiUrl } from '../../api/client';
 import type { AcademicsData, AcademicsPayload, AdmissionDocument } from '../../types';
+import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 
 /* ── Toast Component ────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -80,7 +81,7 @@ const ImageUpload: React.FC<{
             <span className="text-[10px] font-bold uppercase tracking-widest text-center px-4">Click to upload image</span>
           </div>
         )}
-        <input 
+        <input id="academicsform-1" name="academicsform-1" aria-label="academicsform field" 
           type="file" 
           accept="image/*" 
           onChange={handleFileChange}
@@ -155,7 +156,7 @@ const DocumentListManager: React.FC<{
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-1">
                 <label className={labelBase}>Title</label>
-                <input 
+                <input id="academicsform-2" name="academicsform-2" aria-label="academicsform field" 
                   value={item.title} 
                   onChange={e => updateItem(idx, { title: e.target.value })}
                   className={inputBase}
@@ -164,7 +165,7 @@ const DocumentListManager: React.FC<{
               </div>
               <div className="md:col-span-1 text-right">
                  <label className={labelBase}>Academic Year</label>
-                 <select 
+                 <select id="academicsform-select-1" name="academicsform-select-1" aria-label="academicsform select field" 
                     value={item.year} 
                     onChange={e => updateItem(idx, { year: e.target.value })}
                     className={inputBase}
@@ -176,7 +177,7 @@ const DocumentListManager: React.FC<{
               </div>
               <div className="md:col-span-2">
                 <label className={labelBase}>{type === 'calendars' ? 'Status / Tag (e.g. TENTATIVE)' : 'Description'}</label>
-                <input 
+                <input id="academicsform-3" name="academicsform-3" aria-label="academicsform field" 
                   value={item.description} 
                   onChange={e => updateItem(idx, { description: e.target.value })}
                   className={inputBase}
@@ -186,7 +187,7 @@ const DocumentListManager: React.FC<{
               <div className="md:col-span-2">
                 <label className={labelBase}>PDF Document</label>
                 <div className="relative overflow-hidden bg-white border-2 border-dashed border-slate-200 rounded-2xl p-4 transition-all hover:border-[#2563EB]">
-                  <input 
+                  <input id="academicsform-4" name="academicsform-4" aria-label="academicsform field" 
                     type="file" 
                     accept="application/pdf"
                     onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
@@ -245,8 +246,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const saveChanges = async () => {
     setSaving(true);
     try {
       const res = await pagesApi.academics.update(payload);
@@ -257,6 +257,11 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await saveChanges();
   };
 
   if (loading) return (
@@ -270,29 +275,14 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          {onBack && (
-            <button 
-              onClick={onBack}
-              className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shadow-sm"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-            </button>
-          )}
-          <div>
-            <h1 className="text-3xl font-extrabold text-[#111827]">
-              {activeSection ? `Edit ${activeSection === 'calendars' ? 'Calendars' : 'Booklets'}` : 'Academics Module'}
-            </h1>
-            <p className="text-slate-500 text-sm mt-1">
-              {activeSection ? `Manage your academic ${activeSection} here.` : 'Manage Academic calendars and Program booklets.'}
-            </p>
-          </div>
-        </div>
-        <div className="text-xs font-bold text-slate-400 uppercase tracking-widest text-right">
-          Last updated: {data?.updatedAt ? new Date(data.updatedAt).toLocaleDateString() : 'Never'}
-        </div>
-      </div>
+      <PageEditorHeader
+        title={activeSection ? `Edit ${activeSection === 'calendars' ? 'Calendars' : 'Booklets'}` : 'Academics Module'}
+        description={activeSection ? `Manage your academic ${activeSection} here.` : 'Manage academic calendars and program booklets.'}
+        onSave={saveChanges}
+        isSaving={saving}
+        showBackButton={!!onBack}
+        onBack={onBack}
+      />
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Academic Calendars List */}
@@ -332,7 +322,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
               <div className="space-y-6">
                 <div>
                   <label className={labelBase}>Full Name</label>
-                  <input 
+                  <input id="academicsform-5" name="academicsform-5" aria-label="academicsform field" 
                     value={payload.dean?.name || ''} 
                     onChange={e => setPayload(prev => ({ ...prev, dean: { ...prev.dean!, name: e.target.value } }))}
                     className={inputBase}
@@ -341,7 +331,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
                 </div>
                 <div>
                   <label className={labelBase}>Qualification</label>
-                  <input 
+                  <input id="academicsform-6" name="academicsform-6" aria-label="academicsform field" 
                     value={payload.dean?.qualification || ''} 
                     onChange={e => setPayload(prev => ({ ...prev, dean: { ...prev.dean!, qualification: e.target.value } }))}
                     className={inputBase}
@@ -350,7 +340,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
                 </div>
                 <div>
                   <label className={labelBase}>Designation</label>
-                  <input 
+                  <input id="academicsform-7" name="academicsform-7" aria-label="academicsform field" 
                     value={payload.dean?.designation || ''} 
                     onChange={e => setPayload(prev => ({ ...prev, dean: { ...prev.dean!, designation: e.target.value } }))}
                     className={inputBase}
@@ -359,7 +349,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
                 </div>
                 <div>
                   <label className={labelBase}>Institution / College</label>
-                  <input 
+                  <input id="academicsform-8" name="academicsform-8" aria-label="academicsform field" 
                     value={payload.dean?.institution || ''} 
                     onChange={e => setPayload(prev => ({ ...prev, dean: { ...prev.dean!, institution: e.target.value } }))}
                     className={inputBase}
@@ -369,7 +359,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
               </div>
               <div className="md:col-span-2">
                 <label className={labelBase}>Dean's Message (Quote)</label>
-                <textarea 
+                <textarea id="academicsform-textarea-2" name="academicsform-textarea-2" aria-label="academicsform textarea field" 
                   value={payload.dean?.message || ''} 
                   onChange={e => setPayload(prev => ({ ...prev, dean: { ...prev.dean!, message: e.target.value } }))}
                   className={`${inputBase} min-h-[200px] resize-none py-4 leading-relaxed`}
@@ -386,7 +376,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
             <div className="grid grid-cols-1 gap-8">
                <div>
                   <label className={labelBase}>Framework Title</label>
-                  <input 
+                  <input id="academicsform-9" name="academicsform-9" aria-label="academicsform field" 
                     value={payload.obe?.title || ''} 
                     onChange={e => setPayload(prev => ({ ...prev, obe: { ...prev.obe!, title: e.target.value } }))}
                     className={inputBase}
@@ -395,7 +385,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
                 </div>
                 <div>
                   <label className={labelBase}>Description</label>
-                  <textarea 
+                  <textarea id="academicsform-textarea-3" name="academicsform-textarea-3" aria-label="academicsform textarea field" 
                     value={payload.obe?.description || ''} 
                     onChange={e => setPayload(prev => ({ ...prev, obe: { ...prev.obe!, description: e.target.value } }))}
                     className={`${inputBase} min-h-[100px] resize-none py-4 leading-relaxed`}
@@ -419,13 +409,9 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest sm:w-1/2 leading-relaxed">
             All PDF resources support dynamic row management. Multiple entries can be added for booklets and calendars.
           </p>
-          <button 
-            type="submit" 
-            disabled={saving} 
-            className="w-full sm:w-auto bg-[#2563EB] hover:bg-blue-700 disabled:opacity-50 text-white font-black px-12 py-4 rounded-2xl text-xs transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 uppercase tracking-[0.15em] flex items-center justify-center gap-2"
-          >
-            {saving ? <><div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" /><span>Saving...</span></> : 'Update Module'}
-          </button>
+          <span className="w-full sm:w-auto rounded-2xl border border-slate-200 px-6 py-3 text-center text-xs font-black uppercase tracking-[0.15em] text-slate-400">
+            Use top header to save changes
+          </span>
         </div>
       </form>
 

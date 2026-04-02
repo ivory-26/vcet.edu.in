@@ -217,7 +217,7 @@ export default function MMSEnquirePopup() {
 
               <label className="block">
                 <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Student Name <span className="text-rose-600">*</span></span>
-                <input
+                <input id="mmsenquirepopup-1" name="mmsenquirepopup-1" aria-label="mmsenquirepopup field"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -228,7 +228,7 @@ export default function MMSEnquirePopup() {
 
               <label className="block">
                 <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Student Email Address <span className="text-rose-600">*</span></span>
-                <input
+                <input id="mmsenquirepopup-2" name="mmsenquirepopup-2" aria-label="mmsenquirepopup field"
                   required
                   type="email"
                   value={email}
@@ -240,7 +240,7 @@ export default function MMSEnquirePopup() {
 
               <label className="block">
                 <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Student Phone Number <span className="text-rose-600">*</span></span>
-                <input
+                <input id="mmsenquirepopup-3" name="mmsenquirepopup-3" aria-label="mmsenquirepopup field"
                   required
                   type="tel"
                   value={phone}
@@ -255,7 +255,7 @@ export default function MMSEnquirePopup() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
                   <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">State <span className="text-rose-600">*</span></span>
-                  <input
+                  <input id="mmsenquirepopup-4" name="mmsenquirepopup-4" aria-label="mmsenquirepopup field"
                     required
                     list="mms-state-suggestions"
                     value={stateName}
@@ -288,7 +288,7 @@ export default function MMSEnquirePopup() {
 
                 <label className="block">
                   <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">City <span className="text-rose-600">*</span></span>
-                  <input
+                  <input id="mmsenquirepopup-5" name="mmsenquirepopup-5" aria-label="mmsenquirepopup field"
                     required
                     list="mms-city-suggestions"
                     value={city}
@@ -323,7 +323,7 @@ export default function MMSEnquirePopup() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block">
                   <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Program <span className="text-rose-600">*</span></span>
-                  <select
+                  <select id="mmsenquirepopup-select-1" name="mmsenquirepopup-select-1" aria-label="mmsenquirepopup select field"
                     required
                     value={program}
                     onChange={(e) => setProgram(e.target.value)}
@@ -337,7 +337,7 @@ export default function MMSEnquirePopup() {
 
                 <label className="block">
                   <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Preferred Course <span className="text-rose-600">*</span></span>
-                  <select
+                  <select id="mmsenquirepopup-select-2" name="mmsenquirepopup-select-2" aria-label="mmsenquirepopup select field"
                     required
                     value={course}
                     onChange={(e) => setCourse(e.target.value)}
@@ -351,7 +351,7 @@ export default function MMSEnquirePopup() {
 
               <label className="block">
                 <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Highest Qualification <span className="text-rose-600">*</span></span>
-                <input
+                <input id="mmsenquirepopup-6" name="mmsenquirepopup-6" aria-label="mmsenquirepopup field"
                   required
                   value={qualification}
                   onChange={(e) => setQualification(e.target.value)}
@@ -362,7 +362,7 @@ export default function MMSEnquirePopup() {
 
               <label className="block">
                 <span className="mb-1 block text-base font-semibold text-brand-navy sm:text-lg">Enquiry Details <span className="text-rose-600">*</span></span>
-                <textarea
+                <textarea id="mmsenquirepopup-textarea-3" name="mmsenquirepopup-textarea-3" aria-label="mmsenquirepopup textarea field"
                   required
                   rows={4}
                   minLength={15}
@@ -374,7 +374,7 @@ export default function MMSEnquirePopup() {
               </label>
 
               <label className="flex items-start gap-3 rounded-lg border border-brand-blue/15 bg-white px-3 py-3">
-                <input
+                <input id="mmsenquirepopup-7" name="mmsenquirepopup-7" aria-label="mmsenquirepopup field"
                   required
                   type="checkbox"
                   checked={consent}

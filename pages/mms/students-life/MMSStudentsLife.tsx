@@ -67,7 +67,7 @@ export default function MMSStudentsLife() {
           )}
         </StudentsLifeSectionCard>
 
-        {data?.events?.map((ev, idx) => (
+        {(data as any)?.events?.map((ev: any, idx: number) => (
           <StudentsLifeSectionCard key={idx} title={ev.name || `Event ${idx + 1}`} subtitle="Department Event & Activity">
             <p className="text-[17px] leading-8 text-slate-700">
               {ev.description}

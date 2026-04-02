@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { pagesApi } from '../../api/pagesApi';
 import type { ResearchData } from '../../types';
 import { resolveUploadedAssetUrl } from '../../../utils/uploadedAssets';
+import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
   useEffect(() => {
@@ -72,7 +73,7 @@ const LimitedInput: React.FC<{
     <div className="relative">
       <label className={labelBase}>{label}</label>
       {type === 'text' ? (
-        <input
+        <input id="researchform-1" name="researchform-1" aria-label="researchform field"
           value={value || ''}
           maxLength={max}
           onChange={e => onChange(e.target.value)}
@@ -80,7 +81,7 @@ const LimitedInput: React.FC<{
           placeholder={placeholder}
         />
       ) : (
-        <textarea
+        <textarea id="researchform-textarea-2" name="researchform-textarea-2" aria-label="researchform textarea field"
           value={value || ''}
           maxLength={max}
           onChange={e => onChange(e.target.value)}
@@ -155,7 +156,7 @@ const LinkListManager: React.FC<{
               <div className="space-y-2">
                 <label className={labelBase}>Upload PDF</label>
                 <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <input
+                  <input id="researchform-2" name="researchform-2" aria-label="researchform field"
                     type="file"
                     accept="application/pdf"
                     className="text-sm font-semibold text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-blue-700"
@@ -243,7 +244,7 @@ const PhDManager: React.FC<{ title: string; items: any[]; onChange: (v: any[]) =
           </div>
           <div className="col-span-3">
             <label className={labelBase}>Count</label>
-            <input
+            <input id="researchform-3" name="researchform-3" aria-label="researchform field"
               type="number"
               min={0}
               value={item.count ?? 0}
@@ -304,7 +305,7 @@ const TableManager: React.FC<{
                 {f.type === 'select' ? (
                   <div>
                     <label className={labelBase}>{f.label}</label>
-                    <select value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={inputBase}>
+                    <select id="researchform-select-1" name="researchform-select-1" aria-label="researchform select field" value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={inputBase}>
                       {(f.options || []).map(opt => <option key={opt} value={opt}>{opt || 'Blank'}</option>)}
                     </select>
                   </div>
@@ -313,7 +314,7 @@ const TableManager: React.FC<{
                     <label className={labelBase}>{f.label}</label>
                     <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-3">
                       <div className="relative aspect-[16/10] rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                        <input
+                        <input id="researchform-4" name="researchform-4" aria-label="researchform field"
                           type="file"
                           accept="image/*"
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -352,7 +353,7 @@ const TableManager: React.FC<{
                   <div>
                     <label className={labelBase}>{f.label}</label>
                     <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-3">
-                      <input
+                      <input id="researchform-5" name="researchform-5" aria-label="researchform field"
                         type="file"
                         accept="application/pdf"
                         className="text-sm font-semibold text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-blue-700"
@@ -768,7 +769,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                       <label className={labelBase}>Partner Image</label>
                       <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-3">
                         <div className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                          <input
+                          <input id="researchform-6" name="researchform-6" aria-label="researchform field"
                             type="file"
                             accept="image/*"
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
@@ -960,21 +961,14 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
     <div className="max-w-6xl mx-auto space-y-8 pb-12 animate-fade-in relative">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <button onClick={onBack} className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-          </button>
-          <div>
-            <h1 className="text-3xl font-extrabold text-[#111827]">{data?.name}</h1>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Research Editor (Report-Aligned)</p>
-          </div>
-        </div>
-        <button onClick={handleSubmit} disabled={saving} className="px-8 py-3.5 bg-[#2563EB] text-white rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2">
-          {saving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-      </div>
+      <PageEditorHeader
+        title={data?.name || 'Research Page Editor'}
+        description="Manage institutional research, publications, patents, and innovation cell content."
+        onSave={handleSubmit}
+        isSaving={saving}
+        showBackButton
+        onBack={onBack}
+      />
 
       {exactErrors.length > 0 && (
         <div className="p-4 rounded-2xl border border-red-200 bg-red-50 text-red-700 text-xs font-bold uppercase tracking-wider">

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, Plus, Trash2, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import type { MMSScholarshipPayload } from '../../types';
 import { mmsScholarshipApi } from '../../api/mmsScholarshipApi';
+import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 
 const emptyForm: MMSScholarshipPayload = {
   overview: [],
@@ -14,6 +15,7 @@ const emptyForm: MMSScholarshipPayload = {
 };
 
 const MMSScholarshipForm: React.FC = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState<MMSScholarshipPayload>(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -38,8 +40,8 @@ const MMSScholarshipForm: React.FC = () => {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setSaving(true);
     setError('');
     setSuccessMsg('');
@@ -69,21 +71,16 @@ const MMSScholarshipForm: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12 animate-fade-in relative pt-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/admin/pages/mms" className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 transition-colors shadow-sm">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-extrabold text-[#111827]">Scholarships</h1>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">MMS ADMISSIONS EDITOR</p>
-          </div>
-        </div>
-        <button onClick={handleSave} disabled={saving} className="px-8 py-3.5 bg-[#2563EB] text-white rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-blue-500/20 hover:bg-blue-700 transition-all disabled:opacity-50 flex items-center gap-2">
-          {saving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-          {saving ? 'Saving...' : 'Save Changes'}
-        </button>
-      </div>
+      <PageEditorHeader
+        title="Scholarships"
+        description="MMS Admissions Editor"
+        onSave={() => {
+          void handleSave();
+        }}
+        isSaving={saving}
+        showBackButton
+        onBack={() => navigate('/admin/pages/mms')}
+      />
 
       {error && (
         <div className="bg-red-50 border border-red-100 rounded-xl px-5 py-4 text-sm text-red-600 font-medium flex items-center gap-3">
@@ -111,21 +108,21 @@ const MMSScholarshipForm: React.FC = () => {
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                    <div className="relative">
                      <label className="admin-label">Name (Max 100)</label>
-                     <input className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 100, val => {
+                     <input id="mmsscholarshipform-1" name="mmsscholarshipform-1" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 100, val => {
                        const c = [...form.overview!]; c[i].name = val; setForm({...form, overview: c});
                      })}/>
                      <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.name?.length || 0}/100</span>
                    </div>
                    <div className="relative">
                      <label className="admin-label">Category (Max 50)</label>
-                     <input className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
+                     <input id="mmsscholarshipform-2" name="mmsscholarshipform-2" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
                        const c = [...form.overview!]; c[i].category = val; setForm({...form, overview: c});
                      })}/>
                      <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.category?.length || 0}/50</span>
                    </div>
                    <div className="md:col-span-2 relative">
                      <label className="admin-label">Description (Max 150)</label>
-                     <input className="admin-input-small" value={item.description} onChange={e => handleTextChange(e.target.value, 150, val => {
+                     <input id="mmsscholarshipform-3" name="mmsscholarshipform-3" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.description} onChange={e => handleTextChange(e.target.value, 150, val => {
                        const c = [...form.overview!]; c[i].description = val; setForm({...form, overview: c});
                      })}/>
                      <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.description?.length || 0}/150</span>
@@ -146,13 +143,13 @@ const MMSScholarshipForm: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
                <label className="admin-label">Eligible Communities (Max 100) <br/><span className="text-[10px] text-slate-400 font-normal">e.g. Muslim, Christian, Sikh, Buddhist, Parsi, Jain</span></label>
-               <input className="admin-input-small mt-1" value={form.minority?.communities || ''} onChange={e => handleTextChange(e.target.value, 100, val => {
+               <input id="mmsscholarshipform-4" name="mmsscholarshipform-4" aria-label="mmsscholarshipform field" className="admin-input-small mt-1" value={form.minority?.communities || ''} onChange={e => handleTextChange(e.target.value, 100, val => {
                  setForm({...form, minority: {...form.minority!, communities: val}});
                })}/>
             </div>
             <div className="relative">
                <label className="admin-label">Purpose (Max 150)<br/>&nbsp;</label>
-               <input className="admin-input-small mt-1" value={form.minority?.purpose || ''} onChange={e => handleTextChange(e.target.value, 150, val => {
+               <input id="mmsscholarshipform-5" name="mmsscholarshipform-5" aria-label="mmsscholarshipform field" className="admin-input-small mt-1" value={form.minority?.purpose || ''} onChange={e => handleTextChange(e.target.value, 150, val => {
                  setForm({...form, minority: {...form.minority!, purpose: val}});
                })}/>
             </div>
@@ -171,19 +168,19 @@ const MMSScholarshipForm: React.FC = () => {
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                    <div className="relative md:col-span-2">
                      <label className="admin-label">Scheme Name (Max 120)</label>
-                     <input className="admin-input-small" value={item.schemeName} onChange={e => handleTextChange(e.target.value, 120, val => {
+                     <input id="mmsscholarshipform-6" name="mmsscholarshipform-6" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.schemeName} onChange={e => handleTextChange(e.target.value, 120, val => {
                        const c = [...form.ebc!]; c[i].schemeName = val; setForm({...form, ebc: c});
                      })}/>
                    </div>
                    <div className="relative">
                      <label className="admin-label">Category (Max 50)</label>
-                     <input className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
+                     <input id="mmsscholarshipform-7" name="mmsscholarshipform-7" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
                        const c = [...form.ebc!]; c[i].category = val; setForm({...form, ebc: c});
                      })}/>
                    </div>
                    <div className="relative md:col-span-3">
                      <label className="admin-label">Applicable GR Dates (Max 100)</label>
-                     <input className="admin-input-small" value={item.grDates} onChange={e => handleTextChange(e.target.value, 100, val => {
+                     <input id="mmsscholarshipform-8" name="mmsscholarshipform-8" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.grDates} onChange={e => handleTextChange(e.target.value, 100, val => {
                        const c = [...form.ebc!]; c[i].grDates = val; setForm({...form, ebc: c});
                      })}/>
                    </div>
@@ -210,19 +207,19 @@ const MMSScholarshipForm: React.FC = () => {
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                    <div className="relative md:col-span-2">
                      <label className="admin-label">Scholarship Name (Max 120)</label>
-                     <input className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 120, val => {
+                     <input id="mmsscholarshipform-9" name="mmsscholarshipform-9" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 120, val => {
                        const c = [...form.categoryBased!]; c[i].name = val; setForm({...form, categoryBased: c});
                      })}/>
                    </div>
                    <div className="relative">
                      <label className="admin-label">Category (Max 50)</label>
-                     <input className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
+                     <input id="mmsscholarshipform-10" name="mmsscholarshipform-10" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
                        const c = [...form.categoryBased!]; c[i].category = val; setForm({...form, categoryBased: c});
                      })}/>
                    </div>
                    <div className="relative">
                      <label className="admin-label">Funding Authority (Max 50)</label>
-                     <input className="admin-input-small" value={item.authority} onChange={e => handleTextChange(e.target.value, 50, val => {
+                     <input id="mmsscholarshipform-11" name="mmsscholarshipform-11" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.authority} onChange={e => handleTextChange(e.target.value, 50, val => {
                        const c = [...form.categoryBased!]; c[i].authority = val; setForm({...form, categoryBased: c});
                      })}/>
                    </div>
@@ -242,13 +239,13 @@ const MMSScholarshipForm: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
                <label className="admin-label">Portal Name (Max 100)</label>
-               <input className="admin-input-small" value={form.portal?.name || ''} onChange={e => handleTextChange(e.target.value, 100, val => {
+               <input id="mmsscholarshipform-12" name="mmsscholarshipform-12" aria-label="mmsscholarshipform field" className="admin-input-small" value={form.portal?.name || ''} onChange={e => handleTextChange(e.target.value, 100, val => {
                  setForm({...form, portal: {...form.portal!, name: val}});
                })}/>
             </div>
             <div className="relative">
                <label className="admin-label">Portal URL (Max 150)</label>
-               <input className="admin-input-small" value={form.portal?.url || ''} onChange={e => handleTextChange(e.target.value, 150, val => {
+               <input id="mmsscholarshipform-13" name="mmsscholarshipform-13" aria-label="mmsscholarshipform field" className="admin-input-small" value={form.portal?.url || ''} onChange={e => handleTextChange(e.target.value, 150, val => {
                  setForm({...form, portal: {...form.portal!, url: val}});
                })}/>
             </div>
@@ -266,7 +263,7 @@ const MMSScholarshipForm: React.FC = () => {
                 }} className="absolute top-2 right-2 text-red-500 z-10 hover:bg-red-50 p-1 rounded"><Trash2 className="w-4 h-4"/></button>
                 
                 <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-24 flex flex-col items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer">
-                  <input type="file" accept="application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
+                  <input id="mmsscholarshipform-14" name="mmsscholarshipform-14" aria-label="mmsscholarshipform field" type="file" accept="application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
                     if (e.target.files && e.target.files[0]) {
                        const c = [...form.pdf!]; c[i].fileUrl = e.target.files[0]; setForm({...form, pdf: c});
                     }
@@ -277,7 +274,7 @@ const MMSScholarshipForm: React.FC = () => {
                 
                 <div className="relative">
                   <label className="admin-label text-[10px]">PDF Label / Name</label>
-                  <input className="admin-input-small text-xs" placeholder="Label / Name" value={pdfItem.label || ''} onChange={e => {
+                  <input id="mmsscholarshipform-15" name="mmsscholarshipform-15" aria-label="mmsscholarshipform field" className="admin-input-small text-xs" placeholder="Label / Name" value={pdfItem.label || ''} onChange={e => {
                       const c = [...form.pdf!]; c[i].label = e.target.value; setForm({...form, pdf: c});
                   }} />
                 </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { pagesApi } from '../../api/pagesApi';
 import { ExamData, ExamPayload, AdmissionDocument as DocItem, SyllabusSection, ResultSection } from '../../types';
+import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
   <div className="bg-white border border-slate-200/60 rounded-[2.5rem] overflow-hidden shadow-sm transition-all hover:shadow-md">
@@ -70,7 +71,7 @@ const DocumentListManager: React.FC<{
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className={labelBase}>File Title / Label</label>
-                <input 
+                <input id="examsform-1" name="examsform-1" aria-label="examsform field" 
                   value={item.title} 
                   onChange={e => updateItem(idx, { title: e.target.value })}
                   className={inputBase}
@@ -80,7 +81,7 @@ const DocumentListManager: React.FC<{
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="md:col-span-1">
                     <label className={labelBase}>Academic Year / Semester</label>
-                    <input 
+                    <input id="examsform-2" name="examsform-2" aria-label="examsform field" 
                       value={item.year} 
                       onChange={e => updateItem(idx, { year: e.target.value })}
                       className={inputBase}
@@ -90,7 +91,7 @@ const DocumentListManager: React.FC<{
                  <div className="md:col-span-1">
                     <label className={labelBase}>PDF Document</label>
                     <div className="relative overflow-hidden bg-white border-2 border-dashed border-slate-200 rounded-2xl p-4 transition-all hover:border-[#2563EB]">
-                      <input 
+                      <input id="examsform-3" name="examsform-3" aria-label="examsform field" 
                         type="file" 
                         accept="application/pdf"
                         onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
@@ -161,7 +162,7 @@ const SyllabusSectionManager: React.FC<{
 
           <div className="max-w-2xl">
             <label className={labelBase}>Department Name</label>
-            <select 
+            <select id="examsform-select-1" name="examsform-select-1" aria-label="examsform select field" 
               value={section.department} 
               onChange={e => updateSection(idx, { department: e.target.value })}
               className={inputBase}
@@ -229,7 +230,7 @@ const ResultSectionManager: React.FC<{
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className={labelBase}>Exam Month & Year</label>
-              <input 
+              <input id="examsform-4" name="examsform-4" aria-label="examsform field" 
                 value={section.title} 
                 onChange={e => updateSection(idx, { title: e.target.value })}
                 className={inputBase}
@@ -238,7 +239,7 @@ const ResultSectionManager: React.FC<{
             </div>
             <div>
               <label className={labelBase}>Department Name</label>
-              <select 
+              <select id="examsform-select-2" name="examsform-select-2" aria-label="examsform select field" 
                 value={section.department} 
                 onChange={e => updateSection(idx, { department: e.target.value })}
                 className={inputBase}
@@ -308,8 +309,7 @@ const ExamsForm: React.FC<ExamFormProps> = ({ activeSection, onBack }) => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const saveChanges = async () => {
     setSaving(true);
     try {
       await pagesApi.exam.update(payload);
@@ -322,6 +322,11 @@ const ExamsForm: React.FC<ExamFormProps> = ({ activeSection, onBack }) => {
     }
   };
 
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await saveChanges();
+  };
+
   if (loading) return (
     <div className="flex items-center justify-center h-64 bg-white border border-slate-200/60 rounded-3xl animate-pulse">
       <div className="flex flex-col items-center gap-3">
@@ -332,38 +337,15 @@ const ExamsForm: React.FC<ExamFormProps> = ({ activeSection, onBack }) => {
   );
 
   return (
-    <form onSubmit={handleSave} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Header */}
-      <div className="bg-white border border-slate-200/60 rounded-[2.5rem] p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 backdrop-blur-xl bg-white/80">
-        <div className="flex items-center gap-5">
-            <button 
-              type="button"
-              onClick={onBack}
-              className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-[#2563EB] hover:text-white transition-all shadow-sm"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            </button>
-            <div>
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                Exam Section Editor
-              </h1>
-              <p className="text-slate-500 text-sm mt-1 font-medium">
-                Manage {activeSection ? activeSection.replace(/([A-Z])/g, ' $1').toLowerCase() : 'all examination'} related documents.
-              </p>
-            </div>
-        </div>
-        <div className="flex items-center gap-3">
-           <button 
-             type="submit" 
-             disabled={saving}
-             className="px-8 py-3.5 rounded-2xl bg-[#2563EB] text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
-           >
-             {saving ? (
-               <><div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div> Saving...</>
-             ) : 'Update Section'}
-           </button>
-        </div>
-      </div>
+    <form onSubmit={handleSave} className="mx-auto max-w-6xl space-y-8 px-4 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700 sm:px-6 lg:px-8">
+      <PageEditorHeader
+        title="Exam Section Editor"
+        description={`Manage ${activeSection ? activeSection.replace(/([A-Z])/g, ' $1').toLowerCase() : 'all examination'} related documents.`}
+        onSave={saveChanges}
+        isSaving={saving}
+        showBackButton
+        onBack={onBack}
+      />
 
       <div className="space-y-8 pb-20">
         {/* Syllabus */}

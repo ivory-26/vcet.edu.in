@@ -29,39 +29,46 @@ interface PlacementImageHolderProps {
 }
 
 export function PlacementImageHolder({ label, size = 'default', imageSrc, src }: PlacementImageHolderProps) {
-  const minHeightClass = size === 'large' ? 'min-h-[300px]' : 'min-h-[220px]';  
+  const cardHeightClass = 'h-[400px]';
+  const frameClass = 'h-[250px]';
   const activeSrc = imageSrc || src;
   const hookImageUrl = useMmsImageHolder('placement', label, !!activeSrc);       
   const imageUrl = activeSrc || hookImageUrl;
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <article className="group relative overflow-hidden rounded-none border border-brand-blue/20 bg-gradient-to-br from-slate-50 to-brand-light/35 p-[3px] shadow-[0_16px_28px_-20px_rgba(11,61,145,0.6)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_36px_-20px_rgba(11,61,145,0.65)]">
-      <div className="relative rounded-none border border-brand-blue/15 bg-white p-4">   
+    <article className={`group relative overflow-hidden rounded-none border border-brand-blue/20 bg-gradient-to-br from-slate-50 to-brand-light/35 p-[3px] shadow-[0_16px_28px_-20px_rgba(11,61,145,0.6)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_36px_-20px_rgba(11,61,145,0.65)] ${cardHeightClass}`}>
+      <div className="relative flex h-full flex-col rounded-none border border-brand-blue/15 bg-white p-4">
         {imageUrl ? (
           <>
             {!isLoaded && (
-              <div className={`absolute inset-x-4 inset-y-4 flex items-center justify-center bg-slate-100 animate-pulse ${minHeightClass}`}>
+              <div className={`absolute inset-x-4 top-4 flex items-center justify-center bg-brand-navy animate-pulse ${frameClass}`}>
                 <ImageIcon className="h-8 w-8 text-brand-blue/20" />
               </div>
             )}
-            <img
-              src={imageUrl}
-              alt={label}
-              onLoad={() => setIsLoaded(true)}
-              className={`block w-full rounded-none object-cover transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${minHeightClass}`}
-              referrerPolicy="no-referrer"
-            />
+            <div className={`w-full rounded-none bg-brand-navy ${frameClass}`}>
+              <img
+                src={imageUrl}
+                alt={label}
+                onLoad={() => setIsLoaded(true)}
+                className={`block h-full w-full rounded-none object-contain transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                referrerPolicy="no-referrer"
+              />
+            </div>
           </>
         ) : (
-          <div className={`flex ${minHeightClass} items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/30 to-slate-100 text-center`}>
+          <div className={`flex ${frameClass} items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-brand-navy text-center`}>
             <div className="space-y-2 px-4">
               <ImageIcon className="mx-auto h-9 w-9 text-brand-blue/65" />
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold">Image Holder</p>
-              <p className="text-sm font-semibold text-brand-navy">{label}</p>
             </div>
           </div>
         )}
+
+        <div className="mt-3 flex flex-1 flex-col justify-end border-t border-brand-blue/10 pt-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold">Image Title</p>
+          <p className="mt-1 text-sm font-semibold text-brand-navy">{label}</p>
+        </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-gold via-yellow-300 to-brand-gold/75" />
       <div className="pointer-events-none absolute right-0 top-0 h-8 w-8 border-r-[3px] border-t-[3px] border-brand-gold/90" />

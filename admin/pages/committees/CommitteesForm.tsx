@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { pagesApi } from '../../api/pagesApi';
 import { CommitteeData, CommitteePayload, CommitteeMember, CommitteeReport } from '../../types';
+import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 
 /* ── UI Components ────────────────────────────────────────────────────────── */
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
@@ -59,7 +60,7 @@ const ListManager: React.FC<{
             </button>
           </div>
           <div className="flex-grow">
-            <input 
+            <input id="committeesform-1" name="committeesform-1" aria-label="committeesform field" 
               value={item} 
               onChange={e => updateItem(idx, e.target.value)}
               className={inputBase}
@@ -127,7 +128,7 @@ const TableManager: React.FC<{
               <tr key={idx} className="border-t border-slate-100 group">
                 {columns.map(col => (
                   <td key={col.key as string} className="px-6 py-4">
-                    <input 
+                    <input id="committeesform-2" name="committeesform-2" aria-label="committeesform field" 
                       value={item[col.key] || ''} 
                       onChange={e => updateItem(idx, col.key, e.target.value)}
                       className="w-full bg-transparent border-none text-sm font-semibold text-slate-700 focus:ring-0 p-0"
@@ -185,7 +186,7 @@ const ReportManager: React.FC<{
           
           <div className="w-full md:w-1/3">
             <label className={labelBase}>Academic Year</label>
-            <select 
+            <select id="committeesform-select-1" name="committeesform-select-1" aria-label="committeesform select field" 
               value={item.year} 
               onChange={e => updateItem(idx, { year: e.target.value })}
               className={inputBase}
@@ -197,7 +198,7 @@ const ReportManager: React.FC<{
           <div className="flex-grow">
             <label className={labelBase}>PDF Report</label>
             <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
-               <input 
+               <input id="committeesform-3" name="committeesform-3" aria-label="committeesform field" 
                  type="file" 
                  accept=".pdf" 
                  onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
@@ -252,7 +253,7 @@ const PDFDocumentManager: React.FC<{
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelBase}>Document Title</label>
-              <input 
+              <input id="committeesform-4" name="committeesform-4" aria-label="committeesform field" 
                 value={item.title} 
                 onChange={e => updateItem(idx, { title: e.target.value })}
                 className={inputBase}
@@ -262,7 +263,7 @@ const PDFDocumentManager: React.FC<{
             <div>
               <label className={labelBase}>File Upload</label>
               <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
-                 <input 
+                 <input id="committeesform-5" name="committeesform-5" aria-label="committeesform field" 
                    type="file" 
                    accept=".pdf" 
                    onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
@@ -280,7 +281,7 @@ const PDFDocumentManager: React.FC<{
           {showUrlField && (
             <div>
               <label className={labelBase}>External PDF URL (Optional)</label>
-              <input 
+              <input id="committeesform-6" name="committeesform-6" aria-label="committeesform field" 
                 value={item.pdfUrl} 
                 onChange={e => updateItem(idx, { pdfUrl: e.target.value })}
                 className={inputBase}
@@ -327,8 +328,7 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const saveChanges = async () => {
     setSaving(true);
     try {
       await pagesApi.committees.update(slug, payload);
@@ -339,6 +339,11 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await saveChanges();
   };
 
   if (loading) return (
@@ -352,33 +357,14 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
 
   return (
     <form onSubmit={handleSave} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Header */}
-      <div className="bg-white border border-slate-200/60 rounded-[2.5rem] p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 backdrop-blur-xl bg-white/70 sticky top-0 z-40">
-        <div className="flex items-center gap-5">
-            <button 
-              type="button"
-              onClick={onBack}
-              className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:bg-[#2563EB] hover:text-white hover:border-[#2563EB] transition-all shadow-sm"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-            </button>
-            <div>
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none uppercase">
-                {data?.name}
-              </h1>
-              <p className="text-slate-500 text-sm mt-2 font-medium">Manage professional committee data and records.</p>
-            </div>
-        </div>
-        <div className="flex items-center gap-3">
-           <button 
-             type="submit" 
-             disabled={saving}
-             className="px-8 py-3.5 rounded-2xl bg-[#2563EB] text-white text-sm font-black uppercase tracking-wider hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center gap-2"
-           >
-             {saving ? 'Syncing...' : 'Save Changes'}
-           </button>
-        </div>
-      </div>
+      <PageEditorHeader
+        title={data?.name || 'Committee Editor'}
+        description="Manage professional committee data and records."
+        onSave={saveChanges}
+        isSaving={saving}
+        showBackButton
+        onBack={onBack}
+      />
 
       <div className="space-y-10 pb-20">
         {/* CDC Responsibilities */}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { get } from '../../services/api';
 import TopBanner from '../TopBanner';
-import Header from '../Header';
 import Footer from '../Footer';
 import MMSHeader from './MMSHeader';
 import MMSEnquirePopup from './MMSEnquirePopup';
@@ -119,7 +118,7 @@ export default function MMSLayout({ title, children }: MMSLayoutProps) {
   useEffect(() => {
     if (pathname.startsWith('/mms/students-life')) {
       get('/pages/mms-students-life').then(res => {
-        const evs = (res.data)?.customEvents || [];
+        const evs = (res as any).data?.customEvents || [];
         setCustomEventsMenu(evs.map((e) => ({ label: e.name, href: `/mms/students-life/event/${e.slug}` })));
       }).catch(e => console.warn(e));
     }
@@ -162,7 +161,6 @@ export default function MMSLayout({ title, children }: MMSLayoutProps) {
     <div className="min-h-screen overflow-x-hidden bg-white text-slate-800">
       <div className="relative z-[100]">
         <TopBanner />
-        <Header />
       </div>
 
       <MMSHeader />

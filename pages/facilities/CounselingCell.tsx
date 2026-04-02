@@ -114,24 +114,24 @@ const CounselingCell: React.FC = () => {
 
                 <div className="group lg:col-span-4" style={{ transitionDelay: '0.08s' }}>
                   <div className="relative h-full overflow-hidden rounded-none border border-brand-blue/30 bg-[#f1f6ff] p-5 shadow-[0_14px_28px_-22px_rgba(10,32,66,0.55)] hover:-translate-y-0.5 hover:shadow-[0_18px_34px_-18px_rgba(10,32,66,0.65)] hover:border-brand-gold/60 transition-all duration-300">
-                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#0f2d57]" />
-                    <div className="text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-[#0f2d57] mb-3 pl-2">
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-brand-navy" />
+                    <div className="text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-brand-navy mb-3 pl-2">
                       Services Format
                     </div>
                     <div className="space-y-2 text-base md:text-lg text-[#333333]" style={{ fontFamily: 'Cambria, Georgia, serif' }}>
-                      <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                      <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Individual Counseling</span>
                       </div>
-                        <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                        <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Group Counseling</span>
                       </div>
-                        <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                        <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Orientation Sessions</span>
                       </div>
-                        <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                        <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Life Skills Training</span>
                       </div>
@@ -196,7 +196,7 @@ const CounselingCell: React.FC = () => {
 
             <div className="reveal">
               <div className="relative overflow-hidden rounded-none border border-brand-blue/25 bg-[#f8fbff] shadow-[0_20px_34px_-24px_rgba(10,32,66,0.62)] hover:-translate-y-0.5 hover:shadow-[0_24px_40px_-22px_rgba(10,32,66,0.68)] hover:border-brand-gold/60 transition-all duration-300">
-                <div className="absolute inset-x-0 top-0 h-1 bg-[#0f2d57]" />
+                <div className="absolute inset-x-0 top-0 h-1 bg-brand-navy" />
                 <div className="p-6 md:p-7">
                   <div className="mb-5">
                     <div>

@@ -8,9 +8,9 @@ import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 /* ─── Design Tokens ──────────────────────────────────────────── */
 /* ═══════════════════════════════════════════════════════════════ */
 const C = {
-  navy: '#0B2C4A',
-  navyDk: '#071d31',
-  navyMd: '#0F3A5F',
+  navy: '#1a4b7c',
+  navyDk: '#153f69',
+  navyMd: '#245d96',
   gold: '#D4A017',
   goldLt: '#F5CC5B',
   bgPage: '#eef3fa',
@@ -381,7 +381,7 @@ const SportsGymkhana: React.FC = () => {
     {/* ══ 1. ABOUT + TIMINGS ══════════════════════════════════════ */}
     <section className="py-14 relative overflow-hidden" style={{ background: '#eef3fa' }}>
       {/* Ambient outlined orbs */}
-      <div className="pointer-events-none absolute -top-24 -right-24 z-0 rounded-full border border-[#0B2C4A]/10 bg-[#0B2C4A]/03" style={{ width: 450, height: 450 }} />
+      <div className="pointer-events-none absolute -top-24 -right-24 z-0 rounded-full border border-[#1a4b7c]/10 bg-[#1a4b7c]/03" style={{ width: 450, height: 450 }} />
       <div className="pointer-events-none absolute -bottom-16 -left-16 z-0 rounded-full border border-[#D4A017]/20 bg-[#D4A017]/05" style={{ width: 300, height: 300 }} />
 
       <div className="container mx-auto px-4 md:px-8 max-w-7xl relative z-10">
@@ -503,7 +503,7 @@ const SportsGymkhana: React.FC = () => {
                     }}>
                     {/* Icon container */}
                     <div className="w-9 h-9 rounded-none flex items-center justify-center shrink-0 transition-all duration-300 group-hover:rotate-6 shadow-sm" style={{ background: `${C.navy}0f`, border: `1px solid ${C.navy}20` }}>
-                      <svg className="w-4 h-4 text-[#0B2C4A] transition-colors duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <svg className="w-4 h-4 text-[#1a4b7c] transition-colors duration-300 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d={COMMON_SPORT_ICON} />
                       </svg>
                     </div>
@@ -587,25 +587,25 @@ const SportsGymkhana: React.FC = () => {
         </Reveal>
 
         {/* Competition split-cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-fr">
           {competitionsList.map((title, idx) => (
-            <Reveal key={idx} delay={idx * 80}>
-              <div className="group overflow-hidden flex transition-all duration-400 cursor-pointer"
+            <Reveal key={idx} delay={idx * 80} className="h-full">
+              <div className="group h-full min-h-[220px] overflow-hidden grid grid-cols-1 sm:grid-cols-[46%_54%] transition-all duration-400 cursor-pointer"
                 style={{ borderRadius: '0px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
                 onMouseEnter={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.12)'; d.style.transform = 'translateY(-4px)'; d.style.boxShadow = `0 20px 50px rgba(0,0,0,0.3)`; }}
                 onMouseLeave={e => { const d = e.currentTarget as HTMLDivElement; d.style.background = 'rgba(255,255,255,0.07)'; d.style.transform = 'none'; d.style.boxShadow = 'none'; }}>
                 {/* Text panel */}
-                <div className="flex flex-col justify-center px-6 py-6 w-[46%] shrink-0 relative" style={{ borderRight: '1px solid rgba(255,255,255,0.10)' }}>
+                <div className="flex h-full flex-col justify-center px-6 py-6 relative" style={{ borderRight: '1px solid rgba(255,255,255,0.10)' }}>
                   {/* Left accent bar */}
                   <div className="absolute left-0 top-0 bottom-0 w-[3px] transition-all duration-400 group-hover:w-[5px]" style={{ background: `linear-gradient(to bottom, ${C.gold}, ${C.goldLt})`, borderRadius: '0 2px 2px 0' }} />
                   <span className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: C.gold, fontFamily: SF }}>Competition</span>
                   <h4 className="text-[16.5px] font-bold leading-snug transition-colors duration-300 group-hover:text-[#F5CC5B]" style={{ fontFamily: H, color: '#fff' }}>{title}</h4>
                 </div>
-                <div className="flex-1 min-h-[145px] overflow-hidden" style={{ borderRadius: '0px' }}>
+                <div className="relative min-h-[220px] overflow-hidden" style={{ borderRadius: '0px' }}>
                   <img
                     src={displayCompetitionImages[idx]}
                     alt={title}
-                    className="w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
               </div>
@@ -658,7 +658,7 @@ const SportsGymkhana: React.FC = () => {
 
     {/* ══ 5. SPORTS RESULTS ══════════════════════════════════════════ */}
     <section className="py-14 relative overflow-hidden" style={{ background: '#eef3fa' }}>
-      <div className="pointer-events-none absolute bottom-0 left-0 z-0 rounded-full border border-[#0B2C4A]/15 bg-[#0B2C4A]/04" style={{ width: 400, height: 400 }} />
+      <div className="pointer-events-none absolute bottom-0 left-0 z-0 rounded-full border border-[#1a4b7c]/15 bg-[#1a4b7c]/04" style={{ width: 400, height: 400 }} />
       <div className="container mx-auto px-4 md:px-8 max-w-7xl relative z-10">
         <SH title="Sports Results" tag="Victories" delay={0} />
         <div className="space-y-8">
