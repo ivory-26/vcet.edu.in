@@ -17,8 +17,8 @@ const coreTeam: DevProfile[] = [
     name: 'Shubham Pawar',
     githubUser: 'frag2win',
     githubUrl: 'https://github.com/frag2win',
-    linkedinUrl: '#',
-    portfolioUrl: '#',
+    linkedinUrl: 'https://www.linkedin.com/in/shubham-pawar2006/',
+    portfolioUrl: 'https://shubham-pawar.vercel.app/',
     role: 'Lead Developer'
   },
   {
