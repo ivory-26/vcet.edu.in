@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
+import { getFacilitiesSection } from '../../services/facilities';
 
 const mentoringProcess = [
   'During the orientation programme, first year and direct second year students are introduced to the mentoring system.',
@@ -20,6 +21,59 @@ const mentorRecordItems = [
 ];
 
 const CounselingCell: React.FC = () => {
+  const [apiData, setApiData] = useState<any>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    getFacilitiesSection<any>('counselling-cell')
+      .then((res) => mounted && setApiData(res))
+      .catch(() => mounted && setApiData(null));
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const general = useMemo(() => {
+    const source = apiData?.general ?? {};
+    return {
+      title: String(source?.title ?? '').trim() || 'About Counselling Cell',
+      description:
+        String(source?.description ?? '').trim() ||
+        "In today's fast-paced and competitive world, students face personal, social, academic, and career planning challenges. Considering this as a major concern, VCET provides professional counseling support to help students manage these challenges effectively.",
+    };
+  }, [apiData]);
+
+  const staffRows = useMemo(() => {
+    const rows = Array.isArray(apiData?.staff)
+      ? apiData.staff
+          .map((item: any) => ({
+            name: String(item?.name ?? '').trim(),
+            role: String(item?.role ?? '').trim(),
+            desc: String(item?.desc ?? '').trim(),
+          }))
+          .filter((item: any) => item.name.length > 0 || item.role.length > 0)
+      : [];
+    return rows;
+  }, [apiData]);
+
+  const mentorRows = useMemo(() => {
+    const rows = Array.isArray(apiData?.mentors)
+      ? apiData.mentors
+          .map((item: any) => String(item?.description ?? '').trim())
+          .filter(Boolean)
+      : [];
+    return rows.length > 0 ? rows : mentoringProcess;
+  }, [apiData]);
+
+  const mentorRecords = useMemo(() => {
+    const rows = Array.isArray(apiData?.mentors)
+      ? apiData.mentors
+          .map((item: any) => String(item?.title ?? '').trim())
+          .filter(Boolean)
+      : [];
+    return rows.length > 0 ? rows : mentorRecordItems;
+  }, [apiData]);
+
   return (
     <PageLayout>
       <PageBanner
@@ -60,24 +114,24 @@ const CounselingCell: React.FC = () => {
 
                 <div className="group lg:col-span-4" style={{ transitionDelay: '0.08s' }}>
                   <div className="relative h-full overflow-hidden rounded-none border border-brand-blue/30 bg-[#f1f6ff] p-5 shadow-[0_14px_28px_-22px_rgba(10,32,66,0.55)] hover:-translate-y-0.5 hover:shadow-[0_18px_34px_-18px_rgba(10,32,66,0.65)] hover:border-brand-gold/60 transition-all duration-300">
-                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#0f2d57]" />
-                    <div className="text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-[#0f2d57] mb-3 pl-2">
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-brand-navy" />
+                    <div className="text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-brand-navy mb-3 pl-2">
                       Services Format
                     </div>
                     <div className="space-y-2 text-base md:text-lg text-[#333333]" style={{ fontFamily: 'Cambria, Georgia, serif' }}>
-                      <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                      <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Individual Counseling</span>
                       </div>
-                        <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                        <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Group Counseling</span>
                       </div>
-                        <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                        <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Orientation Sessions</span>
                       </div>
-                        <div className="group/item flex items-center gap-2 rounded-none bg-[#15335c] border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#0f2746] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
+                        <div className="group/item flex items-center gap-2 rounded-none bg-brand-navy border border-brand-gold/45 px-3 py-2.5 text-[#f7f1df] transition-all duration-300 hover:translate-x-1 hover:bg-[#153f69] hover:border-brand-gold/70 hover:shadow-[0_10px_18px_-14px_rgba(10,32,66,0.75)]">
                         <span className="h-1.5 w-1.5 rounded-none bg-brand-gold shrink-0" />
                         <span>Life Skills Training</span>
                       </div>
@@ -100,7 +154,7 @@ const CounselingCell: React.FC = () => {
                 </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-display font-bold text-brand-navy">
-                About Counselling Cell
+                {general.title}
               </h2>
             </div>
 
@@ -116,19 +170,8 @@ const CounselingCell: React.FC = () => {
                 className="text-[17px] md:text-[18px] text-[#333333] leading-8 mb-4"
                 style={{ fontFamily: 'Cambria, Georgia, serif' }}
               >
-                The purpose of the counseling cell is to assist students in dealing with their
-                problems and enable them to resolve their issues independently. The vision of the
-                counseling cell is to create a positive environment within the institute and enable
-                individuals to contribute effectively to the organization and the community.
-              </p>
-              <p
-                className="text-[17px] md:text-[18px] text-[#333333] leading-8"
-                style={{ fontFamily: 'Cambria, Georgia, serif' }}
-              >
-                The counseling services are provided at both individual and group levels, including
-                orientation sessions and life skills training. The duration of counseling sessions
-                depends on the nature and complexity of the problem.
-              </p>
+                        {general.description}
+                      </p>
             </div>
           </div>
         </div>
@@ -153,7 +196,7 @@ const CounselingCell: React.FC = () => {
 
             <div className="reveal">
               <div className="relative overflow-hidden rounded-none border border-brand-blue/25 bg-[#f8fbff] shadow-[0_20px_34px_-24px_rgba(10,32,66,0.62)] hover:-translate-y-0.5 hover:shadow-[0_24px_40px_-22px_rgba(10,32,66,0.68)] hover:border-brand-gold/60 transition-all duration-300">
-                <div className="absolute inset-x-0 top-0 h-1 bg-[#0f2d57]" />
+                <div className="absolute inset-x-0 top-0 h-1 bg-brand-navy" />
                 <div className="p-6 md:p-7">
                   <div className="mb-5">
                     <div>
@@ -161,10 +204,10 @@ const CounselingCell: React.FC = () => {
                         Institute Psychologist
                       </div>
                       <h3 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-brand-navy">
-                        Mrs. Poonam Surange
+                        {staffRows[0]?.name || 'Mrs. Poonam Surange'}
                       </h3>
                       <div className="mt-3 inline-block border border-brand-gold/60 bg-[#102a4c] px-2.5 py-1.5 text-sm font-semibold text-brand-gold shadow-[0_8px_16px_-12px_rgba(10,32,66,0.65)] rounded-none">
-                        Student Counseling and Guidance
+                        {staffRows[0]?.role || 'Student Counseling and Guidance'}
                       </div>
                     </div>
                   </div>
@@ -289,7 +332,7 @@ const CounselingCell: React.FC = () => {
                 </div>
 
                 <div className="space-y-3">
-                  {mentoringProcess.map((item, idx) => (
+                  {mentorRows.map((item, idx) => (
                     <div
                       key={idx}
                       className="group rounded-none border border-brand-blue/20 bg-[#eaf1fb] px-3 py-3.5 hover:bg-[#f8fbff] hover:border-brand-gold/55 hover:shadow-[0_12px_22px_-16px_rgba(10,32,66,0.75)] transition-all duration-300"
@@ -334,7 +377,7 @@ const CounselingCell: React.FC = () => {
                 The mentor maintains records including:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {mentorRecordItems.map((item, idx) => (
+                {mentorRecords.map((item, idx) => (
                   <div
                     key={item}
                     className="group rounded-none border border-brand-blue/20 bg-[#e9f0fb] px-4 py-3.5 text-[17px] md:text-[18px] text-[#1f2f46] hover:-translate-y-0.5 hover:bg-[#f8fbff] hover:shadow-md hover:border-brand-gold/55 transition-all duration-300"

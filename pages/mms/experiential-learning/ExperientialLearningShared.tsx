@@ -28,34 +28,42 @@ export function ExperientialImageHolder({ label, imageSrc }: ExperientialImageHo
   const hookImageUrl = useMmsImageHolder('experiential', label, !!imageSrc);
   const imageUrl = imageSrc || hookImageUrl;
   const [isLoaded, setIsLoaded] = useState(false);
+  const cardHeightClass = 'h-[400px]';
+  const frameClass = 'h-[250px]';
 
   return (
-    <article className="group relative overflow-hidden rounded-none border border-brand-blue/25 bg-gradient-to-br from-slate-50 to-brand-light/45 p-[3px] shadow-[0_18px_30px_-24px_rgba(11,61,145,0.65)]">
-      <div className="relative rounded-none border border-brand-blue/20 bg-white p-4 sm:p-5">
+    <article className={`group relative overflow-hidden rounded-none border border-brand-blue/25 bg-gradient-to-br from-slate-50 to-brand-light/45 p-[3px] shadow-[0_18px_30px_-24px_rgba(11,61,145,0.65)] ${cardHeightClass}`}>
+      <div className="relative flex h-full flex-col rounded-none border border-brand-blue/20 bg-white p-4 sm:p-5">
         {imageUrl ? (
           <>
             {!isLoaded && (
-              <div className="absolute inset-x-4 inset-y-4 sm:inset-x-5 sm:inset-y-5 flex items-center justify-center bg-slate-100 animate-pulse">
+              <div className={`absolute inset-x-4 top-4 sm:inset-x-5 flex items-center justify-center bg-brand-navy animate-pulse ${frameClass}`}>
                 <ImageIcon className="h-8 w-8 text-brand-blue/20" />
               </div>
             )}
-            <img
-              src={imageUrl}
-              alt={label}
-              onLoad={() => setIsLoaded(true)}
-              className={`block min-h-[220px] w-full rounded-none object-cover transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-              referrerPolicy="no-referrer"
-            />
+            <div className={`w-full rounded-none bg-brand-navy ${frameClass}`}>
+              <img
+                src={imageUrl}
+                alt={label}
+                onLoad={() => setIsLoaded(true)}
+                className={`block h-full w-full rounded-none object-contain transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                referrerPolicy="no-referrer"
+              />
+            </div>
           </>
         ) : (
-          <div className="flex min-h-[220px] items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/35 to-slate-100 text-center">
+          <div className={`flex items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-brand-navy text-center ${frameClass}`}>
             <div className="space-y-2 px-4">
               <ImageIcon className="mx-auto h-9 w-9 text-brand-blue/65" />      
               <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-gold">Image Holder</p>
-              <p className="text-sm font-semibold text-brand-navy">{label}</p>  
             </div>
           </div>
         )}
+
+        <div className="mt-3 flex flex-1 flex-col justify-end border-t border-brand-blue/10 pt-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold">Image Title</p>
+          <p className="mt-1 text-sm font-semibold text-brand-navy">{label}</p>
+        </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-gold via-yellow-300 to-brand-gold/70" />
       <div className="pointer-events-none absolute right-0 top-0 h-8 w-8 border-r-[3px] border-t-[3px] border-brand-gold/90" />
@@ -65,9 +73,15 @@ export function ExperientialImageHolder({ label, imageSrc }: ExperientialImageHo
 
 export function ExperientialSkeletonHolder() {
   return (
-    <article className="group relative overflow-hidden rounded-none border border-brand-blue/25 bg-gradient-to-br from-slate-50 to-brand-light/45 p-[3px] shadow-[0_18px_30px_-24px_rgba(11,61,145,0.65)] animate-pulse">
-      <div className="rounded-none border border-brand-blue/20 bg-slate-100 p-4 sm:p-5 flex min-h-[260px] items-center justify-center">
-        <ImageIcon className="h-9 w-9 text-brand-blue/20" />
+    <article className="group relative h-[400px] overflow-hidden rounded-none border border-brand-blue/25 bg-gradient-to-br from-slate-50 to-brand-light/45 p-[3px] shadow-[0_18px_30px_-24px_rgba(11,61,145,0.65)] animate-pulse">
+      <div className="flex h-full flex-col rounded-none border border-brand-blue/20 bg-white p-4 sm:p-5">
+        <div className="flex h-[250px] items-center justify-center bg-brand-navy">
+          <ImageIcon className="h-9 w-9 text-brand-blue/20" />
+        </div>
+        <div className="mt-3 flex flex-1 flex-col justify-end border-t border-brand-blue/10 pt-3">
+          <div className="h-3 w-24 bg-slate-200" />
+          <div className="mt-2 h-4 w-40 bg-slate-200" />
+        </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-gold via-yellow-300 to-brand-gold/70 opacity-30" />
       <div className="pointer-events-none absolute right-0 top-0 h-8 w-8 border-r-[3px] border-t-[3px] border-brand-gold/30" />
