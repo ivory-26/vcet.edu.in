@@ -30,7 +30,7 @@ interface FacilitiesImageHolderProps {
 
 export function FacilitiesImageHolder(props: FacilitiesImageHolderProps) {
   const { label, size = 'default' } = props;
-  const minHeightClass = size === 'large' ? 'min-h-[280px] sm:min-h-[320px]' : 'min-h-[200px]';
+  const heightClass = size === 'large' ? 'h-[280px] sm:h-[320px]' : 'h-[200px] sm:h-[220px]';
   const imageUrl = props.src || props.imageSrc;
 
   return (
@@ -40,11 +40,11 @@ export function FacilitiesImageHolder(props: FacilitiesImageHolderProps) {
           <img
             src={imageUrl}
             alt={label}
-            className={`block w-full rounded-none object-cover ${minHeightClass}`}
+            className={`block w-full rounded-none object-cover ${heightClass}`}
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className={`flex ${minHeightClass} items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/30 to-slate-100 text-center`}>
+          <div className={`flex ${heightClass} items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/30 to-slate-100 text-center`}>
             <div className="space-y-2 px-4">
               <ImageIcon className="mx-auto h-9 w-9 text-brand-blue/65" />
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold">Image Holder</p>

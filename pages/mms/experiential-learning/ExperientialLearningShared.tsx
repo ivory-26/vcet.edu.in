@@ -28,6 +28,7 @@ export function ExperientialImageHolder({ label, imageSrc }: ExperientialImageHo
   const hookImageUrl = useMmsImageHolder('experiential', label, !!imageSrc);
   const imageUrl = imageSrc || hookImageUrl;
   const [isLoaded, setIsLoaded] = useState(false);
+  const heightClass = 'h-[220px] sm:h-[260px]';
 
   return (
     <article className="group relative overflow-hidden rounded-none border border-brand-blue/25 bg-gradient-to-br from-slate-50 to-brand-light/45 p-[3px] shadow-[0_18px_30px_-24px_rgba(11,61,145,0.65)]">
@@ -35,7 +36,7 @@ export function ExperientialImageHolder({ label, imageSrc }: ExperientialImageHo
         {imageUrl ? (
           <>
             {!isLoaded && (
-              <div className="absolute inset-x-4 inset-y-4 sm:inset-x-5 sm:inset-y-5 flex items-center justify-center bg-slate-100 animate-pulse">
+              <div className={`absolute inset-x-4 inset-y-4 sm:inset-x-5 sm:inset-y-5 flex items-center justify-center bg-slate-100 animate-pulse ${heightClass}`}>
                 <ImageIcon className="h-8 w-8 text-brand-blue/20" />
               </div>
             )}
@@ -43,12 +44,12 @@ export function ExperientialImageHolder({ label, imageSrc }: ExperientialImageHo
               src={imageUrl}
               alt={label}
               onLoad={() => setIsLoaded(true)}
-              className={`block min-h-[220px] w-full rounded-none object-cover transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+              className={`block w-full rounded-none object-cover transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${heightClass}`}
               referrerPolicy="no-referrer"
             />
           </>
         ) : (
-          <div className="flex min-h-[220px] items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/35 to-slate-100 text-center">
+          <div className={`flex items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/35 to-slate-100 text-center ${heightClass}`}>
             <div className="space-y-2 px-4">
               <ImageIcon className="mx-auto h-9 w-9 text-brand-blue/65" />      
               <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-gold">Image Holder</p>
@@ -66,7 +67,7 @@ export function ExperientialImageHolder({ label, imageSrc }: ExperientialImageHo
 export function ExperientialSkeletonHolder() {
   return (
     <article className="group relative overflow-hidden rounded-none border border-brand-blue/25 bg-gradient-to-br from-slate-50 to-brand-light/45 p-[3px] shadow-[0_18px_30px_-24px_rgba(11,61,145,0.65)] animate-pulse">
-      <div className="rounded-none border border-brand-blue/20 bg-slate-100 p-4 sm:p-5 flex min-h-[260px] items-center justify-center">
+      <div className="rounded-none border border-brand-blue/20 bg-slate-100 p-4 sm:p-5 flex h-[220px] sm:h-[260px] items-center justify-center">
         <ImageIcon className="h-9 w-9 text-brand-blue/20" />
       </div>
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-brand-gold via-yellow-300 to-brand-gold/70 opacity-30" />

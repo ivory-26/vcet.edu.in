@@ -15,9 +15,9 @@ import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 /* ─── Design Tokens (Sharp & Academic) ───────────────────────── */
 /* ═══════════════════════════════════════════════════════════════ */
 const C = {
-  navy: '#0B2C4A',
-  navyDk: '#071d31',
-  navyMd: '#0F3A5F',
+  navy: '#1a4b7c',
+  navyDk: '#153f69',
+  navyMd: '#245d96',
   gold: '#D4A017',
   goldLt: '#F5CC5B',
   bgPage: '#eef3fa', // Supportive Service Blue
@@ -190,9 +190,9 @@ const Library: React.FC = () => {
 
       <div ref={contentStartRef} className="flex flex-col lg:flex-row min-h-screen bg-[#eef3fa] relative">
         {/* ── 2. Side Navigation (Vertical Ribbon Style) ── */}
-        <aside className="w-full lg:w-72 bg-[#102a4c] border-b lg:border-b-0 lg:border-r border-brand-gold/30 lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] z-[40] shadow-2xl overflow-y-auto no-scrollbar">
+        <aside className="w-full lg:w-72 bg-brand-navy border-b lg:border-b-0 lg:border-r border-brand-gold/30 lg:sticky lg:top-[80px] lg:h-[calc(100vh-80px)] z-[40] shadow-2xl overflow-y-auto no-scrollbar">
           <div className="p-6 lg:p-10 flex flex-col gap-2">
-            <div className="mb-8 hidden lg:block">
+            <div className="mb-6 hidden lg:block">
               <h3 className="text-brand-gold text-[10px] font-extrabold uppercase tracking-[0.3em] mb-2">Section Menu</h3>
               <div className="w-10 h-1 bg-brand-gold" />
             </div>
@@ -202,27 +202,13 @@ const Library: React.FC = () => {
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`relative px-6 py-4 text-[11px] font-extrabold uppercase tracking-[0.15em] transition-all duration-300 min-w-max lg:min-w-0 text-left group ${
-                    activeTab === tab.key ? 'text-brand-gold' : 'text-white/60 hover:text-white'
+                  className={`relative px-4 py-3.5 text-[11px] font-extrabold uppercase tracking-[0.12em] transition-all duration-300 min-w-max lg:min-w-0 text-left group border-l-4 ${
+                    activeTab === tab.key
+                      ? 'bg-white/14 text-white border-l-brand-gold shadow-inner'
+                      : 'text-white/70 border-l-transparent hover:bg-white/10 hover:text-white hover:border-l-brand-gold/45'
                   }`}
                   style={{ fontFamily: C.body }}
                 >
-                  <div 
-                    className={`absolute inset-0 transition-all duration-500 z-0 ${
-                      activeTab === tab.key 
-                        ? 'bg-white/10 opacity-100 border-l-4 border-l-brand-gold shadow-inner' 
-                        : 'bg-white/0 opacity-0 group-hover:opacity-100 group-hover:bg-white/05 border-l-4 border-l-transparent group-hover:border-l-brand-gold/30'
-                    }`}
-                  />
-                   
-                  {activeTab === tab.key && (
-                    <motion.div 
-                      layoutId="libraryTabVerticalInd" 
-                      className="absolute left-0 top-0 bottom-0 w-1 bg-brand-gold z-20" 
-                      transition={T.spring}
-                    />
-                  )}
-                   
                   <span className="relative z-10">{tab.label}</span>
                 </button>
               ))}

@@ -49,7 +49,7 @@ const HealthFacilities: React.FC = () => {
                 Student Wellness
               </p>
               <h2
-                className="mt-3 text-3xl md:text-[2.8rem] font-display font-semibold text-[#0f2d5c]"
+                className="mt-3 text-3xl md:text-[2.8rem] font-display font-semibold text-brand-navy"
               >
                 Health Facilities
               </h2>

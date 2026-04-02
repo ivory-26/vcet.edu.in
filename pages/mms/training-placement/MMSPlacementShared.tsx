@@ -29,7 +29,7 @@ interface PlacementImageHolderProps {
 }
 
 export function PlacementImageHolder({ label, size = 'default', imageSrc, src }: PlacementImageHolderProps) {
-  const minHeightClass = size === 'large' ? 'min-h-[300px]' : 'min-h-[220px]';  
+  const heightClass = size === 'large' ? 'h-[300px] sm:h-[340px]' : 'h-[220px] sm:h-[240px]';
   const activeSrc = imageSrc || src;
   const hookImageUrl = useMmsImageHolder('placement', label, !!activeSrc);       
   const imageUrl = activeSrc || hookImageUrl;
@@ -41,7 +41,7 @@ export function PlacementImageHolder({ label, size = 'default', imageSrc, src }:
         {imageUrl ? (
           <>
             {!isLoaded && (
-              <div className={`absolute inset-x-4 inset-y-4 flex items-center justify-center bg-slate-100 animate-pulse ${minHeightClass}`}>
+              <div className={`absolute inset-x-4 inset-y-4 flex items-center justify-center bg-slate-100 animate-pulse ${heightClass}`}>
                 <ImageIcon className="h-8 w-8 text-brand-blue/20" />
               </div>
             )}
@@ -49,12 +49,12 @@ export function PlacementImageHolder({ label, size = 'default', imageSrc, src }:
               src={imageUrl}
               alt={label}
               onLoad={() => setIsLoaded(true)}
-              className={`block w-full rounded-none object-cover transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${minHeightClass}`}
+              className={`block w-full rounded-none object-cover transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${heightClass}`}
               referrerPolicy="no-referrer"
             />
           </>
         ) : (
-          <div className={`flex ${minHeightClass} items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/30 to-slate-100 text-center`}>
+          <div className={`flex ${heightClass} items-center justify-center rounded-none border-2 border-dashed border-brand-blue/30 bg-gradient-to-br from-brand-light/30 to-slate-100 text-center`}>
             <div className="space-y-2 px-4">
               <ImageIcon className="mx-auto h-9 w-9 text-brand-blue/65" />
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold">Image Holder</p>
