@@ -68,13 +68,6 @@ const fallbackMembers = [
     contactNo: '--',
     address: 'Student T.E.(COMP)',
   },
-  {
-    post: 'Member',
-    name: 'Mrs.Anjali Dilip Vartak',
-    email: 'anjali.vartak@vcet.edu.in',
-    contactNo: '--',
-    address: 'Swadhar (NGO)',
-  },
 ];
 
 const InternalComplaint: React.FC = () => {

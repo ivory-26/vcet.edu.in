@@ -329,6 +329,9 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
         setPayload({
           responsibilities: res.data?.responsibilities || [],
           objectives: res.data?.objectives || [],
+          activities: res.data?.activities || [],
+          aboutPoints: res.data?.aboutPoints || [],
+          initiatives: res.data?.initiatives || [],
           guidelines: res.data?.guidelines || [],
           members: res.data?.members || [],
           reports: res.data?.reports || [],
@@ -402,6 +405,52 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
           </SectionCard>
         )}
 
+        {slug === 'equal-opportunity' && (
+          <>
+            <SectionCard title="Committee Objectives" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}>
+              <ListManager
+                title="Objective"
+                items={payload.objectives || []}
+                onChange={items => setPayload({ ...payload, objectives: items })}
+                maxItems={6}
+                charLimit={[50, 150]}
+              />
+            </SectionCard>
+            <SectionCard title="Activities & Initiatives" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>}>
+              <ListManager
+                title="Activity"
+                items={payload.activities || []}
+                onChange={items => setPayload({ ...payload, activities: items })}
+                maxItems={10}
+                charLimit={[30, 200]}
+              />
+            </SectionCard>
+          </>
+        )}
+
+        {slug === 'sedg' && (
+          <>
+            <SectionCard title="Focus Areas" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5l7 7-7 7M4 5l7 7-7 7" /></svg>}>
+              <ListManager
+                title="Focus Area"
+                items={payload.aboutPoints || []}
+                onChange={items => setPayload({ ...payload, aboutPoints: items })}
+                maxItems={6}
+                charLimit={[50, 150]}
+              />
+            </SectionCard>
+            <SectionCard title="Initiatives" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}>
+              <ListManager
+                title="Initiative"
+                items={payload.initiatives || []}
+                onChange={items => setPayload({ ...payload, initiatives: items })}
+                maxItems={10}
+                charLimit={[30, 200]}
+              />
+            </SectionCard>
+          </>
+        )}
+
         {/* SGRC Guidelines */}
         {slug === 'sgrc' && (
           <SectionCard title="Institutional Guidelines" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4.253 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>}>
@@ -449,7 +498,7 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
               items={payload.documents || []} 
               onChange={docs => setPayload({...payload, documents: docs})} 
               maxItems={slug === 'sedg' ? 1 : 3}
-              showUrlField={slug === 'equal-opportunity'}
+              showUrlField
             />
           </SectionCard>
         )}

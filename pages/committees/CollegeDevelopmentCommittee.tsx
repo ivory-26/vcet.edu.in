@@ -16,6 +16,13 @@ const fallbackResponsibilities = [
 const fallbackMembers = [
   { post: 'Chairman', name: 'Shri. Vikas Vartak' },
   { post: 'Secretary', name: 'Shri. M. N. Mohol' },
+  { post: 'Member', name: 'Shri. Hasmukhbhai Shah' },
+  { post: 'Member', name: 'Shri. Babansheth Naik' },
+  { post: 'Member', name: 'Shri. Amit Vartak' },
+  { post: 'Member', name: 'Dr. Thaksen Parvat' },
+  { post: 'IQAC Coordinator', name: 'Dr. Megha Trivedi' },
+  { post: 'Member (Alumni Nominee)', name: 'Ms. Aishwarya Mohol' },
+  { post: 'Member (Teacher Representative)', name: 'Dr. Amrita Ruperee' },
   { post: 'Member Secretary', name: 'Dr. Rakesh Himte' },
 ];
 

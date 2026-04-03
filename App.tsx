@@ -92,7 +92,6 @@ const CENTURION = lazy(() => import('./pages/student-life/CENTURION'));
 const AIRNOVA = lazy(() => import('./pages/student-life/AIRNOVA'));
 const EMECHTO = lazy(() => import('./pages/student-life/EMECHTO'));
 const NSDC = lazy(() => import('./pages/student-life/NSDC'));
-const CareerAtVCET = lazy(() => import('./pages/student-life/CareerAtVCET'));
 const Training = lazy(() => import('./pages/student-life/Training'));
 const Placement = lazy(() => import('./pages/student-life/Placement'));
 const ECell = lazy(() => import('./pages/student-life/ECell'));
@@ -409,7 +408,6 @@ function App() {
             <Route path="/differently-abled" element={<DifferentlyAbled />} />
 
             {/* Student Life */}
-            <Route path="/career-at-vcet" element={<CareerAtVCET />} />
             <Route path="/students-council" element={<Navigate to="/" replace />} />
             <Route path="/cultural-committee" element={<CulturalCommittee />} />
             <Route path="/sports-committee" element={<SportsCommittee />} />

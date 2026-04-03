@@ -4,7 +4,7 @@ import PageBanner from '../../components/PageBanner';
 import { Accessibility, Heart, BookOpen, Users, Target, HandHeart, GraduationCap, Lightbulb } from 'lucide-react';
 import { getCommitteeSection } from '../../services/committees';
 
-const objectives = [
+const fallbackObjectives = [
   {
     icon: Accessibility,
     title: 'Accessibility',
@@ -37,7 +37,7 @@ const objectives = [
   },
 ];
 
-const activities = [
+const fallbackActivities = [
   'Orientation programs for newly admitted students from disadvantaged backgrounds',
   'Providing assistive devices and technology for differently-abled students',
   'Organizing sensitization workshops for faculty and staff',
@@ -50,10 +50,31 @@ const activities = [
 ];
 
 type DocumentItem = { title: string; url: string };
+type ObjectiveCard = { icon: React.ComponentType<any>; title: string; description: string };
 
 const fallbackDocuments: DocumentItem[] = [
   { title: 'Equal Opportunity Cell Policy', url: '#' },
 ];
+
+const objectiveIconMap: React.ComponentType<any>[] = [
+  Accessibility,
+  Heart,
+  BookOpen,
+  HandHeart,
+  GraduationCap,
+  Lightbulb,
+];
+
+const getObjectiveTitle = (text: string, index: number): string => {
+  const normalized = text.toLowerCase();
+  if (normalized.includes('accessib')) return 'Accessibility';
+  if (normalized.includes('inclusive')) return 'Inclusive Environment';
+  if (normalized.includes('academic')) return 'Academic Support';
+  if (normalized.includes('scholarship') || normalized.includes('financial')) return 'Scholarship Facilitation';
+  if (normalized.includes('career') || normalized.includes('placement')) return 'Career Guidance';
+  if (normalized.includes('skill') || normalized.includes('training')) return 'Skill Development';
+  return `Objective ${index + 1}`;
+};
 
 const EqualOpportunity: React.FC = () => {
   const [apiData, setApiData] = useState<Record<string, any> | null>(null);
@@ -81,6 +102,23 @@ const EqualOpportunity: React.FC = () => {
       }))
       .filter((row: DocumentItem) => row.title || row.url);
     return mapped.length > 0 ? mapped : fallbackDocuments;
+  }, [apiData]);
+
+  const objectives = useMemo<ObjectiveCard[]>(() => {
+    const source = Array.isArray(apiData?.objectives) ? apiData.objectives : [];
+    const mapped = source.map((item: unknown) => String(item ?? '').trim()).filter(Boolean);
+    const finalItems = mapped.length > 0 ? mapped : fallbackObjectives.map((item) => item.description);
+    return finalItems.map((description, index) => ({
+      description,
+      title: getObjectiveTitle(description, index),
+      icon: objectiveIconMap[index % objectiveIconMap.length],
+    }));
+  }, [apiData]);
+
+  const activities = useMemo<string[]>(() => {
+    const source = Array.isArray(apiData?.activities) ? apiData.activities : [];
+    const mapped = source.map((item: unknown) => String(item ?? '').trim()).filter(Boolean);
+    return mapped.length > 0 ? mapped : fallbackActivities;
   }, [apiData]);
 
   return (

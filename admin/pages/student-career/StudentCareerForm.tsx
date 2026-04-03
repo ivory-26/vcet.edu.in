@@ -180,6 +180,9 @@ const SLUG_NAMES: Record<string, string> = {
   'airnova': 'Club Airnova',
   'emechto': 'Club Emechto',
   'external-projects': 'Ethan / Solecthon',
+  'training': 'Training',
+  'placement': 'Placement',
+  'career-at-vcet': 'Career @ VCET',
 };
 
 const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) => {
@@ -999,6 +1002,40 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
 
 
 
+
+      case 'career-at-vcet':
+        return (
+          <div className="space-y-8">
+            <SectionCard title="Recruitment PDF" icon="📄">
+              <p className="text-xs text-slate-500 font-semibold">
+                This is the direct PDF used for the "Career @ VCET" dropdown item.
+              </p>
+              <div>
+                <label className={labelBase}>Recruitment PDF URL</label>
+                <input
+                  id="studentcareerform-career-pdf"
+                  name="studentcareerform-career-pdf"
+                  aria-label="career recruitment pdf url"
+                  value={payload.recruitmentPdf || ''}
+                  onChange={e => setPayload({...payload, recruitmentPdf: e.target.value})}
+                  className={inputBase}
+                  maxLength={600}
+                  placeholder="https://vcet.edu.in/wp-content/uploads/...pdf"
+                />
+              </div>
+              <div>
+                <label className={labelBase}>Upload PDF (optional)</label>
+                <MediaUploadButton
+                  value={payload.recruitmentPdf}
+                  previewUrl={payload.recruitmentPdf_preview}
+                  onChange={(v,p) => setPayload({...payload, recruitmentPdf: v, recruitmentPdf_preview: p})}
+                  accept=".pdf,application/pdf"
+                  label="Upload Recruitment PDF"
+                />
+              </div>
+            </SectionCard>
+          </div>
+        );
 
       default:
         return <div className="p-20 text-center font-black text-slate-300 uppercase tracking-[0.4em] text-sm">Selection Data Loading...</div>;

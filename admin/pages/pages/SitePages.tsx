@@ -217,7 +217,7 @@ const studentCareerEditables = [
   },
   {
     title: "Career",
-    description: "Manage Career @ VCET page content including hero, openings, and hiring process.",
+    description: "Manage Career @ VCET recruitment PDF link.",
     links: [
       { label: "Career @ VCET", section: "career-at-vcet" },
     ]

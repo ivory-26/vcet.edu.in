@@ -23,10 +23,6 @@ const fallbackMembers: Member[] = [
   { role: 'Member', name: 'Dr. Vikas Gupta' },
   { role: 'Member', name: 'Dr. Uday Aswalekar' },
   { role: 'Member', name: 'Dr. Ajay Radke' },
-  { role: 'Member', name: 'Mr. Parag Patil' },
-  { role: 'Member', name: 'Dr. Santosh Chapaneri (Alumni)' },
-  { role: 'Member', name: 'Mr. Santosh Tamhane (Alumni)' },
-  { role: 'Member', name: 'Student Representative' },
 ];
 
 const fallbackMomReports: PdfReport[] = [

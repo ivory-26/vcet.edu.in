@@ -4,7 +4,7 @@ import PageBanner from '../../components/PageBanner';
 import { Heart, Users, BookOpen, HandHeart, Target, Lightbulb, GraduationCap, Award } from 'lucide-react';
 import { getCommitteeSection } from '../../services/committees';
 
-const aboutPoints = [
+const fallbackAboutPoints = [
   {
     icon: Heart,
     title: 'Student Welfare',
@@ -37,7 +37,7 @@ const aboutPoints = [
   },
 ];
 
-const initiatives = [
+const fallbackInitiatives = [
   'Identifying and enrolling students from SEDG backgrounds during admissions',
   'Providing free study materials, textbooks, and access to digital learning resources',
   'Organizing bridge courses and remedial classes in core subjects',
@@ -51,10 +51,31 @@ const initiatives = [
 ];
 
 type DocumentItem = { title: string; url: string };
+type AboutCard = { icon: React.ComponentType<any>; title: string; description: string };
 
 const fallbackDocuments: DocumentItem[] = [
   { title: 'SEDG Cell Policy', url: '#' },
 ];
+
+const aboutIconMap: React.ComponentType<any>[] = [
+  Heart,
+  BookOpen,
+  HandHeart,
+  GraduationCap,
+  Lightbulb,
+  Target,
+];
+
+const getAboutTitle = (text: string, index: number): string => {
+  const normalized = text.toLowerCase();
+  if (normalized.includes('holistic') || normalized.includes('welfare')) return 'Student Welfare';
+  if (normalized.includes('academic') || normalized.includes('remedial')) return 'Academic Support';
+  if (normalized.includes('scholarship') || normalized.includes('financial')) return 'Financial Assistance';
+  if (normalized.includes('career') || normalized.includes('placement')) return 'Career Guidance';
+  if (normalized.includes('workshop') || normalized.includes('growth')) return 'Empowerment Programs';
+  if (normalized.includes('disparity') || normalized.includes('gap')) return 'Bridging the Gap';
+  return `Focus Area ${index + 1}`;
+};
 
 const SEDGCell: React.FC = () => {
   const [apiData, setApiData] = useState<Record<string, any> | null>(null);
@@ -82,6 +103,23 @@ const SEDGCell: React.FC = () => {
       }))
       .filter((row: DocumentItem) => row.title || row.url);
     return mapped.length > 0 ? mapped : fallbackDocuments;
+  }, [apiData]);
+
+  const aboutPoints = useMemo<AboutCard[]>(() => {
+    const source = Array.isArray(apiData?.aboutPoints) ? apiData.aboutPoints : [];
+    const mapped = source.map((item: unknown) => String(item ?? '').trim()).filter(Boolean);
+    const finalItems = mapped.length > 0 ? mapped : fallbackAboutPoints.map((item) => item.description);
+    return finalItems.map((description, index) => ({
+      description,
+      title: getAboutTitle(description, index),
+      icon: aboutIconMap[index % aboutIconMap.length],
+    }));
+  }, [apiData]);
+
+  const initiatives = useMemo<string[]>(() => {
+    const source = Array.isArray(apiData?.initiatives) ? apiData.initiatives : [];
+    const mapped = source.map((item: unknown) => String(item ?? '').trim()).filter(Boolean);
+    return mapped.length > 0 ? mapped : fallbackInitiatives;
   }, [apiData]);
 
   return (
