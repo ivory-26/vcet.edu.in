@@ -4,6 +4,7 @@ import { bestPracticeUploadsApi } from '../../api/bestPracticeUploads';
 import { naacScoreUploadsApi } from '../../api/naacScoreUploads';
 import type { BestPracticeUpload, NaacScoreUpload, SssReportUpload } from '../../types';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import AdminFormSection from '../../components/AdminFormSection';
 import { SortableListContext } from '../../components/SortableList';
 
 /* ── Toast ─────────────────────────────────────────────────────────────────── */
@@ -20,17 +21,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 };
 
 /* ── UI Primitives ──────────────────────────────────────────────────────────── */
-const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
-    <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-      <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
-      <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
-    </div>
-    <div className="p-8 space-y-6">{children}</div>
-  </div>
-);
-
-const inputBase = 'w-full bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#2563EB] rounded-2xl px-5 py-4 text-sm font-bold transition-all outline-none';
+const inputBase = 'w-full bg-slate-50 border-1 border-slate-200 focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 rounded-2xl px-5 py-4 text-sm font-bold transition-all outline-none text-slate-700';
 const labelBase = 'block text-xs font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1';
 
 /* ── PDF Upload Button ──────────────────────────────────────────────────────
@@ -488,6 +479,7 @@ const NaacForm: React.FC<NaacFormProps> = ({ slug, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [activeAccordionSection, setActiveAccordionSection] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -700,123 +692,123 @@ const NaacForm: React.FC<NaacFormProps> = ({ slug, onBack }) => {
     switch (slug) {
       case 'sss-report':
         return (
-          <div className="space-y-8">
-            <SectionCard title="SSS Report Upload" icon="📄">
+          <div className="space-y-4">
+            <AdminFormSection title="SSS Report Configuration" icon="📄" isOpen={activeAccordionSection === 'sss'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'sss' ? null : 'sss')}>
               <SSSPdfUploadManager
                 items={payload.sssUploads || []}
                 onChange={val => setPayload({ ...payload, sssUploads: val })}
               />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       /* ─── SSR Cycle 1: Title + PDF per row ─── */
       case 'ssr-cycle-1':
         return (
-          <SectionCard title="SSR Cycle 1 — Documents & Photos" icon="🏆">
+          <AdminFormSection title="Cycle 1 Documentation" icon="🏆" isOpen={activeAccordionSection === 'ssr1'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'ssr1' ? null : 'ssr1')}>
             <TableWithPdfManager
               items={payload.metrics}
-              addLabel="Add Entry"
+              addLabel="Add Document Label"
               textFields={[
                 { key: 'title', label: 'Title / Photo Name', placeholder: 'e.g. Front View of College', maxLength: 150 },
               ]}
               onChange={val => setPayload({ ...payload, metrics: val })}
             />
-          </SectionCard>
+          </AdminFormSection>
         );
 
       /* ─── SSR Cycle 2: Extended Profile (nested) + QIF + DVV ─── */
       case 'ssr-cycle-2':
         return (
-          <div className="space-y-8">
-
+          <div className="space-y-4">
             {/* 1. Extended Profile — category with multiple ID+PDF entries */}
-            <SectionCard title="1. Extended Profile" icon="📊">
+            <AdminFormSection title="1. Extended Profile" icon="📊" isOpen={activeAccordionSection === 'ext-profile'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'ext-profile' ? null : 'ext-profile')}>
               <NestedCategoryManager
                 items={payload.extendedProfile}
-                addCategoryLabel="+ Add Category (e.g. 1. Students)"
-                addEntryLabel="+ Add Entry (Extended ID + PDF)"
-                categoryTitle="Category Label (e.g. 1. Students)"
-                categoryPlaceholder="e.g. 1. Students / 2. Teachers / 3. Institution"
+                addCategoryLabel="+ Add New Category"
+                addEntryLabel="+ Add Extended Entry"
+                categoryTitle="Profile Category"
+                categoryPlaceholder="e.g. 1. Students / 2. Teachers"
                 idLabel="Extended ID"
-                descLabel="Extended Profile (Description)"
+                descLabel="Profile Metric Description"
                 onChange={val => setPayload({ ...payload, extendedProfile: val })}
               />
-            </SectionCard>
+            </AdminFormSection>
 
             {/* 2. QIF */}
-            <SectionCard title="2. QIF — Quality Indicator Framework" icon="📈">
+            <AdminFormSection title="2. Quality Indicator Framework (QIF)" icon="📈" isOpen={activeAccordionSection === 'qif'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'qif' ? null : 'qif')}>
               <NestedCategoryManager
                 items={payload.qif}
-                addCategoryLabel="+ Add Criteria (e.g. Criteria 1)"
-                addEntryLabel="+ Add Sub-Criteria"
-                categoryTitle="Criteria Label (e.g. Criteria 1: Curricular Aspects)"
-                categoryPlaceholder="e.g. Criteria 1: Curriculum Aspect"
-                idLabel="Sub-Criteria"
-                descLabel="Criteria Heading"
+                addCategoryLabel="+ Add Strategic Criteria"
+                addEntryLabel="+ Add Sub-Criteria Item"
+                categoryTitle="Criteria Designation"
+                categoryPlaceholder="e.g. Criteria 1: Curricular Aspects"
+                idLabel="Sub-Metric"
+                descLabel="Framework Heading"
                 onChange={val => setPayload({ ...payload, qif: val })}
               />
-            </SectionCard>
+            </AdminFormSection>
 
             {/* 3. DVV Clarifications */}
-            <SectionCard title="3. DVV Clarifications" icon="⚖️">
+            <AdminFormSection title="3. DVV Clarifications" icon="⚖️" isOpen={activeAccordionSection === 'dvv'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'dvv' ? null : 'dvv')}>
+              <div className="space-y-10">
+                <div>
+                  <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-6 px-1">
+                    HEI Response to DVV Findings — Extended Profile
+                  </p>
+                  <NestedCategoryManager
+                    items={payload.dvvExtended}
+                    addCategoryLabel="+ Add Response Category"
+                    addEntryLabel="+ Add Extended Row"
+                    categoryTitle="Clarification Category"
+                    idLabel="Extended ID"
+                    descLabel="Profile Description"
+                    onChange={val => setPayload({ ...payload, dvvExtended: val })}
+                  />
+                </div>
 
-              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
-                HEI Response to DVV Findings — Extended Profile
-              </p>
-              <NestedCategoryManager
-                items={payload.dvvExtended}
-                addCategoryLabel="+ Add DVV Category"
-                addEntryLabel="+ Add Extended Entry"
-                categoryTitle="Category Label (e.g. 1. Students)"
-                categoryPlaceholder="e.g. 1. Students"
-                idLabel="Extended ID"
-                descLabel="Extended Profile (Description)"
-                onChange={val => setPayload({ ...payload, dvvExtended: val })}
-              />
-
-              <div className="border-t border-slate-100 my-8" />
-
-              <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">
-                HEI Response to DVV Findings — Metric
-              </p>
-              <NestedCategoryManager
-                items={payload.dvvMetric}
-                addCategoryLabel="+ Add DVV Metric Criteria"
-                addEntryLabel="+ Add Metric Row"
-                categoryTitle="Criteria Label (e.g. Criteria 1)"
-                categoryPlaceholder="e.g. Criteria 1"
-                idLabel="Sub-Criteria"
-                descLabel="Criteria Heading"
-                onChange={val => setPayload({ ...payload, dvvMetric: val })}
-              />
-            </SectionCard>
+                <div className="pt-8 border-t border-slate-100">
+                  <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-6 px-1">
+                    HEI Response to DVV Findings — Metric
+                  </p>
+                  <NestedCategoryManager
+                    items={payload.dvvMetric}
+                    addCategoryLabel="+ Add Metric Criteria"
+                    addEntryLabel="+ Add Specific Metric Row"
+                    categoryTitle="Metric Designation"
+                    idLabel="Sub-Criteria"
+                    descLabel="Criteria Sub-Heading"
+                    onChange={val => setPayload({ ...payload, dvvMetric: val })}
+                  />
+                </div>
+              </div>
+            </AdminFormSection>
           </div>
         );
 
       /* ─── Best Practices ─── */
       case 'best-practices':
         return (
-          <div className="space-y-8">
-            <SectionCard title="Best Practices & Institutional Distinctiveness Upload" icon="📄">
+          <div className="space-y-4">
+            <AdminFormSection title="Institutional Distinctiveness" icon="🏆" isOpen={activeAccordionSection === 'best'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'best' ? null : 'best')}>
               <SSSPdfUploadManager
                 items={payload.bestPracticeUploads || []}
                 onChange={val => setPayload({ ...payload, bestPracticeUploads: val })}
               />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       /* ─── NAAC Accreditation Score: Single PDF upload ─── */
       case 'naac-score':
         return (
-          <div className="space-y-8">
-            <SectionCard title="NAAC Score Upload" icon="📄">
+          <div className="space-y-4">
+            <AdminFormSection title="NAAC Accreditation Score" icon="📊" isOpen={activeAccordionSection === 'score'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'score' ? null : 'score')}>
               <SSSPdfUploadManager
                 items={payload.naacScoreUploads || []}
                 onChange={val => setPayload({ ...payload, naacScoreUploads: val })}
               />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 

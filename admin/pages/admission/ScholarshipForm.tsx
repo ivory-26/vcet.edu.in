@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, Settings, List } from 'lucide-react';
 import { admissionsApi } from '../../api/admissions';
 import type { AdmissionItem, AdmissionItemPayload, AdmissionSection, AdmissionSectionPayload } from '../../types';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import AdminFormSection from '../../components/AdminFormSection';
 
 interface ScholarshipFormProps {
   onBack?: () => void;
@@ -151,6 +152,9 @@ const ScholarshipForm: React.FC<ScholarshipFormProps> = ({ onBack }) => {
   const pointerClientYRef = useRef(0);
   const autoScrollVelocityRef = useRef(0);
   const autoScrollFrameRef = useRef<number | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>('settings');
+
+  const toggleSection = (id: string) => setActiveSection(prev => prev === id ? null : id);
 
   const loadScholarships = async () => {
     setLoading(true);
@@ -526,55 +530,57 @@ const ScholarshipForm: React.FC<ScholarshipFormProps> = ({ onBack }) => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="overflow-hidden rounded-4xl border border-slate-100 bg-white shadow-lg shadow-slate-200/40">
-          <div className="border-b border-slate-100 px-8 py-5">
-            <h2 className="text-sm font-extrabold uppercase tracking-[0.22em] text-slate-700">Section Settings</h2>
-          </div>
-          <div className="space-y-6 p-8">
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className={labelBase}>Navigation Title</label>
-                <input id="scholarshipform-1" name="scholarshipform-1" aria-label="scholarshipform field"
-                  className={inputBase}
-                  value={form.navigation_title}
-                  onChange={(event) => setForm((current) => (current ? { ...current, navigation_title: event.target.value } : current))}
-                />
-              </div>
-              <div>
-                <label className={labelBase}>Page Title</label>
-                <input id="scholarshipform-2" name="scholarshipform-2" aria-label="scholarshipform field"
-                  className={inputBase}
-                  value={form.title}
-                  onChange={(event) => setForm((current) => (current ? { ...current, title: event.target.value } : current))}
-                />
-              </div>
-              <div>
-                <label className={labelBase}>Summary</label>
-                <input id="scholarshipform-3" name="scholarshipform-3" aria-label="scholarshipform field"
-                  className={inputBase}
-                  value={form.summary}
-                  onChange={(event) => setForm((current) => (current ? { ...current, summary: event.target.value } : current))}
-                />
-              </div>
-              <div>
-                <label className={labelBase}>Sort Order</label>
-                <input id="scholarshipform-4" name="scholarshipform-4" aria-label="scholarshipform field"
-                  className={inputBase}
-                  type="number"
-                  min="0"
-                  value={form.sort_order}
-                  onChange={(event) => setForm((current) => (current ? { ...current, sort_order: event.target.value } : current))}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className={labelBase}>Description</label>
-                <textarea id="scholarshipform-textarea-1" name="scholarshipform-textarea-1" aria-label="scholarshipform textarea field"
-                  className={`${inputBase} min-h-[110px] resize-y`}
-                  value={form.description}
-                  onChange={(event) => setForm((current) => (current ? { ...current, description: event.target.value } : current))}
-                />
-              </div>
-              <div className="md:col-span-2">
+        <AdminFormSection
+          title="Section Settings"
+          icon={<Settings className="w-5 h-5" />}
+          isOpen={activeSection === 'settings'}
+          onToggle={() => toggleSection('settings')}
+        >
+          <div className="grid gap-5 md:grid-cols-2">
+            <div>
+              <label className={labelBase}>Navigation Title</label>
+              <input id="scholarshipform-1" name="scholarshipform-1" aria-label="scholarshipform field"
+                className={inputBase}
+                value={form.navigation_title}
+                onChange={(event) => setForm((current) => (current ? { ...current, navigation_title: event.target.value } : current))}
+              />
+            </div>
+            <div>
+              <label className={labelBase}>Page Title</label>
+              <input id="scholarshipform-2" name="scholarshipform-2" aria-label="scholarshipform field"
+                className={inputBase}
+                value={form.title}
+                onChange={(event) => setForm((current) => (current ? { ...current, title: event.target.value } : current))}
+              />
+            </div>
+            <div>
+              <label className={labelBase}>Summary</label>
+              <input id="scholarshipform-3" name="scholarshipform-3" aria-label="scholarshipform field"
+                className={inputBase}
+                value={form.summary}
+                onChange={(event) => setForm((current) => (current ? { ...current, summary: event.target.value } : current))}
+              />
+            </div>
+            <div>
+              <label className={labelBase}>Sort Order</label>
+              <input id="scholarshipform-4" name="scholarshipform-4" aria-label="scholarshipform field"
+                className={inputBase}
+                type="number"
+                min="0"
+                value={form.sort_order}
+                onChange={(event) => setForm((current) => (current ? { ...current, sort_order: event.target.value } : current))}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className={labelBase}>Description</label>
+              <textarea id="scholarshipform-textarea-1" name="scholarshipform-textarea-1" aria-label="scholarshipform textarea field"
+                className={`${inputBase} min-h-[110px] resize-y`}
+                value={form.description}
+                onChange={(event) => setForm((current) => (current ? { ...current, description: event.target.value } : current))}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4">
                 <label className="inline-flex items-center gap-3 text-sm font-semibold text-slate-700">
                   <input id="scholarshipform-5" name="scholarshipform-5" aria-label="scholarshipform field"
                     type="checkbox"
@@ -586,20 +592,25 @@ const ScholarshipForm: React.FC<ScholarshipFormProps> = ({ onBack }) => {
               </div>
             </div>
           </div>
-        </div>
+        </AdminFormSection>
 
-        <div className="overflow-hidden rounded-4xl border border-slate-100 bg-white shadow-lg shadow-slate-200/40">
-          <div className="flex items-center justify-between border-b border-slate-100 px-8 py-5">
-            <h2 className="text-sm font-extrabold uppercase tracking-[0.22em] text-slate-700">Scholarship Items</h2>
-            <button
-              type="button"
-              onClick={addItem}
-              className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-800"
-            >
-              Add Scholarship
-            </button>
-          </div>
-          <div className="space-y-5 p-8">
+        <AdminFormSection
+          title="Scholarship Items"
+          icon={<List className="w-5 h-5" />}
+          isOpen={activeSection === 'items'}
+          onToggle={() => toggleSection('items')}
+        >
+          <div className="space-y-5">
+            <div className="flex justify-end mb-4">
+              <button
+                type="button"
+                onClick={addItem}
+                className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white transition hover:bg-slate-800"
+              >
+                Add Scholarship
+              </button>
+            </div>
+
             {items.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-slate-200 px-5 py-8 text-center text-sm font-semibold text-slate-400">
                 No scholarships added yet.
@@ -714,7 +725,7 @@ const ScholarshipForm: React.FC<ScholarshipFormProps> = ({ onBack }) => {
               })
             )}
           </div>
-        </div>
+        </AdminFormSection>
 
 
       </form>

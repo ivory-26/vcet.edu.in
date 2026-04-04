@@ -7,6 +7,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useListSync } from '../../hooks/useListSync';
+import AdminFormSection from '../../components/AdminFormSection';
 
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
   useEffect(() => {
@@ -26,18 +27,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
   );
 };
 
-const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode; subtitle?: string }> = ({ title, icon, children, subtitle }) => (
-  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
-    <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between gap-3 flex-wrap">
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
-        <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
-      </div>
-      {subtitle && <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">{subtitle}</p>}
-    </div>
-    <div className="p-8 space-y-6">{children}</div>
-  </div>
-);
+
 
 const inputBase = 'w-full bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#2563EB] rounded-2xl px-5 py-3.5 text-sm font-bold transition-all outline-none';
 const labelBase = 'block text-xs font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1';
@@ -675,6 +665,30 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  // Initialize first section as open when data is loaded/slug changed
+  useEffect(() => {
+    setActiveSection(null); // Reset first
+  }, [slug]);
+
+  useEffect(() => {
+    if (!loading && !activeSection) {
+      // Set default open section based on slug
+      if (slug === 'research-intro') setActiveSection('hub-cards');
+      else if (slug === 'funded-research') setActiveSection('funding-rows');
+      else if (slug === 'publications') setActiveSection('books');
+      else if (slug === 'patents') setActiveSection('patents-list');
+      else if (slug === 'consultancy') setActiveSection('revenue');
+      else if (slug === 'research-facility') setActiveSection('facilities-list');
+      else if (slug === 'iic') setActiveSection('achievements');
+      else if (slug === 'nirf') setActiveSection('nirf-cards');
+      else if (slug === 'downloads') setActiveSection('top-buttons');
+      else if (slug === 'research-conventions' || slug === 'research-policy') setActiveSection('documents-list');
+    }
+  }, [loading, slug, activeSection]);
+
+  const toggleSection = (id: string) => setActiveSection(prev => prev === id ? null : id);
 
   useEffect(() => {
     setLoading(true);
@@ -722,7 +736,13 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
       case 'research-intro':
         return (
           <div className="space-y-8">
-            <SectionCard title="R&D Hub Cards" icon="🧭" subtitle="Exactly 4 cards">
+            <AdminFormSection 
+              title="R&D Hub Cards" 
+              icon="🧭" 
+              subtitle="Exactly 4 cards"
+              isOpen={activeSection === 'hub-cards'}
+              onToggle={() => toggleSection('hub-cards')}
+            >
               <TableManager
                 title="Hub Cards"
                 items={payload.hubCards}
@@ -733,9 +753,15 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'description', label: 'Card Description', max: 150, type: 'textarea', placeholder: 'Card description' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Objectives" icon="🎯" subtitle="Max 6 items">
+            <AdminFormSection 
+              title="Objectives" 
+              icon="🎯" 
+              subtitle="Max 6 items"
+              isOpen={activeSection === 'objectives'}
+              onToggle={() => toggleSection('objectives')}
+            >
               <TableManager
                 title="Objective Items"
                 items={(payload.objectives || []).map((text: string) => ({ text }))}
@@ -743,34 +769,64 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                 onChange={v => update('objectives', v.map((r: any) => r.text))}
                 fields={[{ key: 'text', label: 'Objective Text', max: 150, type: 'textarea', placeholder: 'Objective statement' }]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="PhD Dataset - Pursuing" icon="👨‍🎓" subtitle="Max 10 rows">
+            <AdminFormSection 
+              title="PhD Dataset - Pursuing" 
+              icon="👨‍🎓" 
+              subtitle="Max 10 rows"
+              isOpen={activeSection === 'phd-pursuing'}
+              onToggle={() => toggleSection('phd-pursuing')}
+            >
               <PhDManager title="Pursuing" items={payload.phdPursuing} maxItems={10} onChange={v => update('phdPursuing', v)} />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="PhD Dataset - Holders" icon="🎓" subtitle="Max 10 rows">
+            <AdminFormSection 
+              title="PhD Dataset - Holders" 
+              icon="🎓" 
+              subtitle="Max 10 rows"
+              isOpen={activeSection === 'phd-holders'}
+              onToggle={() => toggleSection('phd-holders')}
+            >
               <PhDManager title="Holders" items={payload.phdHolders} maxItems={10} onChange={v => update('phdHolders', v)} />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Dean of Research" icon="🧑‍🏫" subtitle="Exactly 1 card">
+            <AdminFormSection 
+              title="Dean of Research" 
+              icon="🧑‍🏫" 
+              subtitle="Exactly 1 card"
+              isOpen={activeSection === 'dean'}
+              onToggle={() => toggleSection('dean')}
+            >
               <div className="grid md:grid-cols-2 gap-6">
                 <LimitedInput label="Dean Name" value={payload.dean?.name || ''} max={40} onChange={v => update('dean', { ...payload.dean, name: v })} />
                 <LimitedInput label="Designation" value={payload.dean?.designation || ''} max={60} onChange={v => update('dean', { ...payload.dean, designation: v })} />
               </div>
               <LimitedInput label="Research Interest" value={payload.dean?.researchInterest || ''} max={140} type="textarea" onChange={v => update('dean', { ...payload.dean, researchInterest: v })} />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Quick Links" icon="🔗" subtitle="Exactly 6 links">
+            <AdminFormSection 
+              title="Quick Links" 
+              icon="🔗" 
+              subtitle="Exactly 6 links"
+              isOpen={activeSection === 'quick-links'}
+              onToggle={() => toggleSection('quick-links')}
+            >
               <LinkListManager title="Quick Link List" items={payload.quickLinks} onChange={v => update('quickLinks', v)} maxItems={6} exactCount labelMax={26} />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'funded-research':
         return (
           <div className="space-y-8">
-            <SectionCard title="Funding Rows" icon="💰" subtitle="Max 10 rows">
+            <AdminFormSection 
+              title="Funding Rows" 
+              icon="💰" 
+              subtitle="Max 10 rows"
+              isOpen={activeSection === 'funding-rows'}
+              onToggle={() => toggleSection('funding-rows')}
+            >
               <TableManager
                 title="Year-wise Funding"
                 items={payload.funding}
@@ -781,18 +837,30 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'amount', label: 'Amount (Lakhs)', max: 6, placeholder: 'e.g. 13.84' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Funding Report PDF" icon="📄" subtitle="Exactly 1 link">
+            <AdminFormSection 
+              title="Funding Report PDF" 
+              icon="📄" 
+              subtitle="Exactly 1 link"
+              isOpen={activeSection === 'funding-report'}
+              onToggle={() => toggleSection('funding-report')}
+            >
               <LinkListManager title="Funding Report" items={[payload.fundingReport]} onChange={v => update('fundingReport', v[0] || { label: '', url: '' })} maxItems={1} exactCount labelMax={40} urlLabel="PDF URL (optional)" allowFileUpload />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'publications':
         return (
           <div className="space-y-8">
-            <SectionCard title="Books by Year" icon="📚" subtitle="Max 8 rows">
+            <AdminFormSection 
+              title="Books by Year" 
+              icon="📚" 
+              subtitle="Max 8 rows"
+              isOpen={activeSection === 'books'}
+              onToggle={() => toggleSection('books')}
+            >
               <TableManager
                 title="Books Table"
                 items={payload.books}
@@ -803,9 +871,15 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'count', label: 'Count', max: 3, placeholder: 'e.g. 24' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Journal / Conference by Year" icon="📰" subtitle="Max 6 rows">
+            <AdminFormSection 
+              title="Journal / Conference by Year" 
+              icon="📰" 
+              subtitle="Max 6 rows"
+              isOpen={activeSection === 'journals'}
+              onToggle={() => toggleSection('journals')}
+            >
               <TableManager
                 title="Papers Table"
                 items={payload.journals}
@@ -817,18 +891,30 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'conferenceCount', label: 'Conference Count', max: 3, placeholder: '47' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Publication PDFs" icon="📁" subtitle="Exactly 3 links">
+            <AdminFormSection 
+              title="Publication PDFs" 
+              icon="📁" 
+              subtitle="Exactly 3 links"
+              isOpen={activeSection === 'publication-pdfs'}
+              onToggle={() => toggleSection('publication-pdfs')}
+            >
               <LinkListManager title="Books / Conference / Journal PDFs" items={payload.publicationPdfs} onChange={v => update('publicationPdfs', v)} maxItems={3} exactCount labelMax={50} urlLabel="PDF URL (optional)" allowFileUpload />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'patents':
         return (
           <div className="space-y-8">
-            <SectionCard title="Patent Records" icon="💡" subtitle="Max 20 rows">
+            <AdminFormSection 
+              title="Patent Records" 
+              icon="💡" 
+              subtitle="Max 20 rows"
+              isOpen={activeSection === 'patents-list'}
+              onToggle={() => toggleSection('patents-list')}
+            >
               <TableManager
                 title="Patents Table"
                 items={payload.patents}
@@ -845,9 +931,15 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'status', label: 'Status', max: 40, placeholder: 'Published / Granted' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Year Filter Values" icon="🗂️" subtitle="Max 6 values">
+            <AdminFormSection 
+              title="Year Filter Values" 
+              icon="🗂️" 
+              subtitle="Max 6 values"
+              isOpen={activeSection === 'patent-years'}
+              onToggle={() => toggleSection('patent-years')}
+            >
               <TableManager
                 title="Year Filters"
                 items={(payload.patentYears || []).map((y: string) => ({ year: y }))}
@@ -855,14 +947,20 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                 onChange={v => update('patentYears', v.map((r: any) => r.year))}
                 fields={[{ key: 'year', label: 'Year', max: 4, exactLength: 4, placeholder: '2023' }]}
               />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'consultancy':
         return (
           <div className="space-y-8">
-            <SectionCard title="Revenue Rows" icon="📈" subtitle="Max 10 rows">
+            <AdminFormSection 
+              title="Revenue Rows" 
+              icon="📈" 
+              subtitle="Max 10 rows"
+              isOpen={activeSection === 'revenue'}
+              onToggle={() => toggleSection('revenue')}
+            >
               <TableManager
                 title="Consultancy Revenue"
                 items={payload.consultancyRevenue}
@@ -874,13 +972,25 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'note', label: 'Note', max: 6, type: 'select', options: ['', 'Peak', 'Lowest'] },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Consultancy PDF" icon="📄" subtitle="Exactly 1 link">
+            <AdminFormSection 
+              title="Consultancy PDF" 
+              icon="📄" 
+              subtitle="Exactly 1 link"
+              isOpen={activeSection === 'consultancy-report'}
+              onToggle={() => toggleSection('consultancy-report')}
+            >
               <LinkListManager title="Consultancy Report" items={[payload.consultancyReport]} onChange={v => update('consultancyReport', v[0] || { label: '', url: '' })} maxItems={1} exactCount labelMax={40} urlLabel="PDF URL (optional)" allowFileUpload />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Industry Partners" icon="🤝" subtitle="Max 9 partners, 3 tags each">
+            <AdminFormSection 
+              title="Industry Partners" 
+              icon="🤝" 
+              subtitle="Max 9 partners"
+              isOpen={activeSection === 'partners'}
+              onToggle={() => toggleSection('partners')}
+            >
               <div className="space-y-4">
                 <div className="flex justify-end">
                   <CountBadge used={(payload.industryPartners || []).length} max={9} />
@@ -963,13 +1073,19 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   <button onClick={() => update('industryPartners', [...(payload.industryPartners || []), { name: '', tagline: '', description: '', imageUrl: '', file: null, tags: [] }])} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all">Add Partner</button>
                 )}
               </div>
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'research-facility':
         return (
-          <SectionCard title="Facility Images" icon="🏢" subtitle="Max 6 images, 16:10 recommended">
+          <AdminFormSection 
+            title="Facility Images" 
+            icon="🏢" 
+            subtitle="Max 6 images, 16:10 recommended"
+            isOpen={activeSection === 'facilities-list'}
+            onToggle={() => toggleSection('facilities-list')}
+          >
             <TableManager
               title="Facility Image Entries"
               items={payload.facilities}
@@ -979,13 +1095,19 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'file', label: 'Facility Image Upload', max: 0, type: 'file-image' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
         );
 
       case 'iic':
         return (
           <div className="space-y-8">
-            <SectionCard title="Achievement Images" icon="🏆" subtitle="Max 4">
+            <AdminFormSection 
+              title="Achievement Images" 
+              icon="🏆" 
+              subtitle="Max 4"
+              isOpen={activeSection === 'achievements'}
+              onToggle={() => toggleSection('achievements')}
+            >
               <TableManager
                 title="Achievement Holders"
                 items={payload.iicAchievementsDetailed}
@@ -996,9 +1118,15 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'file', label: 'Achievement Image Upload', max: 0, type: 'file-image' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Gallery Holders" icon="🖼️" subtitle="Max 12">
+            <AdminFormSection 
+              title="Gallery Holders" 
+              icon="🖼️" 
+              subtitle="Max 12"
+              isOpen={activeSection === 'gallery'}
+              onToggle={() => toggleSection('gallery')}
+            >
               <TableManager
                 title="Gallery"
                 items={payload.iicGalleryDetailed}
@@ -1009,9 +1137,15 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'file', label: 'Gallery Image Upload', max: 0, type: 'file-image' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="Committee Rows" icon="👥" subtitle="Left: 100 max, Right: 220 max">
+            <AdminFormSection 
+              title="Committee Rows" 
+              icon="👥" 
+              subtitle="Left: 100 max, Right: 220 max"
+              isOpen={activeSection === 'committee'}
+              onToggle={() => toggleSection('committee')}
+            >
               <TableManager
                 title="Staff Committee"
                 items={payload.iicCommitteeGroups?.staff || []}
@@ -1040,17 +1174,29 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                 onChange={v => update('iicCommitteeGroups', { ...payload.iicCommitteeGroups, student: v })}
                 fields={[{ key: 'left', label: 'Left Column', max: 100 }, { key: 'right', label: 'Right Column', max: 220, type: 'textarea' }]}
               />
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="IIC Report PDFs" icon="📄" subtitle="Max 4 links">
+            <AdminFormSection 
+              title="IIC Report PDFs" 
+              icon="📄" 
+              subtitle="Max 4 links"
+              isOpen={activeSection === 'reports'}
+              onToggle={() => toggleSection('reports')}
+            >
               <LinkListManager title="IIC Report Links" items={payload.iicReportsDetailed} onChange={v => update('iicReportsDetailed', v)} maxItems={4} labelMax={20} urlLabel="PDF URL (optional)" allowFileUpload />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'nirf':
         return (
-          <SectionCard title="NIRF PDF Cards" icon="📁" subtitle="Max 6 cards">
+          <AdminFormSection 
+            title="NIRF PDF Cards" 
+            icon="📁" 
+            subtitle="Max 6 cards"
+            isOpen={activeSection === 'nirf-cards'}
+            onToggle={() => toggleSection('nirf-cards')}
+          >
             <TableManager
               title="NIRF Cards"
               items={payload.nirfCards}
@@ -1063,22 +1209,34 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                   { key: 'file', label: 'NIRF PDF Upload', max: 0, type: 'file-pdf' },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
         );
 
       case 'downloads': {
         const totalLinks = (payload.leftLinks || []).length + (payload.rightLinks || []).length;
         return (
           <div className="space-y-8">
-            <SectionCard title="Top Document Buttons" icon="⬇️" subtitle="Max 4 buttons">
+            <AdminFormSection 
+              title="Top Document Buttons" 
+              icon="⬇️" 
+              subtitle="Max 4 buttons"
+              isOpen={activeSection === 'top-buttons'}
+              onToggle={() => toggleSection('top-buttons')}
+            >
               <LinkListManager title="Top Buttons" items={payload.topButtons} onChange={v => update('topButtons', v)} maxItems={4} labelMax={60} />
-            </SectionCard>
-            <SectionCard title="Resource Links" icon="🔗" subtitle={`Total ${totalLinks}/12, max 6 per column`}>
+            </AdminFormSection>
+            <AdminFormSection 
+              title="Resource Links" 
+              icon="🔗" 
+              subtitle={`Total ${totalLinks}/12, max 6 per column`}
+              isOpen={activeSection === 'resource-links'}
+              onToggle={() => toggleSection('resource-links')}
+            >
               <div className="grid md:grid-cols-2 gap-6">
                 <LinkListManager title="Left Column" items={payload.leftLinks} onChange={v => update('leftLinks', v)} maxItems={6} labelMax={70} />
                 <LinkListManager title="Right Column" items={payload.rightLinks} onChange={v => update('rightLinks', v)} maxItems={6} labelMax={70} />
               </div>
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
       }
@@ -1086,10 +1244,12 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
       case 'research-conventions':
       case 'research-policy':
         return (
-          <SectionCard
+          <AdminFormSection
             title={slug === 'research-conventions' ? 'Research Convention PDFs' : 'Research Policy PDFs'}
             icon="📄"
             subtitle="Manage and upload PDFs"
+            isOpen={activeSection === 'documents-list'}
+            onToggle={() => toggleSection('documents-list')}
           >
             <TableManager
               title="Documents"
@@ -1101,7 +1261,7 @@ const ResearchForm: React.FC<ResearchFormProps> = ({ slug, onBack }) => {
                 { key: 'file', label: 'Upload PDF', max: 0, type: 'file-pdf' },
               ]}
             />
-          </SectionCard>
+          </AdminFormSection>
         );
 
       default:

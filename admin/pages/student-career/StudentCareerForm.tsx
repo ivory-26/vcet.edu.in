@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
 import { SortableListContext } from '../../components/SortableList';
+import AdminFormSection from '../../components/AdminFormSection';
 
 /* ── Toast ─────────────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -26,8 +27,8 @@ const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: Re
   </div>
 );
 
-const inputBase = 'w-full bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#2563EB] rounded-2xl px-5 py-4 text-sm font-bold transition-all outline-none';
-const labelBase = 'block text-xs font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1';
+const inputBase = 'w-full bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#2563EB] rounded-2xl px-5 py-4 text-sm font-bold transition-all outline-none placeholder:text-slate-300';
+const labelBase = 'block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2.5 ml-1';
 
 /* ── Media Upload Button (with preview) ────────────────────────────────────── */
 const MediaUploadButton: React.FC<{
@@ -199,6 +200,7 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeClub, setActiveClub] = useState<'centurion' | 'airnova' | 'emechto' | 'ethan'>('centurion');
+  const [activeAccordionSection, setActiveAccordionSection] = useState<string | null>('1');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
@@ -206,6 +208,7 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
     else if (slug === 'airnova') setActiveClub('airnova');
     else if (slug === 'emechto') setActiveClub('emechto');
     else if (slug === 'external-projects') setActiveClub('ethan');
+    setActiveAccordionSection('1'); // Reset accordion on slug change
     setTimeout(() => setLoading(false), 300);
   }, [slug]);
 
@@ -223,8 +226,13 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
     switch (slug) {
       case 'cultural-committee':
         return (
-          <div className="space-y-8">
-            <SectionCard title="1. Hero / Overview" icon="🎭">
+          <div className="space-y-4">
+            <AdminFormSection 
+              title="1. Hero / Overview" 
+              icon="🎭"
+              isOpen={activeAccordionSection === '1'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label className={labelBase}>Instagram Link</label><input id="studentcareerform-3" name="studentcareerform-3" aria-label="studentcareerform field" value={payload.hInsta || ''} onChange={e => setPayload({...payload, hInsta: e.target.value})} className={inputBase} placeholder="URL" /></div>
               </div>
@@ -241,8 +249,14 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                 </div>
               </div>
               <div className="mt-4"><label className={labelBase}>Hero Banner Image</label><MediaUploadButton value={payload.hImg} previewUrl={payload.hImg_preview} onChange={(v,p) => setPayload({...payload, hImg: v, hImg_preview: p})} /></div>
-            </SectionCard>
-            <SectionCard title="2. Best Outgoing Student (BOS)" icon="🌟">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="2. Best Outgoing Student (BOS)" 
+              icon="🌟"
+              isOpen={activeAccordionSection === '2'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+            >
               <TableManager 
                 items={payload.bos || []} maxItems={1} addLabel="Set Featured Student"
                 onChange={v => setPayload({...payload, bos: v})}
@@ -253,8 +267,14 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                 ]}
                 mediaField={{ key: 'img', label: 'Student Photo', accept: 'image/*' }}
               />
-            </SectionCard>
-            <SectionCard title="3. Cultural Events" icon="🎨">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="3. Cultural Events" 
+              icon="🎨"
+              isOpen={activeAccordionSection === '3'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+            >
               <TableManager 
                 items={payload.events || []} maxItems={12} addLabel="Add Event Card"
                 onChange={v => setPayload({...payload, events: v})}
@@ -263,17 +283,29 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   { key: 'desc', label: 'Event Description', placeholder: 'Max 400 chars', maxLength: 400, isTextarea: true },
                 ]}
               />
-            </SectionCard>
-            <SectionCard title="4. Cultural Gallery" icon="📸">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="4. Cultural Gallery" 
+              icon="📸"
+              isOpen={activeAccordionSection === '4'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '4' ? null : '4')}
+            >
               <TableManager 
                 items={payload.gallery || []} maxItems={24} addLabel="Add Gallery Image"
                 onChange={v => setPayload({...payload, gallery: v})}
                 textFields={[]}
                 mediaField={{ key: 'img', label: 'Photograph', accept: 'image/*' }}
               />
-            </SectionCard>
-            <SectionCard title="5. Cultural Team" icon="👥">
-              <div>
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="5. Cultural Team" 
+              icon="👥"
+              isOpen={activeAccordionSection === '5'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '5' ? null : '5')}
+            >
+              <div className="mb-6">
                 <label className={labelBase}>Academic Year</label>
                 <input id="studentcareerform-4" name="studentcareerform-4" aria-label="studentcareerform field"
                   maxLength={20}
@@ -292,24 +324,34 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   { key: 'dept', label: 'Department', placeholder: 'e.g. Computer Engg', maxLength: 60 },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'sports-committee':
         return (
-          <div className="space-y-8">
-            <SectionCard title="1. Hero / Overview" icon="🏆">
+          <div className="space-y-4">
+            <AdminFormSection 
+              title="1. Hero / Overview" 
+              icon="🏆"
+              isOpen={activeAccordionSection === '1'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label className={labelBase}>Instagram Link</label><input id="studentcareerform-5" name="studentcareerform-5" aria-label="studentcareerform field" value={payload.hInsta || ''} onChange={e => setPayload({...payload, hInsta: e.target.value})} className={inputBase} placeholder="URL" /></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div><label className={labelBase}>Hero Background Image</label><MediaUploadButton value={payload.hImg} previewUrl={payload.hImg_preview} onChange={(v,p) => setPayload({...payload, hImg: v, hImg_preview: p})} accept="image/*" /></div>
                 <div><label className={labelBase}>Committee PDF</label><MediaUploadButton value={payload.hPdf} previewUrl={payload.hPdf_preview} onChange={(v,p) => setPayload({...payload, hPdf: v, hPdf_preview: p})} accept=".pdf" label="Upload Committee PDF" /></div>
               </div>
-            </SectionCard>
+            </AdminFormSection>
 
-            <SectionCard title="2. Events" icon="⚽">
+            <AdminFormSection 
+              title="2. Events" 
+              icon="⚽"
+              isOpen={activeAccordionSection === '2'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+            >
               <TableManager 
                 items={payload.events || []} maxItems={12} addLabel="Add Sports Event"
                 onChange={v => setPayload({...payload, events: v})}
@@ -318,22 +360,34 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   { key: 'desc', label: 'Event Description', placeholder: 'Max 400 chars', maxLength: 400, isTextarea: true },
                 ]}
               />
-            </SectionCard>
-            <SectionCard title="3. Gallery" icon="📸">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="3. Gallery" 
+              icon="📸"
+              isOpen={activeAccordionSection === '3'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+            >
               <TableManager 
                 items={payload.gallery || []} maxItems={24} addLabel="Add Action Shot"
                 onChange={v => setPayload({...payload, gallery: v})}
                 textFields={[]}
                 mediaField={{ key: 'img', label: 'Photograph', accept: 'image/*' }}
               />
-            </SectionCard>
-            <SectionCard title="4. Team (Committee Members)" icon="👥">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="4. Team (Committee Members)" 
+              icon="👥"
+              isOpen={activeAccordionSection === '4'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '4' ? null : '4')}
+            >
               <div className="mb-6 pb-6 border-b border-slate-100">
                 <label className={labelBase}>Sports Student PDF Card Title</label>
                 <input id="studentcareerform-6" name="studentcareerform-6" aria-label="studentcareerform field" value={payload.pdfTitle || ''} onChange={e => setPayload({...payload, pdfTitle: e.target.value})} className={inputBase} placeholder="e.g. Sports Student Committee" />
                 <div className="mt-4"><MediaUploadButton value={payload.pdfFile} previewUrl={payload.pdfFile_preview} onChange={(v,p) => setPayload({...payload, pdfFile: v, pdfFile_preview: p})} accept=".pdf" label="Upload Special PDF" /></div>
               </div>
-              <div className="mb-4">
+              <div className="mb-6">
                 <label className={labelBase}>Academic Year</label>
                 <input id="studentcareerform-7" name="studentcareerform-7" aria-label="studentcareerform field"
                   maxLength={20}
@@ -351,37 +405,60 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   { key: 'name', label: 'Name', placeholder: 'Max 60 chars', maxLength: 60 },
                 ]}
               />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'literati':
         return (
-          <div className="space-y-8">
-          <SectionCard title="1. Intro Links" icon="✍️">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><label className={labelBase}>Instagram Link</label><input id="studentcareerform-8" name="studentcareerform-8" aria-label="studentcareerform field" value={payload.hInsta || ''} onChange={e => setPayload({...payload, hInsta: e.target.value})} className={inputBase} /></div>
-            </div>
-            </SectionCard>
-            <SectionCard title="2. Literary Events" icon="📖">
+          <div className="space-y-4">
+            <AdminFormSection 
+              title="1. Intro Links" 
+              icon="✍️"
+              isOpen={activeAccordionSection === '1'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label className={labelBase}>Instagram Link</label><input id="studentcareerform-8" name="studentcareerform-8" aria-label="studentcareerform field" value={payload.hInsta || ''} onChange={e => setPayload({...payload, hInsta: e.target.value})} className={inputBase} /></div>
+              </div>
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="2. Literary Events" 
+              icon="📖"
+              isOpen={activeAccordionSection === '2'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+            >
                <TableManager items={payload.events || []} maxItems={12} addLabel="Add Event Card" onChange={v => setPayload({...payload, events: v})} textFields={[{ key: 'title', label: 'Title', placeholder: 'e.g. Debate', maxLength: 50 }, { key: 'desc', label: 'Description', placeholder: 'Max 400', isTextarea: true }]} />
-            </SectionCard>
-            <SectionCard title="3. Gallery" icon="📸">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="3. Gallery" 
+              icon="📸"
+              isOpen={activeAccordionSection === '3'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+            >
                <TableManager items={payload.gallery || []} maxItems={24} addLabel="Add Photo" onChange={v => setPayload({...payload, gallery: v})} textFields={[]} mediaField={{ key: 'img', label: 'Photo' }} />
-            </SectionCard>
-          <SectionCard title="4. Team" icon="👥">
-            <div className="mb-6 pb-6 border-b border-slate-100">
-              <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Staff Incharge</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div><MediaUploadButton value={payload.cImg} previewUrl={payload.cImg_preview} onChange={(v,p) => setPayload({...payload, cImg: v, cImg_preview: p})} label="Upload Staff Photo" /></div>
-                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <input id="studentcareerform-9" name="studentcareerform-9" aria-label="studentcareerform field" maxLength={60} value={payload.cName || ''} onChange={e => setPayload({...payload, cName: e.target.value})} className={inputBase} placeholder="Staff Name" />
-                 <input id="studentcareerform-10" name="studentcareerform-10" aria-label="studentcareerform field" maxLength={80} value={payload.cDept || ''} onChange={e => setPayload({...payload, cDept: e.target.value})} className={inputBase} placeholder="Department" />
-                 <input id="studentcareerform-11" name="studentcareerform-11" aria-label="studentcareerform field" value={payload.cMail || ''} onChange={e => setPayload({...payload, cMail: e.target.value})} className={inputBase} placeholder="Email" />
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="4. Team" 
+              icon="👥"
+              isOpen={activeAccordionSection === '4'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '4' ? null : '4')}
+            >
+              <div className="mb-6 pb-6 border-b border-slate-100">
+                <h4 className={labelBase + " text-slate-500! mb-4!"}>Staff Incharge</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div><MediaUploadButton value={payload.cImg} previewUrl={payload.cImg_preview} onChange={(v,p) => setPayload({...payload, cImg: v, cImg_preview: p})} label="Upload Staff Photo" /></div>
+                  <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                   <input id="studentcareerform-9" name="studentcareerform-9" aria-label="studentcareerform field" maxLength={60} value={payload.cName || ''} onChange={e => setPayload({...payload, cName: e.target.value})} className={inputBase} placeholder="Staff Name" />
+                   <input id="studentcareerform-10" name="studentcareerform-10" aria-label="studentcareerform field" maxLength={80} value={payload.cDept || ''} onChange={e => setPayload({...payload, cDept: e.target.value})} className={inputBase} placeholder="Department" />
+                   <input id="studentcareerform-11" name="studentcareerform-11" aria-label="studentcareerform field" value={payload.cMail || ''} onChange={e => setPayload({...payload, cMail: e.target.value})} className={inputBase} placeholder="Email" />
+                  </div>
                 </div>
               </div>
-            </div>
-               <div>
+               <div className="mb-6">
                  <label className={labelBase}>Academic Year</label>
                  <input id="studentcareerform-12" name="studentcareerform-12" aria-label="studentcareerform field"
                    maxLength={20}
@@ -392,8 +469,14 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                  />
                </div>
                <TableManager items={payload.team || []} maxItems={25} addLabel="Add Member" onChange={v => setPayload({...payload, team: v})} textFields={[{ key: 'name', label: 'Name', maxLength: 60 }, { key: 'pos', label: 'Position', maxLength: 50 }, { key: 'dept', label: 'Department', maxLength: 60 }]} />
-            </SectionCard>
-            <SectionCard title="5. Vista Magazine" icon="📚">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="5. Vista Magazine" 
+              icon="📚"
+              isOpen={activeAccordionSection === '5'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '5' ? null : '5')}
+            >
               <TableManager
                 items={payload.magazines || []}
                 maxItems={10}
@@ -402,27 +485,44 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                 textFields={[{ key: 'title', label: 'Magazine Title', maxLength: 80 }]}
                 mediaField={{ key: 'pdf', label: 'Magazine PDF', accept: '.pdf' }}
               />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'nss':
         return (
-          <div className="space-y-8">
-            <SectionCard title="1. NSS Events & Social" icon="❤️">
+          <div className="space-y-4">
+            <AdminFormSection 
+              title="1. NSS Events & Social" 
+              icon="❤️"
+              isOpen={activeAccordionSection === '1'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+            >
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div><label className={labelBase}>Instagram Link Label</label><input id="studentcareerform-13" name="studentcareerform-13" aria-label="studentcareerform field" maxLength={100} value={payload.instaLab || ''} onChange={e => setPayload({...payload, instaLab: e.target.value})} className={inputBase} /></div>
                 <div><label className={labelBase}>Instagram URL</label><input id="studentcareerform-14" name="studentcareerform-14" aria-label="studentcareerform field" value={payload.instaUrl || ''} onChange={e => setPayload({...payload, instaUrl: e.target.value})} className={inputBase} /></div>
               </div>
               <TableManager items={payload.events || []} maxItems={24} addLabel="Add Service Event" onChange={v => setPayload({...payload, events: v})} textFields={[{ key: 'title', label: 'Title', maxLength: 50 }, { key: 'desc', label: 'Description', maxLength: 400, isTextarea: true }]} />
-            </SectionCard>
-            <SectionCard title="2. NSS Gallery" icon="📸">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="2. NSS Gallery" 
+              icon="📸"
+              isOpen={activeAccordionSection === '2'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+            >
                <TableManager items={payload.gallery || []} maxItems={24} addLabel="Add Photo" onChange={v => setPayload({...payload, gallery: v})} textFields={[]} mediaField={{ key: 'img', label: 'Photo' }} />
-            </SectionCard>
-            <SectionCard title="3. NSS Team Sections" icon="👥">
-               <div className="space-y-10">
+            </AdminFormSection>
+
+            <AdminFormSection 
+              title="3. NSS Team Sections" 
+              icon="👥"
+              isOpen={activeAccordionSection === '3'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+            >
+               <div className="space-y-8">
                   <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                     <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">A. Featured Co-ordinator</h4>
+                     <h4 className={labelBase + " text-slate-500! mb-6!"}>A. Featured Co-ordinator</h4>
                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div className="lg:col-span-1"><MediaUploadButton value={payload.cImg} previewUrl={payload.cImg_preview} onChange={(v,p) => setPayload({...payload, cImg: v, cImg_preview: p})} label="Coord. Photo" /></div>
                         <div className="lg:col-span-2 space-y-4">
@@ -436,11 +536,11 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                      </div>
                   </div>
                   <div>
-                     <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 ml-1">B. Staff Committee (3-Column Table)</h4>
+                     <h4 className={labelBase + " text-slate-500! mb-4! ml-1!"}>B. Staff Committee (3-Column Table)</h4>
                      <TableManager items={payload.staff || []} maxItems={12} addLabel="Add Staff Member" onChange={v => setPayload({...payload, staff: v})} textFields={[{key:'pos', label:'Post', maxLength:50}, {key:'name', label:'Name', maxLength:60}, {key:'dept', label:'Department', maxLength:60}]} />
                   </div>
                   <div>
-                     <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 ml-1">C. Student Core Committee (2-Column Table)</h4>
+                     <h4 className={labelBase + " text-slate-500! mb-4! ml-1!"}>C. Student Core Committee (2-Column Table)</h4>
                     <div className="mb-4">
                       <label className={labelBase}>Academic Year</label>
                       <input id="studentcareerform-19" name="studentcareerform-19" aria-label="studentcareerform field"
@@ -454,32 +554,47 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                      <TableManager items={payload.studs || []} maxItems={20} addLabel="Add Student Coord" onChange={v => setPayload({...payload, studs: v})} textFields={[{key:'pos', label:'Post', maxLength:50}, {key:'name', label:'Name', maxLength:60}]} />
                   </div>
                </div>
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'ebsb':
         return (
-          <div className="space-y-8 animate-in fade-in duration-500">
-          <SectionCard title="1. Events & Activities" icon="🎉">
+          <div className="space-y-4 animate-in fade-in duration-500">
+            <AdminFormSection 
+              title="1. Events & Activities" 
+              icon="🎉"
+              isOpen={activeAccordionSection === '1'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+            >
               <div className="mb-4">
-                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Glimpse of EBSB activities</h4>
+                <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>Glimpse of EBSB activities</h4>
                 <TableManager 
                    items={payload.events || []} maxItems={12} addLabel="Add Activity Card" 
                    onChange={v => setPayload({...payload, events: v})} 
                    textFields={[{key:'title', label:'TITLE', maxLength:100}, {key:'desc', label:'DESCRIPTION', maxLength:800, isTextarea: true}]} 
                 />
               </div>
-            </SectionCard>
+            </AdminFormSection>
 
-          <SectionCard title="2. EBSB Gallery" icon="📸">
+            <AdminFormSection 
+              title="2. EBSB Gallery" 
+              icon="📸"
+              isOpen={activeAccordionSection === '2'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+            >
               <TableManager items={payload.gallery || []} maxItems={24} addLabel="Add Photograph" onChange={v => setPayload({...payload, gallery: v})} textFields={[]} mediaField={{key:'img', label:'Photograph'}} />
-            </SectionCard>
+            </AdminFormSection>
 
-          <SectionCard title="3. Committee Team" icon="👥">
+            <AdminFormSection 
+              title="3. Committee Team" 
+              icon="👥"
+              isOpen={activeAccordionSection === '3'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+            >
                <div className="space-y-10">
                   <div className="bg-slate-50 p-7 rounded-4xl border border-slate-100">
-                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-200 pb-2">A. In-Charge & Advisory</h4>
+                     <h4 className={labelBase + " text-slate-400! mb-6! border-b border-slate-200 pb-2"}>A. In-Charge & Advisory</h4>
                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div className="lg:col-span-1"><MediaUploadButton value={payload.cImg} previewUrl={payload.cImg_preview} onChange={(v,p) => setPayload({...payload, cImg: v, cImg_preview: p})} label="Upload Photo" /></div>
                         <div className="lg:col-span-2 space-y-4">
@@ -495,7 +610,7 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   </div>
                   
                   <div>
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">B. Staff Committee Table</h4>
+                    <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>B. Staff Committee Table</h4>
                     <TableManager 
                        items={payload.staff || []} maxItems={12} addLabel="Add Staff Member" 
                        onChange={v => setPayload({...payload, staff: v})} 
@@ -504,7 +619,7 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   </div>
 
                   <div>
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">C. Student Committee Table</h4>
+                    <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>C. Student Committee Table</h4>
                     <TableManager 
                        items={payload.studs || []} maxItems={15} addLabel="Add Student Member" 
                        onChange={v => setPayload({...payload, studs: v})} 
@@ -512,7 +627,7 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                     />
                   </div>
                </div>
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
@@ -525,14 +640,24 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
       case 'nsdc':
       case 'igbc':
         return (
-          <div className="space-y-8">
-            <SectionCard title="1. Hero / Metrics" icon="⚡">
-               <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Impact Metrics (Max 4)</h4>
+          <div className="space-y-4">
+            <AdminFormSection 
+              title="1. Hero / Metrics" 
+              icon="⚡"
+              isOpen={activeAccordionSection === '1'}
+              onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+            >
+               <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>Impact Metrics (Max 4)</h4>
                <TableManager items={payload.metrics || []} maxItems={4} addLabel="Add Metric Card" onChange={v => setPayload({...payload, metrics: v})} textFields={[{key:'lab', label:'Label (e.g. Members)', maxLength:40}, {key:'val', label:'Value (e.g. 100+)', maxLength:30}]} />
-            </SectionCard>
+            </AdminFormSection>
 
             {slug !== 'nsdc' && (
-              <SectionCard title="1B. Sidebar Highlights" icon="✨">
+              <AdminFormSection 
+                title="1B. Sidebar Highlights" 
+                icon="✨"
+                isOpen={activeAccordionSection === '1b'}
+                onToggle={() => setActiveAccordionSection(activeAccordionSection === '1b' ? null : '1b')}
+              >
                 <TableManager
                   items={payload.highlights || []}
                   maxItems={3}
@@ -543,46 +668,71 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                     { key: 'label', label: 'Label (e.g. Members)', maxLength: 40 },
                   ]}
                 />
-              </SectionCard>
+              </AdminFormSection>
             )}
 
             {slug !== 'hackathon-events' && slug !== 'nsdc' && slug !== 'csi' && (
-              <SectionCard title="2. Events & Activities" icon="⚙️">
+              <AdminFormSection 
+                title="2. Events & Activities" 
+                icon="⚙️"
+                isOpen={activeAccordionSection === '2'}
+                onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+              >
                 {['ieee', 'iete', 'ishrae', 'vmea', 'igbc'].includes(slug) && (
                   <div className="mb-8 p-6 bg-blue-50/50 rounded-4xl border border-blue-100">
-                    <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest block mb-4">Featured Event Photos (Max 2)</label>
+                    <label className={labelBase + " text-blue-600! mb-4!"}>Featured Event Photos (Max 2)</label>
                     <TableManager items={payload.featured || []} maxItems={2} addLabel="Add Featured Banner" onChange={v => setPayload({...payload, featured: v})} textFields={[]} mediaField={{key:'img', label:'Featured Banner'}} />
                   </div>
                 )}
                 
                 <div className="mb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Archive of Club Activities</div>
                 <TableManager items={payload.events || []} maxItems={15} addLabel="Add Activity Card" onChange={v => setPayload({...payload, events: v})} textFields={[{key:'title', label:'Title', maxLength:60}, {key:'desc', label:'Summary', maxLength:400, isTextarea: true}]} />
-              </SectionCard>
+              </AdminFormSection>
             )}
 
             {slug === 'nsdc' && null}
 
             {slug === 'hackathon-events' && (
-               <div className="space-y-8">
-                 <SectionCard title="2. Faculty Coordinators" icon="👩‍🏫">
-                   <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Staff Coordinators Table</h4>
+               <div className="space-y-4">
+                 <AdminFormSection 
+                    title="2. Faculty Coordinators" 
+                    icon="👩‍🏫"
+                    isOpen={activeAccordionSection === '2'}
+                    onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+                  >
+                   <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>Staff Coordinators Table</h4>
                    <TableManager items={payload.staff || []} maxItems={20} addLabel="Add Faculty" onChange={v => setPayload({...payload, staff: v})} textFields={[{key:'sr', label:'SR. NO.', maxLength:6}, {key:'name', label:'NAME', maxLength:80}]} />
-                 </SectionCard>
+                 </AdminFormSection>
 
-                 <SectionCard title="3. Committee Roles" icon="👥">
-                   <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Committee Roles Table</h4>
+                 <AdminFormSection 
+                    title="3. Committee Roles" 
+                    icon="👥"
+                    isOpen={activeAccordionSection === '3'}
+                    onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+                  >
+                   <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>Committee Roles Table</h4>
                    <TableManager items={payload.team || []} maxItems={25} addLabel="Add Committee Post" onChange={v => setPayload({...payload, team: v})} textFields={[{key:'pos', label:'POST / ROLE', maxLength:60}, {key:'names', label:'NAME(S)', maxLength:200, isTextarea: true}]} />
-                 </SectionCard>
+                 </AdminFormSection>
 
-                 <SectionCard title="4. Hackathon Image Gallery" icon="📸">
+                 <AdminFormSection 
+                    title="4. Hackathon Image Gallery" 
+                    icon="📸"
+                    isOpen={activeAccordionSection === '4'}
+                    onToggle={() => setActiveAccordionSection(activeAccordionSection === '4' ? null : '4')}
+                  >
                     <TableManager items={payload.gallery || []} maxItems={30} addLabel="Add Gallery Photograph" onChange={v => setPayload({...payload, gallery: v})} textFields={[{key:'cap', label:'Caption (if show on hover)', maxLength:100}]} mediaField={{key:'img', label:'Photograph'}} />
-                 </SectionCard>
+                 </AdminFormSection>
                </div>
             )}
 
             {slug === 'csi' && (
-              <div className="space-y-8">
-                <SectionCard title="2. Faculty Team" icon="👩‍🏫">
+              <div className="space-y-4">
+                <AdminFormSection 
+                  title="2. Faculty Team" 
+                  icon="👩‍🏫"
+                  isOpen={activeAccordionSection === '2'}
+                  onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+                >
                   <TableManager
                     items={payload.faculty || []}
                     maxItems={6}
@@ -596,8 +746,13 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                     ]}
                     mediaField={{ key: 'img', label: 'Faculty Photo', accept: 'image/*' }}
                   />
-                </SectionCard>
-                <SectionCard title="3. Student Committee" icon="👥">
+                </AdminFormSection>
+                <AdminFormSection 
+                  title="3. Student Committee" 
+                  icon="👥"
+                  isOpen={activeAccordionSection === '3'}
+                  onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+                >
                   <TableManager
                     items={payload.team || []}
                     maxItems={30}
@@ -609,21 +764,31 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                       { key: 'dept', label: 'Department', maxLength: 40 },
                     ]}
                   />
-                </SectionCard>
+                </AdminFormSection>
               </div>
             )}
 
             {slug !== 'nsdc' && slug !== 'hackathon-events' && (
-              <SectionCard title="3. Photo Gallery" icon="📸">
+              <AdminFormSection 
+                title="3. Photo Gallery" 
+                icon="📸"
+                isOpen={activeAccordionSection === '3'}
+                onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+              >
                  <TableManager items={payload.gallery || []} maxItems={30} addLabel="Add Gallery Photograph" onChange={v => setPayload({...payload, gallery: v})} textFields={[{key:'cap', label:'Caption (if show on hover)', maxLength:100}]} mediaField={{key:'img', label:'Photograph'}} />
-               </SectionCard>
+               </AdminFormSection>
             )}
 
             {slug !== 'hackathon-events' && slug !== 'nsdc' && slug !== 'csi' && (
-              <SectionCard title="4. Technical Team leadership" icon="👥">
+              <AdminFormSection 
+                title="4. Technical Team leadership" 
+                icon="👥"
+                isOpen={activeAccordionSection === '4'}
+                onToggle={() => setActiveAccordionSection(activeAccordionSection === '4' ? null : '4')}
+              >
                 <div className="bg-white border-2 border-slate-50 rounded-4xl p-6 space-y-8 shadow-inner shadow-slate-100/50">
                    <div>
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Faculty In-Charge / Counselor Profile</h4>
+                    <h4 className={labelBase + " text-slate-400! mb-4!"}>Faculty In-Charge / Counselor Profile</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       <div className="lg:col-span-1"><MediaUploadButton value={payload.cImg} previewUrl={payload.cImg_preview} onChange={(v,p) => setPayload({...payload, cImg: v, cImg_preview: p})} label="Profile Photo" /></div>
                       <div className="lg:col-span-2 space-y-4">
@@ -647,21 +812,21 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
 
                   {slug === 'ieee' && (
                     <div>
-                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Student Core Committee Table</h4>
+                      <h4 className={labelBase + " text-slate-400! mb-4!"}>Student Core Committee Table</h4>
                       <TableManager items={payload.team || []} maxItems={25} addLabel="Add Committee Member" onChange={v => setPayload({...payload, team: v})} textFields={[{key:'pos', label:'POSITION', maxLength:60}, {key:'cls', label:'CLASS', maxLength:30}, {key:'name', label:'NAME', maxLength:60}]} />
                     </div>
                   )}
 
                   {slug === 'vmea' && (
                     <div>
-                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Core Committee Table</h4>
+                      <h4 className={labelBase + " text-slate-400! mb-4!"}>Core Committee Table</h4>
                       <TableManager items={payload.team || []} maxItems={25} addLabel="Add Committee Member" onChange={v => setPayload({...payload, team: v})} textFields={[{key:'pos', label:'POST', maxLength:60}, {key:'name', label:'NAME', maxLength:60}]} />
                     </div>
                   )}
 
                   {slug === 'igbc' && (
                     <div>
-                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Student Committee Table</h4>
+                      <h4 className={labelBase + " text-slate-400! mb-4!"}>Student Committee Table</h4>
                       <TableManager items={payload.team || []} maxItems={25} addLabel="Add Committee Member" onChange={v => setPayload({...payload, team: v})} textFields={[{key:'pos', label:'POSITION', maxLength:60}, {key:'cls', label:'CLASS', maxLength:30}, {key:'name', label:'NAME', maxLength:60}]} />
                     </div>
                   )}
@@ -669,11 +834,11 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   {slug === 'iete' && (
                     <div className="space-y-8">
                       <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Co-Ordinators Final Year</h4>
+                        <h4 className={labelBase + " text-slate-400! mb-4!"}>Co-Ordinators Final Year</h4>
                         <TableManager items={payload.teamFinal || []} maxItems={20} addLabel="Add Final Year Member" onChange={v => setPayload({...payload, teamFinal: v})} textFields={[{key:'pos', label:'POST', maxLength:60}, {key:'name', label:'NAME', maxLength:80}]} />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Third Year Members</h4>
+                        <h4 className={labelBase + " text-slate-400! mb-4!"}>Third Year Members</h4>
                         <TableManager items={payload.teamThird || []} maxItems={20} addLabel="Add Third Year Member" onChange={v => setPayload({...payload, teamThird: v})} textFields={[{key:'pos', label:'POST', maxLength:60}, {key:'name', label:'NAME', maxLength:80}]} />
                       </div>
                     </div>
@@ -682,7 +847,7 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                   {slug === 'ishrae' && (
                     <div className="space-y-8">
                       <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Committee Year Labels</h4>
+                        <h4 className={labelBase + " text-slate-400! mb-4!"}>Committee Year Labels</h4>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <input id="studentcareerform-29" name="studentcareerform-29" aria-label="studentcareerform field"
                             maxLength={20}
@@ -709,21 +874,21 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                       </div>
 
                       <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Core Committee</h4>
+                        <h4 className={labelBase + " text-slate-400! mb-4!"}>Core Committee</h4>
                         <TableManager items={payload.teamCore || []} maxItems={25} addLabel="Add Core Committee Member" onChange={v => setPayload({...payload, teamCore: v})} textFields={[{key:'pos', label:'POSITION', maxLength:60}, {key:'cls', label:'CLASS', maxLength:30}, {key:'name', label:'NAME', maxLength:80}]} />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Member Group 1</h4>
+                        <h4 className={labelBase + " text-slate-400! mb-4!"}>Member Group 1</h4>
                         <TableManager items={payload.team2024 || []} maxItems={30} addLabel="Add Member Group 1" onChange={v => setPayload({...payload, team2024: v})} textFields={[{key:'pos', label:'POSITION', maxLength:60}, {key:'cls', label:'CLASS', maxLength:30}, {key:'name', label:'NAME', maxLength:80}]} />
                       </div>
                       <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Member Group 2</h4>
+                        <h4 className={labelBase + " text-slate-400! mb-4!"}>Member Group 2</h4>
                         <TableManager items={payload.team2021 || []} maxItems={40} addLabel="Add Member Group 2" onChange={v => setPayload({...payload, team2021: v})} textFields={[{key:'pos', label:'POSITION', maxLength:60}, {key:'cls', label:'CLASS', maxLength:30}, {key:'name', label:'NAME', maxLength:80}]} />
                       </div>
                     </div>
                   )}
                 </div>
-              </SectionCard>
+              </AdminFormSection>
             )}
           </div>
         );
@@ -734,25 +899,40 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
       case 'emechto':
       case 'external-projects':
         return (
-          <div className="space-y-8 animate-in fade-in duration-500">
+          <div className="space-y-4 animate-in fade-in duration-500">
              {slug === 'external-projects' && (
-                <SectionCard title="Standalone Project Links" icon="🔗">
+                <AdminFormSection 
+                  title="Standalone Project Links" 
+                  icon="🔗"
+                  isOpen={activeAccordionSection === '1'}
+                  onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+                >
                   <p className="text-xs text-slate-500 font-semibold mb-4">Provide the external website link for Project Ethan / Solecthon.</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div><label className={labelBase}>Ethan Website URL</label><input id="studentcareerform-32" name="studentcareerform-32" aria-label="studentcareerform field" value={payload.ethanUrl || ''} onChange={e => setPayload({...payload, ethanUrl: e.target.value})} className={inputBase} placeholder="https://..." /></div>
                      <div><label className={labelBase}>Solecthon Website URL</label><input id="studentcareerform-33" name="studentcareerform-33" aria-label="studentcareerform field" value={payload.solecthonUrl || ''} onChange={e => setPayload({...payload, solecthonUrl: e.target.value})} className={inputBase} placeholder="https://..." /></div>
                   </div>
-                </SectionCard>
+                </AdminFormSection>
              )}
 
              {slug !== 'external-projects' && (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                   <SectionCard title="1. Impact Metrics (By the Numbers)" icon="📊">
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                   <AdminFormSection 
+                      title="1. Impact Metrics (By the Numbers)" 
+                      icon="📊"
+                      isOpen={activeAccordionSection === '1'}
+                      onToggle={() => setActiveAccordionSection(activeAccordionSection === '1' ? null : '1')}
+                    >
                       <p className="text-xs text-slate-500 font-semibold mb-6">These appear in the prominent highlights bar (e.g., "120+ Team Members").</p>
                       <TableManager items={payload.metrics || []} maxItems={4} addLabel="Add Metric Card" onChange={v => setPayload({...payload, metrics: v})} textFields={[{key:'val', label:'VALUE (e.g. 5+)', maxLength:20}, {key:'lab', label:'LABEL (e.g. VEHICLES)', maxLength:40}]} />
-                   </SectionCard>
+                   </AdminFormSection>
 
-                   <SectionCard title="2. Competition Achievements" icon="🏁">
+                   <AdminFormSection 
+                      title="2. Competition Achievements" 
+                      icon="🏁"
+                      isOpen={activeAccordionSection === '2'}
+                      onToggle={() => setActiveAccordionSection(activeAccordionSection === '2' ? null : '2')}
+                    >
                       <div className="mb-4 text-xs text-slate-500 font-semibold uppercase tracking-widest ml-1">Historical Performance & Results</div>
                       {slug === 'centurion' && (
                         <TableManager
@@ -794,12 +974,17 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                           ]}
                         />
                       )}
-                   </SectionCard>
+                   </AdminFormSection>
 
-                   <SectionCard title="3. Sponsors & Gallery" icon="🖼️">
+                   <AdminFormSection 
+                      title="3. Sponsors & Gallery" 
+                      icon="🖼️"
+                      isOpen={activeAccordionSection === '3'}
+                      onToggle={() => setActiveAccordionSection(activeAccordionSection === '3' ? null : '3')}
+                    >
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                          <div className="space-y-4">
-                            <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Sponsor Content</h4>
+                            <h4 className={labelBase + " text-slate-500! ml-1!"}>Sponsor Content</h4>
                             {slug === 'centurion' && (
                               <div className="space-y-4">
                                 <TableManager items={payload.logos || []} maxItems={30} addLabel="Add Sponsor Logo" onChange={v => setPayload({...payload, logos: v})} textFields={[]} mediaField={{key:'img', label:'Logo'}} />
@@ -861,10 +1046,15 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                             <TableManager items={payload.gallery || []} maxItems={60} addLabel="Add Photograph" onChange={v => setPayload({...payload, gallery: v})} textFields={[]} mediaField={{key:'img', label:'Photo', accept:'image/*'}} />
                          </div>
                       </div>
-                   </SectionCard>
+                   </AdminFormSection>
 
                    {slug === 'centurion' && (
-                     <SectionCard title="4. Event Videos" icon="🎬">
+                     <AdminFormSection 
+                        title="4. Event Videos" 
+                        icon="🎬"
+                        isOpen={activeAccordionSection === '4'}
+                        onToggle={() => setActiveAccordionSection(activeAccordionSection === '4' ? null : '4')}
+                      >
                         <TableManager
                           items={payload.videos || []}
                           maxItems={20}
@@ -873,15 +1063,20 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                           textFields={[{key:'title', label:'Video Title', maxLength:100}]}
                           mediaField={{key:'vid', label:'Video File', accept:'video/*'}}
                         />
-                     </SectionCard>
+                     </AdminFormSection>
                    )}
 
-                   <SectionCard title={slug === 'centurion' ? '5. Professional Team' : '4. Professional Team'} icon="👥">
+                   <AdminFormSection 
+                      title={slug === 'centurion' ? '5. Professional Team' : '4. Professional Team'} 
+                      icon="👥"
+                      isOpen={activeAccordionSection === (slug === 'centurion' ? '5' : '4')}
+                      onToggle={() => setActiveAccordionSection(activeAccordionSection === (slug === 'centurion' ? '5' : '4') ? null : (slug === 'centurion' ? '5' : '4'))}
+                    >
                       <div className="space-y-8">
                         <div className="bg-slate-50/50 p-7 rounded-4xl border border-slate-100 flex flex-col md:flex-row gap-8">
                            <div className="w-40 shrink-0"><MediaUploadButton value={payload.fImg} previewUrl={payload.fImg_p} onChange={(v,p) => setPayload({...payload, fImg: v, fImg_p: p})} label="Upload Advisor" /></div>
                            <div className="grow space-y-4">
-                              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Faculty Advisor / In-Charge</h4>
+                              <h4 className={labelBase + " text-slate-400! mb-4!"}>Faculty Advisor / In-Charge Profile</h4>
                               <div className="grid grid-cols-2 gap-4">
                                  <input id="studentcareerform-35" name="studentcareerform-35" aria-label="studentcareerform field" maxLength={60} value={payload.fName || ''} onChange={e => setPayload({...payload, fName: e.target.value})} className={inputBase} placeholder="Full Name" />
                                  <input id="studentcareerform-36" name="studentcareerform-36" aria-label="studentcareerform field" maxLength={80} value={payload.fDesig || ''} onChange={e => setPayload({...payload, fDesig: e.target.value})} className={inputBase} placeholder="Official Designation" />
@@ -894,13 +1089,13 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                         </div>
                         {slug === 'centurion' && (
                           <div>
-                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Team Members</h4>
+                            <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>Team Members</h4>
                             <TableManager items={payload.team || []} maxItems={60} addLabel="Add Team Member" onChange={v => setPayload({...payload, team: v})} textFields={[{key:'name', label:'NAME', maxLength:60}, {key:'pos', label:'POSITION', maxLength:60}, {key:'sub', label:'SUBSYSTEM', maxLength:60}]} />
                           </div>
                         )}
                         {slug === 'airnova' && (
                           <div>
-                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Team Members</h4>
+                            <h4 className={labelBase + " text-slate-400! mb-4! ml-1!"}>Team Members</h4>
                             <TableManager items={payload.team || []} maxItems={80} addLabel="Add Team Member" onChange={v => setPayload({...payload, team: v})} textFields={[{key:'name', label:'NAME', maxLength:60}, {key:'contact', label:'CONTACT', maxLength:25}, {key:'pos', label:'POSITION', maxLength:80}]} />
                           </div>
                         )}
@@ -923,16 +1118,21 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                           </div>
                         )}
                       </div>
-                   </SectionCard>
+                   </AdminFormSection>
 
-                   <SectionCard title={slug === 'centurion' ? '6. Contact & Social Presence' : '5. Contact & Social Presence'} icon="📞">
+                   <AdminFormSection 
+                      title={slug === 'centurion' ? '6. Contact & Social Presence' : '5. Contact & Social Presence'} 
+                      icon="📞"
+                      isOpen={activeAccordionSection === (slug === 'centurion' ? '6' : '5')}
+                      onToggle={() => setActiveAccordionSection(activeAccordionSection === (slug === 'centurion' ? '6' : '5') ? null : (slug === 'centurion' ? '6' : '5'))}
+                    >
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                          <div className="space-y-6">
-                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Contacts (Team Leads)</h4>
+                            <h4 className={labelBase + " text-slate-400! ml-1!"}>Phone Contacts (Team Leads)</h4>
                             <TableManager items={payload.contacts || []} maxItems={8} addLabel="Add Contact Row" onChange={v => setPayload({...payload, contacts: v})} textFields={[{key:'name', label:'NAME', maxLength:60}, {key:'phone', label:'PHONE / MOBILE', maxLength:25}]} />
                          </div>
                          <div className="bg-slate-50/50 p-7 rounded-4xl border border-slate-100 space-y-4">
-                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Official Engagement Links</h4>
+                            <h4 className={labelBase + " text-slate-400! mb-4!"}>Official Engagement Links</h4>
                             <div className="space-y-4">
                                <div><label className="text-[9px] text-slate-500 font-bold block mb-1">EMAIL</label><input id="studentcareerform-41" name="studentcareerform-41" aria-label="studentcareerform field" value={payload.email || ''} onChange={e => setPayload({...payload, email: e.target.value})} className={inputBase} placeholder="team@vcet.edu.in" /></div>
                                <div><label className="text-[9px] text-slate-500 font-bold block mb-1">INSTAGRAM URL</label><input id="studentcareerform-42" name="studentcareerform-42" aria-label="studentcareerform field" value={payload.insta || ''} onChange={e => setPayload({...payload, insta: e.target.value})} className={inputBase} placeholder="https://instagram.com/..." /></div>
@@ -942,7 +1142,7 @@ const StudentCareerForm: React.FC<StudentCareerFormProps> = ({ slug, onBack }) =
                             </div>
                          </div>
                       </div>
-                   </SectionCard>
+                   </AdminFormSection>
                 </div>
              )}
           </div>

@@ -2,25 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { pagesApi } from '../../api/pagesApi';
 import { CommitteeData, CommitteePayload, CommitteeMember, CommitteeReport } from '../../types';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import AdminFormSection from '../../components/AdminFormSection';
 import { SortableListContext } from '../../components/SortableList';
 
-/* ── UI Components ────────────────────────────────────────────────────────── */
-const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white border border-slate-200/60 rounded-5xl overflow-hidden shadow-sm transition-all hover:shadow-md">
-    <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
-      <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#2563EB]">
-        {icon}
-      </div>
-      <h2 className="text-xl font-bold text-slate-900 tracking-tight">{title}</h2>
-    </div>
-    <div className="p-8">
-      {children}
-    </div>
-  </div>
-);
-
-const inputBase = "w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all";
-const labelBase = "block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 ml-1";
+/* ── UI Components ─────────────────────────────────────────────────────────── */
+const inputBase = "w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all text-slate-700";
+const labelBase = "block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1";
 
 /* ── List Manager (Dynamic Strings) ────────────────────────────────────────── */
 const ListManager: React.FC<{
@@ -45,11 +32,12 @@ const ListManager: React.FC<{
         items={items}
         onChange={onChange}
         renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
-          <div ref={setNodeRef} style={style} className="flex gap-4 group items-start">
-            <div className="flex flex-col gap-1 pt-2 opacity-50 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB]" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+          <div ref={setNodeRef} style={style} className="flex gap-4 group items-start p-2 bg-white rounded-2xl border border-transparent hover:border-slate-100 transition-all">
+            <div className="flex flex-col gap-1 pt-3/5 opacity-50 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB]" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
             <div className="grow">
+               <label className={labelBase}>{title} {idx + 1}</label>
               <input id={`committeesform-list-${idx}`} name={`committeesform-list-${idx}`} aria-label="committeesform field" 
                 value={item} 
                 onChange={e => updateItem(idx, e.target.value)}
@@ -57,7 +45,7 @@ const ListManager: React.FC<{
                 placeholder={`Enter ${title.toLowerCase()}...`}
               />
               {charLimit && (
-                <p className={`text-[10px] mt-1 ml-1 font-bold uppercase tracking-wider ${item.length > charLimit[1] ? 'text-red-500' : 'text-slate-400'}`}>
+                <p className={`text-[10px] mt-1.5 ml-1 font-bold uppercase tracking-wider ${item.length > charLimit[1] ? 'text-red-500' : 'text-slate-400'}`}>
                   {item.length} / {charLimit[1]} Characters
                 </p>
               )}
@@ -65,7 +53,7 @@ const ListManager: React.FC<{
             <button 
               type="button" 
               onClick={() => removeItem(idx)}
-              className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 mt-1"
+              className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 mt-6"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
@@ -73,8 +61,9 @@ const ListManager: React.FC<{
         )}
       />
       {items.length < maxItems && (
-        <button type="button" onClick={addItem} className="text-[#2563EB] text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
-          + Add {title}
+        <button type="button" onClick={addItem} className="text-[#2563EB] text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+          Add {title} ({items.length}/{maxItems})
         </button>
       )}
     </div>
@@ -104,7 +93,7 @@ const TableManager: React.FC<{
 
   return (
     <div className="space-y-4">
-      <div className="bg-slate-50 border border-slate-200 rounded-3xl overflow-hidden">
+      <div className="bg-slate-50 border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-100/50">
@@ -119,9 +108,9 @@ const TableManager: React.FC<{
             items={items}
             onChange={onChange}
             renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
-              <tr ref={setNodeRef} style={{...style, display: 'table-row'}} className="border-t border-slate-100 group bg-white">
+              <tr ref={setNodeRef} style={{...style, display: 'table-row'}} className="border-t border-slate-100 group bg-white hover:bg-slate-50/30 transition-colors">
                 <td className="px-4 py-4 w-10">
-                  <div className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                  <div className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100 transition-opacity" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
                   </div>
                 </td>
@@ -130,7 +119,7 @@ const TableManager: React.FC<{
                     <input id={`committeesform-table-${idx}-${col.key as string}`} name={`committeesform-table-${idx}-${col.key as string}`} aria-label="committeesform field" 
                       value={item[col.key] || ''} 
                       onChange={e => updateItem(idx, col.key, e.target.value)}
-                      className="w-full bg-transparent border-none text-sm font-semibold text-slate-700 focus:ring-0 p-0"
+                      className="w-full bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 p-0 placeholder:text-slate-300 placeholder:font-medium"
                       placeholder={col.placeholder}
                       maxLength={col.limit}
                     />
@@ -147,8 +136,9 @@ const TableManager: React.FC<{
         </table>
       </div>
       {items.length < maxItems && (
-        <button type="button" onClick={addItem} className="text-[#2563EB] text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
-          + Add Member
+        <button type="button" onClick={addItem} className="text-[#2563EB] text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+          Add Member ({items.length}/{maxItems})
         </button>
       )}
     </div>
@@ -181,16 +171,16 @@ const ReportManager: React.FC<{
         items={items}
         onChange={onChange}
         renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
-          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-200 rounded-4xl group relative">
-            <div className="flex flex-col justify-center items-center mr-2 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl group relative shadow-sm">
+            <div className="flex flex-col justify-center items-center mr-2 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100 transition-opacity" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
                <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
             
-            <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-sm">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-white border border-red-100 shadow-sm text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
             
-            <div className="flex flex-col md:flex-row gap-4 grow w-full">
+            <div className="flex flex-col md:flex-row gap-6 grow w-full">
               <div className="w-full md:w-1/3">
                 <label className={labelBase}>Academic Year</label>
                 <select id={`committeesform-select-${idx}`} name={`committeesform-select-${idx}`} aria-label="committeesform select field" 
@@ -203,19 +193,19 @@ const ReportManager: React.FC<{
               </div>
 
               <div className="grow">
-                <label className={labelBase}>PDF Report</label>
-                <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
+                <label className={labelBase}>PDF Report Document</label>
+                <div className="relative h-[3.45rem] bg-white border border-slate-200 rounded-2xl px-5 flex items-center justify-between overflow-hidden ring-offset-2 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                    <input id={`committeesform-pdf-${idx}`} name={`committeesform-pdf-${idx}`} aria-label="committeesform field" 
                      type="file" 
                      accept=".pdf" 
                      onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
                      className="absolute inset-0 opacity-0 cursor-pointer z-10"
                    />
-                   <span className="text-sm font-medium text-slate-500 truncate">
-                     {(item as any).file?.name || item.fileName || 'Select PDF file...'}
+                   <span className="text-sm font-bold text-slate-700 truncate">
+                     {(item as any).file?.name || item.fileName || 'Select institutional PDF...'}
                    </span>
-                   <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-[#2563EB]">
-                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                   <div className="w-8 h-8 rounded-xl bg-[#2563EB]/5 flex items-center justify-center text-[#2563EB]">
+                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
                    </div>
                 </div>
               </div>
@@ -224,8 +214,9 @@ const ReportManager: React.FC<{
         )}
       />
       {items.length < maxItems && (
-        <button type="button" onClick={addItem} className="text-[#2563EB] text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
-          + Add Report
+        <button type="button" onClick={addItem} className="text-[#2563EB] text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+          Add Yearly Report ({items.length}/{maxItems})
         </button>
       )}
     </div>
@@ -257,19 +248,19 @@ const PDFDocumentManager: React.FC<{
         items={items}
         onChange={onChange}
         renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
-          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-200 rounded-4xl group relative space-y-4">
-            <div className="flex flex-col pt-8 justify-start items-center mr-2 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-200 rounded-3xl group relative space-y-4 shadow-sm">
+            <div className="flex flex-col pt-12 justify-start items-center mr-2 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100 transition-opacity" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
                <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
 
-             <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-sm">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+             <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-white border border-red-100 shadow-md text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
             
             <div className="grow space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className={labelBase}>Document Title</label>
+                  <label className={labelBase}>Document Label</label>
                   <input id={`committeesform-doctitle-${idx}`} name={`committeesform-doctitle-${idx}`} aria-label="committeesform field" 
                     value={item.title} 
                     onChange={e => updateItem(idx, { title: e.target.value })}
@@ -278,18 +269,18 @@ const PDFDocumentManager: React.FC<{
                   />
                 </div>
                 <div>
-                  <label className={labelBase}>File Upload</label>
-                  <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
+                  <label className={labelBase}>PDF Document File</label>
+                  <div className="relative h-[3.45rem] bg-white border border-slate-200 rounded-2xl px-5 flex items-center justify-between overflow-hidden ring-offset-2 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                      <input id={`committeesform-docpdf-${idx}`} name={`committeesform-docpdf-${idx}`} aria-label="committeesform field" 
                        type="file" 
                        accept=".pdf" 
                        onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
                      />
-                     <span className="text-sm font-medium text-slate-500 truncate">
-                       {item.file?.name || item.fileName || 'Upload PDF...'}
+                     <span className="text-sm font-bold text-slate-700 truncate">
+                       {item.file?.name || item.fileName || 'Click to upload PDF...'}
                      </span>
-                     <div className="w-6 h-6 rounded-lg bg-[#2563EB]/5 text-[#2563EB] flex items-center justify-center">
+                     <div className="w-8 h-8 rounded-xl bg-[#2563EB]/5 text-[#2563EB] flex items-center justify-center">
                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
                      </div>
                   </div>
@@ -297,7 +288,7 @@ const PDFDocumentManager: React.FC<{
               </div>
               {showUrlField && (
                 <div>
-                  <label className={labelBase}>External PDF URL (Optional)</label>
+                  <label className={labelBase}>Legacy Redirect / External PDF URL (Optional)</label>
                   <input id={`committeesform-docurl-${idx}`} name={`committeesform-docurl-${idx}`} aria-label="committeesform field" 
                     value={item.pdfUrl} 
                     onChange={e => updateItem(idx, { pdfUrl: e.target.value })}
@@ -311,8 +302,9 @@ const PDFDocumentManager: React.FC<{
         )}
       />
       {items.length < maxItems && (
-        <button type="button" onClick={addItem} className="text-[#2563EB] text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
-          + Add Document
+        <button type="button" onClick={addItem} className="text-[#2563EB] text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+          Add Document ({items.length}/{maxItems})
         </button>
       )}
     </div>
@@ -330,6 +322,7 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
   const [payload, setPayload] = useState<CommitteePayload>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [activeAccordionSection, setActiveAccordionSection] = useState<string | null>(null);
 
   useEffect(() => {
     pagesApi.committees.get(slug)
@@ -369,97 +362,97 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
     <div className="flex items-center justify-center h-96 bg-white border border-slate-200/60 rounded-6xl animate-pulse">
       <div className="flex flex-col items-center gap-4">
         <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Fetching Committee Details...</p>
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gathering Committee Records...</p>
       </div>
     </div>
   );
 
   return (
-    <form onSubmit={handleSave} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <form onSubmit={handleSave} className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
       <PageEditorHeader
         title={data?.name || 'Committee Editor'}
-        description="Manage professional committee data and records."
+        description="Manage professional committee protocols, members, and historical reports."
         onSave={saveChanges}
         isSaving={saving}
         showBackButton
         onBack={onBack}
       />
 
-      <div className="space-y-10 pb-20">
+      <div className="space-y-4">
         {/* CDC Responsibilities */}
         {slug === 'cdc' && (
-          <SectionCard title="Key Responsibilities" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>}>
+          <AdminFormSection title="Core Responsibilities" icon="📋" isOpen={activeAccordionSection === 'responsibilities'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'responsibilities' ? null : 'responsibilities')}>
             <ListManager 
               title="Responsibility" 
               items={payload.responsibilities || []} 
               onChange={items => setPayload({...payload, responsibilities: items})} 
-              charLimit={[80, 120]}
+              charLimit={[80, 250]}
             />
-          </SectionCard>
+          </AdminFormSection>
         )}
 
         {/* IQAC/SCST/ICC/AntiRagging/Grievance Objectives */}
         {['iqac', 'anti-ragging', 'grievance', 'sc-st', 'icc'].includes(slug) && (
-          <SectionCard title="Committee Objectives" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>}>
+          <AdminFormSection title="Strategic Objectives" icon="🎯" isOpen={activeAccordionSection === 'objectives'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'objectives' ? null : 'objectives')}>
             <ListManager 
               title="Objective" 
               items={payload.objectives || []} 
               onChange={items => setPayload({...payload, objectives: items})} 
-              charLimit={slug === 'sc-st' ? [80, 100] : [80, 120]}
+              charLimit={slug === 'sc-st' ? [50, 450] : [50, 600]}
             />
-          </SectionCard>
+          </AdminFormSection>
         )}
 
         {/* SGRC Guidelines */}
         {slug === 'sgrc' && (
-          <SectionCard title="Institutional Guidelines" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4.253 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>}>
+          <AdminFormSection title="Constitutional Guidelines" icon="📜" isOpen={activeAccordionSection === 'guidelines'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'guidelines' ? null : 'guidelines')}>
             <ListManager 
               title="Guideline" 
               items={payload.guidelines || []} 
               onChange={items => setPayload({...payload, guidelines: items})} 
             />
-          </SectionCard>
+          </AdminFormSection>
         )}
 
         {/* Member Table */}
         {!['equal-opportunity', 'sedg'].includes(slug) && (
-          <SectionCard title="Committee Members" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>}>
+          <AdminFormSection title="Committee Member Roster" icon="👥" isOpen={activeAccordionSection === 'members'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'members' ? null : 'members')}>
             <TableManager 
               items={payload.members || []} 
               onChange={members => setPayload({...payload, members})}
               columns={
-                slug === 'cdc' ? [{ key: 'post', label: 'Post', placeholder: 'e.g. Chairman' }, { key: 'name', label: 'FullName', placeholder: 'e.g. Dr. John Doe' }] :
-                slug === 'iqac' ? [{ key: 'name', label: 'Name', placeholder: 'Full Name' }, { key: 'designation', label: 'Designation', placeholder: 'e.g. Principal' }] :
-                slug === 'anti-ragging' ? [{ key: 'name', label: 'Name', placeholder: 'Full Name' }, { key: 'designation', label: 'Designation', placeholder: 'e.g. HOD' }, { key: 'contact', label: 'Contact', placeholder: 'Phone Number', limit: 40 }] :
-                slug === 'grievance' ? [{ key: 'post', label: 'Post', placeholder: 'e.g. Member Secretary' }, { key: 'name', label: 'Name', placeholder: 'Full Name' }, { key: 'email', label: 'Email', placeholder: 'Official Email', limit: 40 }] :
-                slug === 'icc' ? [{ key: 'post', label: 'Post', placeholder: 'e.g. Presiding Officer' }, { key: 'name', label: 'Name', placeholder: 'Full Name' }, { key: 'contact', label: 'Contact', placeholder: 'Phone Number', limit: 40 }] :
-                [{ key: 'name', label: 'Name', placeholder: 'Full Name' }, { key: 'post', label: 'Post / Designation', placeholder: 'e.g. Member Secretary' }]
+                slug === 'cdc' ? [{ key: 'post', label: 'Committee Post', placeholder: 'e.g. Chairman' }, { key: 'name', label: 'Full Member Name', placeholder: 'e.g. Dr. John Doe' }] :
+                slug === 'iqac' ? [{ key: 'name', label: 'Official Name', placeholder: 'Full Name' }, { key: 'designation', label: 'Academic Designation', placeholder: 'e.g. Professor & Head' }] :
+                slug === 'anti-ragging' ? [{ key: 'name', label: 'Official Name', placeholder: 'Full Name' }, { key: 'designation', label: 'Designation', placeholder: 'e.g. HOD IT' }, { key: 'contact', label: 'Emergency Contact', placeholder: 'Mobile / Extension', limit: 40 }] :
+                slug === 'grievance' ? [{ key: 'post', label: 'Post', placeholder: 'e.g. Member Secretary' }, { key: 'name', label: 'Full Name', placeholder: 'Official Name' }, { key: 'email', label: 'Institutional Email', placeholder: 'email@vcet.edu.in', limit: 40 }] :
+                slug === 'icc' ? [{ key: 'post', label: 'Post', placeholder: 'e.g. Presiding Officer' }, { key: 'name', label: 'Official Name', placeholder: 'Full Name' }, { key: 'contact', label: 'Contact', placeholder: 'Phone Number', limit: 40 }] :
+                [{ key: 'name', label: 'Full Name', placeholder: 'Official Name' }, { key: 'post', label: 'Committee Role', placeholder: 'e.g. Member Secretary' }]
               }
-              maxItems={slug === 'cdc' ? 10 : 8}
+              maxItems={slug === 'cdc' ? 12 : 10}
             />
-          </SectionCard>
+          </AdminFormSection>
         )}
 
         {/* IQAC Reports */}
         {slug === 'iqac' && (
-          <SectionCard title="Annual Quality Assurance Reports (AQAR)" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}>
+          <AdminFormSection title="AQAR Archives (Annual Reports)" icon="📊" isOpen={activeAccordionSection === 'reports'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'reports' ? null : 'reports')}>
             <ReportManager 
               items={payload.reports || []} 
               onChange={reports => setPayload({...payload, reports})} 
             />
-          </SectionCard>
+          </AdminFormSection>
         )}
 
         {/* Equal Opportunity / SEDG Cell PDF Uploads */}
         {['equal-opportunity', 'sedg'].includes(slug) && (
-          <SectionCard title="Institutional Documents" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}>
+          <AdminFormSection title="Regulatory Documentation" icon="📁" isOpen={activeAccordionSection === 'docs'} onToggle={() => setActiveAccordionSection(activeAccordionSection === 'docs' ? null : 'docs')}>
             <PDFDocumentManager 
               items={payload.documents || []} 
               onChange={docs => setPayload({...payload, documents: docs})} 
-              maxItems={slug === 'sedg' ? 1 : 3}
+              maxItems={slug === 'sedg' ? 2 : 4}
               showUrlField={slug === 'equal-opportunity'}
             />
-          </SectionCard>
+          </AdminFormSection>
         )}
       </div>
     </form>

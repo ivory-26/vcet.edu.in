@@ -7,6 +7,21 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useListSync } from '../../hooks/useListSync';
+import AdminFormSection from '../../components/AdminFormSection';
+import { 
+  FileText, 
+  Award, 
+  Zap, 
+  User, 
+  MessageSquare, 
+  Star, 
+  GraduationCap, 
+  LayoutGrid, 
+  Briefcase, 
+  Users, 
+  Network, 
+  Gavel 
+} from 'lucide-react';
 
 /* ── Toast Component ────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -23,16 +38,6 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
   );
 };
 
-/* ── UI Components ─────────────────────────────────────────────────────────── */
-const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
-    <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
-      <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
-      <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
-    </div>
-    <div className="p-8 space-y-6">{children}</div>
-  </div>
-);
 
 const inputBase = 'w-full bg-slate-50 border-0 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#2563EB] rounded-2xl px-5 py-3/4 text-sm font-bold transition-all outline-none';
 const labelBase = 'block text-xs font-black text-slate-400 uppercase tracking-widest mb-2.5 ml-1';
@@ -272,6 +277,20 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Set default open section based on slug
+    if (slug === 'overview') setActiveSection('paragraphs');
+    else if (slug === 'president-desk' || slug === 'principal-desk') setActiveSection('profile');
+    else if (slug === 'governing-council') setActiveSection('chairman');
+    else if (slug === 'org-structure') setActiveSection('intro');
+    else if (slug === 'administration') setActiveSection('officers');
+    else if (slug === 'strategic-plan') setActiveSection('documents');
+    else if (slug === 'code-of-conduct') setActiveSection('framework');
+  }, [slug]);
+
+  const toggleSection = (id: string) => setActiveSection(prev => prev === id ? null : id);
 
   useEffect(() => {
     pagesApi.about.get(slug).then(res => {
@@ -325,19 +344,36 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
     switch (slug) {
       case 'overview':
         return (
-          <div className="space-y-8">
-            <SectionCard title="Institute Overview Paragraphs" icon="📝">
+          <div className="space-y-4">
+            <AdminFormSection
+              title="Institute Overview Paragraphs"
+              icon={<FileText className="w-5 h-5" />}
+              isOpen={activeSection === 'paragraphs'}
+              onToggle={() => toggleSection('paragraphs')}
+            >
               <StringListManager items={payload.paragraphs} minItems={3} maxItems={3} maxLength={900} minLength={500} type="textarea" onChange={v => updateProp('paragraphs', v)} label="Paragraph" />
-            </SectionCard>
-            <SectionCard title="Accreditation Points" icon="🏅">
+            </AdminFormSection>
+
+            <AdminFormSection
+              title="Accreditation Points"
+              icon={<Award className="w-5 h-5" />}
+              isOpen={activeSection === 'accreditation'}
+              onToggle={() => toggleSection('accreditation')}
+            >
               <StringListManager items={payload.accreditation} minItems={4} maxItems={6} maxLength={80} minLength={20} onChange={v => updateProp('accreditation', v)} label="Point" />
-            </SectionCard>
-            <SectionCard title="Quick Facts" icon="⚡">
+            </AdminFormSection>
+
+            <AdminFormSection
+              title="Quick Facts"
+              icon={<Zap className="w-5 h-5" />}
+              isOpen={activeSection === 'facts'}
+              onToggle={() => toggleSection('facts')}
+            >
               <DynamicListManager items={payload.facts} minItems={4} maxItems={4} onChange={v => updateProp('facts', v)} fields={[
                 { key: 'label', label: 'Fact Label', max: 20 },
                 { key: 'value', label: 'Fact Value', max: 15 }
               ]} />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
@@ -345,8 +381,13 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
       case 'principal-desk':
         const isPrincipal = slug === 'principal-desk';
         return (
-          <div className="space-y-8">
-            <SectionCard title="Leader Profile" icon="👤">
+          <div className="space-y-4">
+            <AdminFormSection
+              title="Leader Profile"
+              icon={<User className="w-5 h-5" />}
+              isOpen={activeSection === 'profile'}
+              onToggle={() => toggleSection('profile')}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <LimitedInput label="Full Name" max={50} value={payload.intro?.name} onChange={v => updateIntro('name', v)} />
                 <LimitedInput label={isPrincipal ? "Role Headline" : "Designation & Org"} max={isPrincipal ? 80 : 90} value={payload.intro?.role} onChange={v => updateIntro('role', v)} />
@@ -354,31 +395,55 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
                   <FileUploadField label="Profile Image Upload" accept="image/*" value={payload.intro?.image} onChange={v => updateIntro('image', v)} />
                 </div>
               </div>
-            </SectionCard>
-            <SectionCard title="Message Content" icon="💬">
+            </AdminFormSection>
+
+            <AdminFormSection
+              title="Message Content"
+              icon={<MessageSquare className="w-5 h-5" />}
+              isOpen={activeSection === 'message'}
+              onToggle={() => toggleSection('message')}
+            >
               <StringListManager items={payload.messageParagraphs} minItems={isPrincipal ? 4 : 3} maxItems={isPrincipal ? 5 : 4} maxLength={isPrincipal ? 950 : 850} minLength={isPrincipal ? 400 : 350} type="textarea" onChange={v => updateProp('messageParagraphs', v)} label="Message Para" />
-            </SectionCard>
-            <SectionCard title="Quotes & Callouts" icon="✨">
+            </AdminFormSection>
+
+            <AdminFormSection
+              title="Quotes & Callouts"
+              icon={<Star className="w-5 h-5" />}
+              isOpen={activeSection === 'quotes'}
+              onToggle={() => toggleSection('quotes')}
+            >
               <LimitedInput label="Highlight Quote" max={isPrincipal ? 260 : 220} min={isPrincipal ? 120 : 100} type="textarea" value={payload.intro?.highlightQuote} onChange={v => updateIntro('highlightQuote', v)} />
               <div className="mt-6">
                 <LimitedInput label="Closing Quote" max={isPrincipal ? 420 : 380} min={isPrincipal ? 180 : 160} type="textarea" value={payload.intro?.closingQuote} onChange={v => updateIntro('closingQuote', v)} />
               </div>
-            </SectionCard>
+            </AdminFormSection>
+
             {isPrincipal && (
               <>
-                <SectionCard title="Principal Qualifications" icon="🎓">
+                <AdminFormSection
+                  title="Principal Qualifications"
+                  icon={<GraduationCap className="w-5 h-5" />}
+                  isOpen={activeSection === 'qualifications'}
+                  onToggle={() => toggleSection('qualifications')}
+                >
                   <DynamicListManager items={payload.profileDetails} minItems={3} maxItems={3} onChange={v => updateProp('profileDetails', v)} fields={[
                     { key: 'qualification', label: 'Qual', max: 20 },
                     { key: 'experience', label: 'Exp', max: 20 },
                     { key: 'affiliation', label: 'Affiliation', max: 80 }
                   ]} />
-                </SectionCard>
-                <SectionCard title="Campus Highlights Cards" icon="🔳">
+                </AdminFormSection>
+
+                <AdminFormSection
+                  title="Campus Highlights Cards"
+                  icon={<LayoutGrid className="w-5 h-5" />}
+                  isOpen={activeSection === 'highlights'}
+                  onToggle={() => toggleSection('highlights')}
+                >
                   <DynamicListManager items={payload.highlightsCards} minItems={4} maxItems={4} onChange={v => updateProp('highlightsCards', v)} fields={[
                     { key: 'value', label: 'Icon/Value', max: 25 },
                     { key: 'label', label: 'Title', max: 35 }
                   ]} />
-                </SectionCard>
+                </AdminFormSection>
               </>
             )}
           </div>
@@ -386,32 +451,54 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
 
       case 'governing-council':
         return (
-          <div className="space-y-8">
-            <SectionCard title="Chairman" icon="👔">
+          <div className="space-y-4">
+            <AdminFormSection
+              title="Chairman"
+              icon={<Briefcase className="w-5 h-5" />}
+              isOpen={activeSection === 'chairman'}
+              onToggle={() => toggleSection('chairman')}
+            >
               <LimitedInput label="Chairman Name" max={70} value={payload.chairman?.name} onChange={v => updateProp('chairman', { ...payload.chairman, name: v })} />
               <div className="mt-4"><LimitedInput label="Role" max={25} value={payload.chairman?.role} onChange={v => updateProp('chairman', { ...payload.chairman, role: v })} /></div>
               <div className="mt-4"><LimitedInput label="Short Description" max={90} value={payload.chairman?.description} onChange={v => updateProp('chairman', { ...payload.chairman, description: v })} /></div>
-            </SectionCard>
-            <SectionCard title="GC Members Table" icon="👥">
+            </AdminFormSection>
+
+            <AdminFormSection
+              title="GC Members Table"
+              icon={<Users className="w-5 h-5" />}
+              isOpen={activeSection === 'members'}
+              onToggle={() => toggleSection('members')}
+            >
                <DynamicListManager items={payload.councilMembers} minItems={8} maxItems={15} onChange={v => updateProp('councilMembers', v)} fields={[
                  { key: 'role', label: 'Role', max: 25 },
                  { key: 'name', label: 'Name', max: 70 },
                  { key: 'description', label: 'Description/Org', max: 90 }
                ]} />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'org-structure':
         return (
-          <div className="space-y-8">
-            <SectionCard title="Structure Intro" icon="🏢">
+          <div className="space-y-4">
+            <AdminFormSection
+              title="Structure Intro"
+              icon={<Network className="w-5 h-5" />}
+              isOpen={activeSection === 'intro'}
+              onToggle={() => toggleSection('intro')}
+            >
               <LimitedInput label="Introduction Text" max={220} min={80} type="textarea" value={payload.orgIntro} onChange={v => updateProp('orgIntro', v)} />
               <div className="mt-6">
                 <FileUploadField label="Org Chart Image Upload" accept="image/*" value={payload.orgChartImage} onChange={v => updateProp('orgChartImage', v)} />
               </div>
-            </SectionCard>
-            <SectionCard title="Hierarchy Nodes" icon="🌳">
+            </AdminFormSection>
+
+            <AdminFormSection
+              title="Hierarchy Nodes"
+              icon={<Network className="w-5 h-5" />}
+              isOpen={activeSection === 'nodes'}
+              onToggle={() => toggleSection('nodes')}
+            >
               <div className="p-4 mb-4 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl border border-blue-200">
                 Define hierarchy nodes. Support for 4-6 levels, max 8 nodes per level.
               </div>
@@ -421,13 +508,18 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
                 { key: 'parent', label: 'Parent Node ID/Reference', max: 50 },
                 { key: 'displayOrder', label: 'Display Order', max: 2 }
               ]} />
-            </SectionCard>
+            </AdminFormSection>
           </div>
         );
 
       case 'administration':
         return (
-          <SectionCard title="Administrative Officers" icon="🏢">
+          <AdminFormSection
+            title="Administrative Officers"
+            icon={<Briefcase className="w-5 h-5" />}
+            isOpen={activeSection === 'officers'}
+            onToggle={() => toggleSection('officers')}
+          >
             <DynamicListManager items={payload.adminCards} minItems={2} maxItems={4} onChange={v => updateProp('adminCards', v)} fields={[
               { key: 'name', label: 'Name', max: 50 },
               { key: 'role', label: 'Designation', max: 40 },
@@ -448,12 +540,17 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
                 />
               ))}
             </div>
-          </SectionCard>
+          </AdminFormSection>
         );
 
       case 'strategic-plan':
         return (
-          <SectionCard title="Strategic Documents (PDF)" icon="📄">
+          <AdminFormSection
+            title="Strategic Documents (PDF)"
+            icon={<FileText className="w-5 h-5" />}
+            isOpen={activeSection === 'documents'}
+            onToggle={() => toggleSection('documents')}
+          >
             <DynamicListManager items={payload.documents} minItems={5} maxItems={8} onChange={v => updateProp('documents', v)} fields={[
               { key: 'label', label: 'Doc Label', max: 60 },
               { key: 'year', label: 'Academic Year', max: 20 }
@@ -473,12 +570,17 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
                 />
               ))}
             </div>
-          </SectionCard>
+          </AdminFormSection>
         );
 
       case 'code-of-conduct':
         return (
-          <SectionCard title="Conduct Framework" icon="⚖️">
+          <AdminFormSection
+            title="Conduct Framework"
+            icon={<Gavel className="w-5 h-5" />}
+            isOpen={activeSection === 'framework'}
+            onToggle={() => toggleSection('framework')}
+          >
             <div className="p-4 mb-4 bg-slate-900 text-white text-[10px] uppercase tracking-tighter font-black rounded-xl border-l-4 border-blue-500">
               Note: This section strictly expects 3 conduct modules (Student, Staff, Faculty).
             </div>
@@ -487,7 +589,7 @@ const AboutUsForm: React.FC<AboutUsFormProps> = ({ slug, onBack }) => {
               { key: 'description', label: 'Headline Description', max: 180, min: 80, type: 'textarea' }
             ]} />
             <ConductRulesManager sections={payload.conductSections || []} onChange={v => updateProp('conductSections', v)} />
-          </SectionCard>
+          </AdminFormSection>
         );
 
       default:
