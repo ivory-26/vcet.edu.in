@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 /* ── Toast ─────────────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -16,7 +17,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 
 /* ── UI Primitives ──────────────────────────────────────────────────────────── */
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-[2rem] shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
+  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
     <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
       <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
       <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
@@ -143,40 +144,49 @@ const TableManager: React.FC<{
 
   return (
     <div className="space-y-4">
-      {items.map((item, idx) => (
-        <div key={idx} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 group">
-          <div className="flex-grow space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-4">
-              {textFields.map(f => (
-                <div key={f.key} className={f.isTextarea ? 'col-span-1 md:col-span-2 lg:col-span-3' : ''}>
-                  <label className={labelBase}>{f.label}</label>
-                  {f.isTextarea
-                    ? <textarea id="trainingplacementform-textarea-1" name="trainingplacementform-textarea-1" aria-label="trainingplacementform textarea field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs h-20 resize-none`} placeholder={f.placeholder} />
-                    : <input id="trainingplacementform-2" name="trainingplacementform-2" aria-label="trainingplacementform field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs`} placeholder={f.placeholder} />
-                  }
-                </div>
-              ))}
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 group">
+            <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-2 self-start mt-4" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
-            {mediaField && (
-              <div>
-                <label className={labelBase}>{mediaField.label}</label>
-                <MediaUploadButton
-                  value={item[mediaField.key]}
-                  previewUrl={item[mediaField.key + '_preview']}
-                  accept={mediaField.accept}
-                  onChange={(v, url) => upd(idx, { [mediaField.key]: v, [mediaField.key + '_preview']: url })}
-                />
+            <div className="grow space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-4">
+                {textFields.map(f => (
+                  <div key={f.key} className={f.isTextarea ? 'col-span-1 md:col-span-2 lg:col-span-3' : ''}>
+                    <label className={labelBase}>{f.label}</label>
+                    {f.isTextarea
+                      ? <textarea id={`tp-ta-${idx}-${f.key}`} name={`tp-ta-${idx}-${f.key}`} aria-label="trainingplacementform textarea field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} py-3! px-4! rounded-xl! text-xs! h-20 resize-none`} placeholder={f.placeholder} />
+                      : <input id={`tp-input-${idx}-${f.key}`} name={`tp-input-${idx}-${f.key}`} aria-label="trainingplacementform field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} py-3! px-4! rounded-xl! text-xs!`} placeholder={f.placeholder} />
+                    }
+                  </div>
+                ))}
               </div>
-            )}
+              {mediaField && (
+                <div>
+                  <label className={labelBase}>{mediaField.label}</label>
+                  <MediaUploadButton
+                    value={item[mediaField.key]}
+                    previewUrl={item[mediaField.key + '_preview']}
+                    accept={mediaField.accept}
+                    onChange={(v, url) => upd(idx, { [mediaField.key]: v, [mediaField.key + '_preview']: url })}
+                  />
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => del(idx)}
+              className="mt-6 p-2 h-max bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button
-            onClick={() => del(idx)}
-            className="self-center p-2 h-max bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-      ))}
+        )}
+      />
       <button 
         onClick={add} 
         disabled={!!maxItems && items.length >= maxItems}
@@ -217,39 +227,53 @@ const NestedEventManager: React.FC<{ items: any[]; onChange: (val: any[]) => voi
 
   return (
     <div className="space-y-6">
-      {items.map((yr, yi) => (
-        <div key={yi} className="border border-slate-200 rounded-3xl overflow-hidden bg-slate-50">
-          <div className="flex items-center gap-3 p-5 bg-white border-b border-slate-100">
-            <div className="flex-grow">
-              <label className={labelBase}>Academic Year</label>
-              <input id="trainingplacementform-3" name="trainingplacementform-3" aria-label="trainingplacementform field" value={yr.year || ''} onChange={e => updYear(yi, { year: e.target.value })} className={inputBase} placeholder="e.g. 2023-24" />
-            </div>
-            <button onClick={() => delYear(yi)} className="mt-6 p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-          </div>
-          <div className="p-4 space-y-3">
-            {(yr.events || []).map((ev: any, ei: number) => (
-              <div key={ei} className="flex gap-4 p-5 bg-white border border-slate-100 rounded-2xl group relative shadow-sm">
-                 <button onClick={() => delEvent(yi, ei)} className="absolute top-4 right-4 p-2 bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg></button>
-                <div className="flex-grow space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label className={labelBase}>Event Title</label><input id="trainingplacementform-4" name="trainingplacementform-4" aria-label="trainingplacementform field" maxLength={80} value={ev.title || ''} onChange={e => updEvent(yi, ei, { title: e.target.value })} className={`${inputBase} !py-2.5 !px-4 !rounded-xl !text-xs`} placeholder="e.g. E-Summit" /></div>
-                    <div><label className={labelBase}>Companies details</label><input id="trainingplacementform-5" name="trainingplacementform-5" aria-label="trainingplacementform field" value={ev.companies || ''} onChange={e => updEvent(yi, ei, { companies: e.target.value })} className={`${inputBase} !py-2.5 !px-4 !rounded-xl !text-xs`} placeholder="If any..." /></div>
-                  </div>
-                  <div><label className={labelBase}>Description</label><textarea id="trainingplacementform-textarea-2" name="trainingplacementform-textarea-2" aria-label="trainingplacementform textarea field" maxLength={200} value={ev.desc || ''} onChange={e => updEvent(yi, ei, { desc: e.target.value })} className={`${inputBase} !py-2.5 !px-4 !rounded-xl !text-xs resize-none h-16`} placeholder="Short brief..." /></div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label className={labelBase}>Speakers/Guests</label><input id="trainingplacementform-6" name="trainingplacementform-6" aria-label="trainingplacementform field" value={ev.speakers || ''} onChange={e => updEvent(yi, ei, { speakers: e.target.value })} className={`${inputBase} !py-2.5 !px-4 !rounded-xl !text-xs`} placeholder="Names..." /></div>
-                    <div><label className={labelBase}>Participants count</label><input id="trainingplacementform-7" name="trainingplacementform-7" aria-label="trainingplacementform field" value={ev.participants || ''} onChange={e => updEvent(yi, ei, { participants: e.target.value })} className={`${inputBase} !py-2.5 !px-4 !rounded-xl !text-xs`} placeholder="e.g. 150+" /></div>
-                  </div>
-                </div>
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(yr, yi, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="border border-slate-200 rounded-3xl overflow-hidden bg-slate-50">
+            <div className="flex items-center gap-3 p-5 bg-white border-b border-slate-100">
+              <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-2" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
               </div>
-            ))}
-            <button onClick={() => addEvent(yi)} disabled={yr.events.length >= 5} className="w-full py-3 border border-dashed border-blue-300 rounded-2xl text-xs font-bold text-blue-400 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
-              + Add Event ({yr.events?.length || 0}/5)
-            </button>
+              <div className="grow">
+                <label className={labelBase}>Academic Year</label>
+                <input id={`tp-year-${yi}`} name={`tp-year-${yi}`} aria-label="trainingplacementform field" value={yr.year || ''} onChange={e => updYear(yi, { year: e.target.value })} className={inputBase} placeholder="e.g. 2023-24" />
+              </div>
+              <button onClick={() => delYear(yi)} className="mt-6 p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div className="p-4 space-y-3">
+              <SortableListContext
+                items={yr.events || []}
+                onChange={val => updYear(yi, { events: val })}
+                renderItem={(ev, ei, id2, dragHandleProps2, setNodeRef2, style2, isDragging2, actions2) => (
+                  <div ref={setNodeRef2} style={style2} className="flex gap-4 p-5 bg-white border border-slate-100 rounded-2xl group relative shadow-sm">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-200 hover:text-blue-400 p-2 self-start mt-2" {...dragHandleProps2.attributes} {...dragHandleProps2.listeners}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+                    </div>
+                    <button onClick={() => delEvent(yi, ei)} className="absolute top-4 right-4 p-2 bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg></button>
+                    <div className="grow space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label className={labelBase}>Event Title</label><input id={`tp-ev-title-${yi}-${ei}`} name={`tp-ev-title-${yi}-${ei}`} aria-label="trainingplacementform field" maxLength={80} value={ev.title || ''} onChange={e => updEvent(yi, ei, { title: e.target.value })} className={`${inputBase} py-2.5! px-4! rounded-xl! text-xs!`} placeholder="e.g. E-Summit" /></div>
+                        <div><label className={labelBase}>Companies details</label><input id={`tp-ev-comp-${yi}-${ei}`} name={`tp-ev-comp-${yi}-${ei}`} aria-label="trainingplacementform field" value={ev.companies || ''} onChange={e => updEvent(yi, ei, { companies: e.target.value })} className={`${inputBase} py-2.5! px-4! rounded-xl! text-xs!`} placeholder="If any..." /></div>
+                      </div>
+                      <div><label className={labelBase}>Description</label><textarea id={`tp-ev-desc-${yi}-${ei}`} name={`tp-ev-desc-${yi}-${ei}`} aria-label="trainingplacementform textarea field" maxLength={200} value={ev.desc || ''} onChange={e => updEvent(yi, ei, { desc: e.target.value })} className={`${inputBase} py-2.5! px-4! rounded-xl! text-xs! resize-none h-16`} placeholder="Short brief..." /></div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label className={labelBase}>Speakers/Guests</label><input id={`tp-ev-speak-${yi}-${ei}`} name={`tp-ev-speak-${yi}-${ei}`} aria-label="trainingplacementform field" value={ev.speakers || ''} onChange={e => updEvent(yi, ei, { speakers: e.target.value })} className={`${inputBase} py-2.5! px-4! rounded-xl! text-xs!`} placeholder="Names..." /></div>
+                        <div><label className={labelBase}>Participants count</label><input id={`tp-ev-part-${yi}-${ei}`} name={`tp-ev-part-${yi}-${ei}`} aria-label="trainingplacementform field" value={ev.participants || ''} onChange={e => updEvent(yi, ei, { participants: e.target.value })} className={`${inputBase} py-2.5! px-4! rounded-xl! text-xs!`} placeholder="e.g. 150+" /></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              />
+              <button onClick={() => addEvent(yi)} disabled={yr.events.length >= 5} className="w-full py-3 border border-dashed border-blue-300 rounded-2xl text-xs font-bold text-blue-400 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+                + Add Event ({yr.events?.length || 0}/5)
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        )}
+      />
       <button onClick={addYear} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all flex items-center justify-center gap-2">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
         Add Academic Year
@@ -331,7 +355,7 @@ const TrainingPlacementForm: React.FC<TrainingPlacementFormProps> = ({ slug, onB
             <SectionCard title="3. PLACEMENT STATISTICS" icon="📊">
               <div className="space-y-10 mt-4">
                 {/* ── 3a. Higher Studies Chart Data ── */}
-                <div className="bg-slate-50 rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                <div className="bg-slate-50 rounded-4xl border border-slate-100 overflow-hidden shadow-sm">
                   <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100">
                     <div>
                       <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">3a. Higher Studies — Chart Data</h3>
@@ -352,9 +376,19 @@ const TrainingPlacementForm: React.FC<TrainingPlacementFormProps> = ({ slug, onB
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-50">
-                        {(payload.higherStudies || []).map((row: any, i: number) => (
-                          <tr key={i} className="group hover:bg-white transition-all">
-                            <td className="px-8 py-4 text-sm font-bold text-slate-900">{row.year}</td>
+                      <SortableListContext
+                        items={payload.higherStudies || []}
+                        onChange={val => setPayload({ ...payload, higherStudies: val })}
+                        renderItem={(row, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+                          <tr ref={setNodeRef} style={style} className={`group hover:bg-white transition-all ${isDragging ? 'bg-white shadow-lg' : ''}`}>
+                            <td className="px-8 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="cursor-grab active:cursor-grabbing text-slate-200 hover:text-blue-400 transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+                                </div>
+                                <span className="text-sm font-bold text-slate-900">{row.year}</span>
+                              </div>
+                            </td>
                             <td className="px-8 py-4 text-sm font-black text-blue-700">{row.count}</td>
                             <td className="px-8 py-4">
                               <div className="flex items-center justify-end gap-2">
@@ -367,10 +401,11 @@ const TrainingPlacementForm: React.FC<TrainingPlacementFormProps> = ({ slug, onB
                               </div>
                             </td>
                           </tr>
-                        ))}
-                        {!(payload.higherStudies?.length) && (
-                          <tr><td colSpan={3} className="px-8 py-6 text-center text-xs text-slate-400 font-semibold italic">No entries yet. Add a year below.</td></tr>
                         )}
+                      />
+                      {!(payload.higherStudies?.length) && (
+                        <tr><td colSpan={3} className="px-8 py-6 text-center text-xs text-slate-400 font-semibold italic">No entries yet. Add a year below.</td></tr>
+                      )}
                       </tbody>
                     </table>
                   </div>
@@ -410,7 +445,7 @@ const TrainingPlacementForm: React.FC<TrainingPlacementFormProps> = ({ slug, onB
                 </div>
 
                 {/* ── 3b. Highest Package Chart Data ── */}
-                <div className="bg-slate-50 rounded-[2rem] border border-slate-100 overflow-hidden shadow-sm">
+                <div className="bg-slate-50 rounded-4xl border border-slate-100 overflow-hidden shadow-sm">
                   <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100">
                     <div>
                       <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">3b. Highest Package — Chart Data</h3>
@@ -431,9 +466,19 @@ const TrainingPlacementForm: React.FC<TrainingPlacementFormProps> = ({ slug, onB
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-50">
-                        {(payload.highestPackage || []).map((row: any, i: number) => (
-                          <tr key={i} className="group hover:bg-white transition-all">
-                            <td className="px-8 py-4 text-sm font-bold text-slate-900">{row.year}</td>
+                      <SortableListContext
+                        items={payload.highestPackage || []}
+                        onChange={val => setPayload({ ...payload, highestPackage: val })}
+                        renderItem={(row, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+                          <tr ref={setNodeRef} style={style} className={`group hover:bg-white transition-all ${isDragging ? 'bg-white shadow-lg' : ''}`}>
+                            <td className="px-8 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="cursor-grab active:cursor-grabbing text-slate-200 hover:text-blue-400 transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+                                </div>
+                                <span className="text-sm font-bold text-slate-900">{row.year}</span>
+                              </div>
+                            </td>
                             <td className="px-8 py-4 text-sm font-black text-amber-700">{row.lpa} LPA</td>
                             <td className="px-8 py-4">
                               <div className="flex items-center justify-end gap-2">
@@ -446,10 +491,11 @@ const TrainingPlacementForm: React.FC<TrainingPlacementFormProps> = ({ slug, onB
                               </div>
                             </td>
                           </tr>
-                        ))}
-                        {!(payload.highestPackage?.length) && (
-                          <tr><td colSpan={3} className="px-8 py-6 text-center text-xs text-slate-400 font-semibold italic">No entries yet. Add a year below.</td></tr>
                         )}
+                      />
+                      {!(payload.highestPackage?.length) && (
+                        <tr><td colSpan={3} className="px-8 py-6 text-center text-xs text-slate-400 font-semibold italic">No entries yet. Add a year below.</td></tr>
+                      )}
                       </tbody>
                     </table>
                   </div>

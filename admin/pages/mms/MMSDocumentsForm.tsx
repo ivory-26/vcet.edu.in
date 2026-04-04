@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Plus, Trash2, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2, FileText, CheckCircle, AlertTriangle, GripVertical } from 'lucide-react';
 import type { MMSDocumentsPayload } from '../../types';
 import { mmsDocumentsApi } from '../../api/mmsDocumentsApi';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const emptyForm: MMSDocumentsPayload = {
   overview: [],
@@ -82,19 +83,26 @@ const MMSDocumentsForm: React.FC = () => {
     const list = form[key] || [];
     return (
       <div className="space-y-3">
-        {list.map((item, i) => (
-          <div key={i} className="flex gap-2 items-start">
-            <div className="flex-1 relative">
-              <input id="mmsdocumentsform-1" name="mmsdocumentsform-1" aria-label="mmsdocumentsform field" className="admin-input-small w-full" value={item || ''} placeholder={placeholder} onChange={e => handleTextChange(e.target.value, charLimit, val => {
-                const c = [...list]; c[i] = val; setForm({...form, [key]: c});
-              })}/>
-              <span className="absolute right-2 top-2 text-[10px] text-slate-400">{item?.length || 0}/{charLimit}</span>
+        <SortableListContext
+          items={list}
+          onChange={val => setForm({ ...form, [key]: val })}
+          renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+            <div ref={setNodeRef} style={style} className={`flex gap-2 items-start ${isDragging ? 'shadow-lg z-50 bg-white rounded-lg p-1' : ''}`}>
+              <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 mt-1 shrink-0" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                <GripVertical className="w-4 h-4" />
+              </div>
+              <div className="flex-1 relative">
+                <input id={`mms-doc-input-${key}-${i}`} name={`mms-doc-input-${key}-${i}`} aria-label="mmsdocumentsform field" className="admin-input-small w-full" value={item || ''} placeholder={placeholder} onChange={e => handleTextChange(e.target.value, charLimit, val => {
+                  const c = [...list]; c[i] = val; setForm({...form, [key]: c});
+                })}/>
+                <span className="absolute right-2 top-2 text-[10px] text-slate-400">{item?.length || 0}/{charLimit}</span>
+              </div>
+              <button type="button" onClick={() => {
+                 const c = [...list]; c.splice(i, 1); setForm({...form, [key]: c});
+              }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
             </div>
-            <button type="button" onClick={() => {
-               const c = [...list]; c.splice(i, 1); setForm({...form, [key]: c});
-            }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
-          </div>
-        ))}
+          )}
+        />
         {(list?.length || 0) < maxLimit && (
           <button type="button" onClick={() => {
              const c = [...list]; c.push(''); setForm({...form, [key]: c});
@@ -136,25 +144,33 @@ const MMSDocumentsForm: React.FC = () => {
         {/* SECTION 1: OVERVIEW */}
         <SectionCard title="Document Submission Overview" icon="📋">
           <div className="space-y-4">
-            {form.overview?.map((item, i) => (
-              <div key={i} className="flex gap-2 items-start bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="flex-1 relative">
-                  <label className="admin-label">Requirement (Max 100)</label>
-                  <input id="mmsdocumentsform-2" name="mmsdocumentsform-2" aria-label="mmsdocumentsform field" className="admin-input-small w-full" value={item.requirement} placeholder="e.g. Original Documents" onChange={e => handleTextChange(e.target.value, 100, val => {
-                    const c = [...form.overview!]; c[i].requirement = val; setForm({...form, overview: c});
-                  })}/>
+            <SortableListContext
+              items={form.overview || []}
+              onChange={val => setForm({ ...form, overview: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+                <div ref={setNodeRef} style={style} className={`flex gap-2 items-start bg-slate-50 p-3 rounded-lg border border-slate-200 ${isDragging ? 'shadow-lg z-50' : ''}`}>
+                  <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 mt-5 shrink-0" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                    <div className="w-3 h-0.5 bg-current mb-0.5" />
+                    <div className="w-3 h-0.5 bg-current" />
+                  </div>
+                  <div className="flex-1 relative">
+                    <label className="admin-label">Requirement (Max 100)</label>
+                    <input id={`mms-doc-over-req-${i}`} name={`mms-doc-over-req-${i}`} aria-label="mmsdocumentsform field" className="admin-input-small w-full" value={item.requirement} placeholder="e.g. Original Documents" onChange={e => handleTextChange(e.target.value, 100, val => {
+                      const c = [...form.overview!]; c[i].requirement = val; setForm({...form, overview: c});
+                    })}/>
+                  </div>
+                  <div className="w-32 relative text-center">
+                    <label className="admin-label">Copies (20)</label>
+                    <input id={`mms-doc-over-copy-${i}`} name={`mms-doc-over-copy-${i}`} aria-label="mmsdocumentsform field" className="admin-input-small w-full text-center" value={item.copies} placeholder="e.g. 3 copies" onChange={e => handleTextChange(e.target.value, 20, val => {
+                      const c = [...form.overview!]; c[i].copies = val; setForm({...form, overview: c});
+                    })}/>
+                  </div>
+                  <button type="button" onClick={() => {
+                     const c = [...form.overview!]; c.splice(i, 1); setForm({...form, overview: c});
+                  }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg mt-5"><Trash2 className="w-4 h-4" /></button>
                 </div>
-                <div className="w-32 relative text-center">
-                  <label className="admin-label">Copies (20)</label>
-                  <input id="mmsdocumentsform-3" name="mmsdocumentsform-3" aria-label="mmsdocumentsform field" className="admin-input-small w-full text-center" value={item.copies} placeholder="e.g. 3 copies" onChange={e => handleTextChange(e.target.value, 20, val => {
-                    const c = [...form.overview!]; c[i].copies = val; setForm({...form, overview: c});
-                  })}/>
-                </div>
-                <button type="button" onClick={() => {
-                   const c = [...form.overview!]; c.splice(i, 1); setForm({...form, overview: c});
-                }} className="p-2 text-red-500 hover:bg-red-50 rounded-lg mt-5"><Trash2 className="w-4 h-4" /></button>
-              </div>
-            ))}
+              )}
+            />
             {(form.overview?.length || 0) < 2 && (
               <button type="button" onClick={() => setForm({...form, overview: [...(form.overview||[]), {requirement: '', copies: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Overview Requirement (Max 2)
@@ -223,7 +239,7 @@ const MMSDocumentsForm: React.FC = () => {
               </div>
             ))}
             {(form.checklistPdf?.length || 0) < 1 && (
-              <button type="button" onClick={() => setForm({...form, checklistPdf: [...(form.checklistPdf||[]), {fileUrl: null as any, label: ''}]})} className="btn-add min-h-[12rem]">
+              <button type="button" onClick={() => setForm({...form, checklistPdf: [...(form.checklistPdf||[]), {fileUrl: null as any, label: ''}]})} className="btn-add min-h-48">
                 <Plus className="w-5 h-5 mx-auto mb-1" /> Add PDF (Max 1)
               </button>
             )}
@@ -244,7 +260,7 @@ const MMSDocumentsForm: React.FC = () => {
 
 const SectionCard = ({ icon, title, children }: any) => {
   return (
-    <div className="bg-white rounded-[2rem] p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+    <div className="bg-white rounded-4xl p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
       <div className="flex items-center gap-3 mb-8">
          {icon && <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg shadow-sm border border-slate-100">{icon}</div>}
          <h2 className="text-sm font-black text-[#111827] uppercase tracking-wider">{title}</h2>

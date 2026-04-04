@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 /* ── Toast ─────────────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -116,38 +117,52 @@ const TableManager: React.FC<{
 
   return (
     <div className="space-y-4">
-      {items.map((item, idx) => (
-        <div key={idx} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 group">
-          <div className="flex-grow space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {textFields.map(f => (
-                <div key={f.key} className={f.isTextarea ? 'col-span-1 md:col-span-2 lg:col-span-3' : ''}>
-                  <label className={labelBase}>{f.label}</label>
-                  {f.isTextarea
-                    ? <textarea id="studentcareerform-textarea-1" name="studentcareerform-textarea-1" aria-label="studentcareerform textarea field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs h-20 resize-none`} placeholder={f.placeholder} />
-                    : <input id="studentcareerform-2" name="studentcareerform-2" aria-label="studentcareerform field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs`} placeholder={f.placeholder} />
-                  }
-                </div>
-              ))}
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 group">
+            <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-2 self-start mt-4" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
-            {mediaField && (
-              <div>
-                <label className={labelBase}>{mediaField.label}</label>
-                <MediaUploadButton
-                  value={item[mediaField.key]}
-                  previewUrl={item[mediaField.key + '_preview']}
-                  accept={mediaField.accept}
-                  onChange={(v, url) => upd(idx, { [mediaField.key]: v, [mediaField.key + '_preview']: url })}
-                />
+            <div className="flex-grow space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {textFields.map(f => (
+                  <div key={f.key} className={f.isTextarea ? 'col-span-1 md:col-span-2 lg:col-span-3' : ''}>
+                    <label className={labelBase}>{f.label}</label>
+                    {f.isTextarea
+                      ? <textarea id={`sc-ta-${idx}-${f.key}`} name={`sc-ta-${idx}-${f.key}`} aria-label="studentcareerform textarea field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs h-20 resize-none`} placeholder={f.placeholder} />
+                      : <input id={`sc-input-${idx}-${f.key}`} name={`sc-input-${idx}-${f.key}`} aria-label="studentcareerform field" maxLength={f.maxLength} value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs`} placeholder={f.placeholder} />
+                    }
+                  </div>
+                ))}
               </div>
-            )}
+              {mediaField && (
+                <div>
+                  <label className={labelBase}>{mediaField.label}</label>
+                  <MediaUploadButton
+                    value={item[mediaField.key]}
+                    previewUrl={item[mediaField.key + '_preview']}
+                    accept={mediaField.accept}
+                    onChange={(v, url) => upd(idx, { [mediaField.key]: v, [mediaField.key + '_preview']: url })}
+                  />
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => del(idx)}
+              className="mt-6 p-2 h-max bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
           </div>
-          <button onClick={() => del(idx)} className="self-center p-2 bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-      ))}
-      <button onClick={add} disabled={!!maxItems && items.length >= maxItems} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50">
+        )}
+      />
+      <button 
+        onClick={add} 
+        disabled={!!maxItems && items.length >= maxItems} 
+        className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+      >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
         {addLabel} {maxItems ? `(${items.length}/${maxItems})` : ''}
       </button>

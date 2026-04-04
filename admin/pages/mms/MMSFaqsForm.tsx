@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Trash2, CheckCircle, HelpCircle } from 'lucide-react';
+import { Plus, Trash2, CheckCircle } from 'lucide-react';
 import type { MMSFaqPayload } from '../../types';
 import { mmsFaqsApi } from '../../api/mmsFaqsApi';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const defaultFaqsRaw = [
   { id: 'faq-1', question: 'What is the course structure for the MMS program?', answer: 'The MMS program is structured into four semesters, divided into two semesters per year, as per University of Mumbai guidelines. The first year includes common subjects for all students, and the second year offers specialization options.' },
@@ -129,26 +130,35 @@ const MMSFaqsForm: React.FC = () => {
       )}
 
       <div className="space-y-6">
-         {mainList.map((faq, i) => (
-           <div key={faq.id || i} className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-4 group transition-all hover:shadow-slate-200/50 relative">
-              <button 
-                type="button" 
-                onClick={() => removeFaq(i)}
-                className="absolute top-6 right-6 w-10 h-10 bg-red-50 text-red-500 border border-red-100 rounded-xl hover:bg-red-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
-
-              <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
-                 <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">Q{i+1}</span>
-                 <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">FAQ Entry</h3>
+        <SortableListContext
+          items={mainList}
+          onChange={val => setForm({ ...form, mainList: val })}
+          renderItem={(faq, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+            <div ref={setNodeRef} style={style} className={`bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-4 group transition-all hover:shadow-slate-200/50 relative ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-2xl' : ''}`}>
+              <div className="flex items-center justify-between border-b border-slate-50 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current" />
+                  </div>
+                  <span className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400">Q{i+1}</span>
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-tight">FAQ Entry</h3>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => removeFaq(i)}
+                  className="w-10 h-10 bg-red-50 text-red-500 border border-red-100 rounded-xl hover:bg-red-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
               </div>
 
               <div className="space-y-6">
-                {/* Question Input */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Question</label>
-                  <input id="mmsfaqsform-1" name="mmsfaqsform-1" aria-label="mmsfaqsform field" 
+                  <input
+                    id={`faq-q-${i}`}
                     className="w-full bg-white border border-slate-200 rounded-2xl p-4 text-sm font-bold text-slate-800 focus:bg-white focus:ring-8 focus:ring-blue-100 focus:border-[#2563EB] transition-all shadow-sm"
                     value={faq.question}
                     onChange={(e) => updateQuestion(i, e.target.value)}
@@ -156,10 +166,10 @@ const MMSFaqsForm: React.FC = () => {
                   />
                 </div>
 
-                {/* Answer Textarea */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Answer</label>
-                  <textarea id="mmsfaqsform-textarea-1" name="mmsfaqsform-textarea-1" aria-label="mmsfaqsform textarea field" 
+                  <textarea
+                    id={`faq-a-${i}`}
                     className="w-full bg-slate-50 border border-slate-200 rounded-3xl p-6 text-sm font-medium focus:bg-white focus:ring-8 focus:ring-blue-100 focus:border-[#2563EB] transition-all min-h-[120px] resize-y shadow-inner"
                     value={faq.answer}
                     onChange={(e) => updateAnswer(i, e.target.value)}
@@ -167,21 +177,22 @@ const MMSFaqsForm: React.FC = () => {
                   />
                 </div>
               </div>
-           </div>
-         ))}
+            </div>
+          )}
+        />
 
-         <button 
-           type="button" 
-           onClick={addFaq} 
-           className="w-full py-6 bg-slate-50 border-2 border-dashed border-slate-300 rounded-[2.5rem] flex items-center justify-center gap-2 text-slate-500 font-black text-xs uppercase tracking-widest hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer"
-         >
-           <Plus className="w-5 h-5" /> Add New FAQ
-         </button>
+        <button 
+          type="button" 
+          onClick={addFaq} 
+          className="w-full py-6 bg-slate-50 border-2 border-dashed border-slate-300 rounded-5xl flex items-center justify-center gap-2 text-slate-500 font-black text-xs uppercase tracking-widest hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer"
+        >
+          <Plus className="w-5 h-5" /> Add New FAQ
+        </button>
       </div>
 
       {successMsg && (
         <div className="fixed bottom-6 right-6 z-50 animate-slide-up">
-           <div className="bg-slate-900 text-white px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-4 font-black text-xs uppercase tracking-widest border border-slate-700/50 backdrop-blur-md">
+           <div className="bg-slate-900 text-white px-8 py-5 rounded-4xl shadow-2xl flex items-center gap-4 font-black text-xs uppercase tracking-widest border border-slate-700/50 backdrop-blur-md">
              <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30"><CheckCircle className="w-5 h-5" /></div>
              {successMsg}
            </div>

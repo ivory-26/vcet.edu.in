@@ -5,6 +5,7 @@ import type { TrainingPlacementPayload } from '../../types';
 import { trainingPlacementApi } from '../../api/trainingPlacement';
 import { resolveApiUrl } from '../../../services/api';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const MMSPlacementInfoForm: React.FC = () => {
   const navigate = useNavigate();
@@ -95,19 +96,28 @@ const MMSPlacementInfoForm: React.FC = () => {
         <SectionCard title="Placement Objectives" icon="🎯">
           <p className="text-xs text-slate-500 mb-4 font-medium">Define placement objectives (max 7). Each objective max 160 characters.</p>
           <div className="space-y-3">
-            {form.placementObjectives?.map((obj, i) => (
-              <div key={i} className="flex gap-2">
-                <div className="flex-1 relative">
-                  <textarea id="mmsplacementinfoform-textarea-1" name="mmsplacementinfoform-textarea-1" aria-label="mmsplacementinfoform textarea field" className="admin-input-small resize-none" rows={2} value={obj.objective} placeholder="Placement objective statement..." onChange={e => handleTextChange(e.target.value, 160, val => {
-                    const c = [...form.placementObjectives!]; c[i] = { ...c[i], objective: val }; setForm({ ...form, placementObjectives: c });
-                  })} />
-                  <span className="absolute right-2 bottom-2 text-[10px] text-slate-400">{obj.objective.length}/160</span>
+            <SortableListContext
+              items={form.placementObjectives || []}
+              onChange={val => setForm({ ...form, placementObjectives: val })}
+              renderItem={(obj, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`flex gap-2 p-2 border rounded-lg bg-white ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl' : ''}`}>
+                  <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 mt-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current" />
+                  </div>
+                  <div className="flex-1 relative">
+                    <textarea id={`mms-obj-text-${i}`} name={`mms-obj-text-${i}`} aria-label="mmsplacementinfoform textarea field" className="admin-input-small resize-none" rows={2} value={obj.objective} placeholder="Placement objective statement..." onChange={e => handleTextChange(e.target.value, 160, val => {
+                      const c = [...form.placementObjectives!]; c[i] = { ...c[i], objective: val }; setForm({ ...form, placementObjectives: c });
+                    })} />
+                    <span className="absolute right-2 bottom-2 text-[10px] text-slate-400">{obj.objective.length}/160</span>
+                  </div>
+                  <button type="button" onClick={() => {
+                    const c = [...form.placementObjectives!]; c.splice(i, 1); setForm({ ...form, placementObjectives: c });
+                  }} className="p-2 text-red-500 rounded-lg shrink-0 self-start hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
                 </div>
-                <button type="button" onClick={() => {
-                  const c = [...form.placementObjectives!]; c.splice(i, 1); setForm({ ...form, placementObjectives: c });
-                }} className="p-2 text-red-500 rounded-lg shrink-0 self-start"><Trash2 className="w-4 h-4" /></button>
-              </div>
-            ))}
+              )}
+            />
             {(form.placementObjectives?.length || 0) < 7 && (
               <button type="button" onClick={() => setForm({ ...form, placementObjectives: [...(form.placementObjectives || []), { objective: '' }] })} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Objective (Max 7)
@@ -121,57 +131,68 @@ const MMSPlacementInfoForm: React.FC = () => {
         <SectionCard title="Placement Cell Members" icon="👤">
           <p className="text-xs text-slate-500 mb-4 font-medium">Add placement cell members (max 2). Includes photo, name, role, email, phone, extension.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {form.placementCellMembers?.map((mem, i) => (
-              <div key={i} className="p-5 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3">
-                <button type="button" onClick={() => {
-                  const c = [...form.placementCellMembers!]; c.splice(i, 1); setForm({ ...form, placementCellMembers: c });
-                }} className="absolute top-2 right-2 text-red-500 z-10 p-1 bg-white rounded-md shadow-sm border border-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+            <SortableListContext
+              items={form.placementCellMembers || []}
+              onChange={val => setForm({ ...form, placementCellMembers: val })}
+              renderItem={(mem, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-5 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.placementCellMembers!]; c.splice(i, 1); setForm({ ...form, placementCellMembers: c });
+                    }} className="text-red-500 z-10 p-1 bg-white rounded-md shadow-sm border border-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
 
-                <ImageUploader 
-                  value={mem.image} 
-                  onFileSelect={f => {
-                    const c = [...form.placementCellMembers!]; 
-                    c[i] = { ...c[i], image: f }; 
-                    setForm({ ...form, placementCellMembers: c });
-                  }} 
-                />
+                  <ImageUploader 
+                    value={mem.image} 
+                    onFileSelect={f => {
+                      const c = [...form.placementCellMembers!]; 
+                      c[i] = { ...c[i], image: f }; 
+                      setForm({ ...form, placementCellMembers: c });
+                    }} 
+                  />
 
-                <div className="relative">
-                  <label className="admin-label">Name <span className="text-slate-400 normal-case">({mem.name.length}/30)</span></label>
-                  <input id="mmsplacementinfoform-1" name="mmsplacementinfoform-1" aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Full Name *" value={mem.name} onChange={e => handleTextChange(e.target.value, 30, val => {
-                    const c = [...form.placementCellMembers!]; c[i] = { ...c[i], name: val }; setForm({ ...form, placementCellMembers: c });
-                  })} />
-                </div>
-                <div className="relative">
-                  <label className="admin-label">Role <span className="text-slate-400 normal-case">({mem.role.length}/40)</span></label>
-                  <input id="mmsplacementinfoform-2" name="mmsplacementinfoform-2" aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Designation / Role *" value={mem.role} onChange={e => handleTextChange(e.target.value, 40, val => {
-                    const c = [...form.placementCellMembers!]; c[i] = { ...c[i], role: val }; setForm({ ...form, placementCellMembers: c });
-                  })} />
-                </div>
-                <div className="relative">
-                  <label className="admin-label">Email <span className="text-slate-400 normal-case">({mem.email.length}/30)</span></label>
-                  <input id="mmsplacementinfoform-3" name="mmsplacementinfoform-3" aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Email address *" value={mem.email} onChange={e => handleTextChange(e.target.value, 30, val => {
-                    const c = [...form.placementCellMembers!]; c[i] = { ...c[i], email: val }; setForm({ ...form, placementCellMembers: c });
-                  })} />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
                   <div className="relative">
-                    <label className="admin-label">Phone <span className="text-slate-400 normal-case">({mem.phone.length}/25)</span></label>
-                    <input id="mmsplacementinfoform-4" name="mmsplacementinfoform-4" aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Phone *" value={mem.phone} onChange={e => handleTextChange(e.target.value, 25, val => {
-                      const c = [...form.placementCellMembers!]; c[i] = { ...c[i], phone: val }; setForm({ ...form, placementCellMembers: c });
+                    <label className="admin-label">Name <span className="text-slate-400 normal-case">({mem.name.length}/30)</span></label>
+                    <input id={`mms-mem-name-${i}`} name={`mms-mem-name-${i}`} aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Full Name *" value={mem.name} onChange={e => handleTextChange(e.target.value, 30, val => {
+                      const c = [...form.placementCellMembers!]; c[i] = { ...c[i], name: val }; setForm({ ...form, placementCellMembers: c });
                     })} />
                   </div>
                   <div className="relative">
-                    <label className="admin-label">Extension <span className="text-slate-400 normal-case">({mem.extension.length}/30)</span></label>
-                    <input id="mmsplacementinfoform-5" name="mmsplacementinfoform-5" aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Ext" value={mem.extension} onChange={e => handleTextChange(e.target.value, 30, val => {
-                      const c = [...form.placementCellMembers!]; c[i] = { ...c[i], extension: val }; setForm({ ...form, placementCellMembers: c });
+                    <label className="admin-label">Role <span className="text-slate-400 normal-case">({mem.role.length}/40)</span></label>
+                    <input id={`mms-mem-role-${i}`} name={`mms-mem-role-${i}`} aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Designation / Role *" value={mem.role} onChange={e => handleTextChange(e.target.value, 40, val => {
+                      const c = [...form.placementCellMembers!]; c[i] = { ...c[i], role: val }; setForm({ ...form, placementCellMembers: c });
                     })} />
                   </div>
+                  <div className="relative">
+                    <label className="admin-label">Email <span className="text-slate-400 normal-case">({mem.email.length}/30)</span></label>
+                    <input id={`mms-mem-email-${i}`} name={`mms-mem-email-${i}`} aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Email address *" value={mem.email} onChange={e => handleTextChange(e.target.value, 30, val => {
+                      const c = [...form.placementCellMembers!]; c[i] = { ...c[i], email: val }; setForm({ ...form, placementCellMembers: c });
+                    })} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="relative">
+                      <label className="admin-label">Phone <span className="text-slate-400 normal-case">({mem.phone.length}/25)</span></label>
+                      <input id={`mms-mem-phone-${i}`} name={`mms-mem-phone-${i}`} aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Phone *" value={mem.phone} onChange={e => handleTextChange(e.target.value, 25, val => {
+                        const c = [...form.placementCellMembers!]; c[i] = { ...c[i], phone: val }; setForm({ ...form, placementCellMembers: c });
+                      })} />
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Extension <span className="text-slate-400 normal-case">({mem.extension.length}/30)</span></label>
+                      <input id={`mms-mem-ext-${i}`} name={`mms-mem-ext-${i}`} aria-label="mmsplacementinfoform field" className="admin-input-small" placeholder="Ext" value={mem.extension} onChange={e => handleTextChange(e.target.value, 30, val => {
+                        const c = [...form.placementCellMembers!]; c[i] = { ...c[i], extension: val }; setForm({ ...form, placementCellMembers: c });
+                      })} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )}
+            />
             {(form.placementCellMembers?.length || 0) < 2 && (
-              <button type="button" onClick={() => setForm({ ...form, placementCellMembers: [...(form.placementCellMembers || []), { name: '', role: '', email: '', phone: '', extension: '' }] })} className="btn-add h-full min-h-[16rem]">
+              <button type="button" onClick={() => setForm({ ...form, placementCellMembers: [...(form.placementCellMembers || []), { name: '', role: '', email: '', phone: '', extension: '' }] })} className="btn-add h-full min-h-64">
                 <Plus className="w-5 h-5 mx-auto mb-2" /> Add Member (Max 2)
               </button>
             )}
@@ -184,23 +205,32 @@ const MMSPlacementInfoForm: React.FC = () => {
             <div>
               <h4 className="font-bold text-sm text-slate-700 mb-3">Program Description <span className="text-slate-400 font-medium text-xs">(Max 3 paragraphs, 1100 chars each)</span></h4>
               <div className="space-y-3">
-                {form.softSkillTraining?.paragraphs?.map((p, i) => (
-                  <div key={i} className="flex gap-2">
-                    <div className="flex-1 relative">
-                      <textarea id="mmsplacementinfoform-textarea-2" name="mmsplacementinfoform-textarea-2" aria-label="mmsplacementinfoform textarea field" className="admin-input-small resize-none" rows={4} value={p.text} placeholder="Program description paragraph..." onChange={e => handleTextChange(e.target.value, 1100, val => {
+                <SortableListContext
+                  items={form.softSkillTraining?.paragraphs || []}
+                  onChange={val => setForm({ ...form, softSkillTraining: { ...form.softSkillTraining!, paragraphs: val } })}
+                  renderItem={(p, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                    <div ref={setNodeRef} style={style} className={`flex gap-2 p-2 border rounded-lg bg-white ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl' : ''}`}>
+                      <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 mt-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                        <div className="w-4 h-0.5 bg-current mb-0.5" />
+                        <div className="w-4 h-0.5 bg-current mb-0.5" />
+                        <div className="w-4 h-0.5 bg-current" />
+                      </div>
+                      <div className="flex-1 relative">
+                        <textarea id={`mms-soft-para-${i}`} name={`mms-soft-para-${i}`} aria-label="mmsplacementinfoform textarea field" className="admin-input-small resize-none" rows={4} value={p.text} placeholder="Program description paragraph..." onChange={e => handleTextChange(e.target.value, 1100, val => {
+                          const c = { ...form.softSkillTraining! };
+                          const paras = [...c.paragraphs]; paras[i] = { ...paras[i], text: val };
+                          setForm({ ...form, softSkillTraining: { ...c, paragraphs: paras } });
+                        })} />
+                        <span className="absolute right-2 bottom-2 text-[10px] text-slate-400">{p.text.length}/1100</span>
+                      </div>
+                      <button type="button" onClick={() => {
                         const c = { ...form.softSkillTraining! };
-                        const paras = [...c.paragraphs]; paras[i] = { ...paras[i], text: val };
+                        const paras = [...c.paragraphs]; paras.splice(i, 1);
                         setForm({ ...form, softSkillTraining: { ...c, paragraphs: paras } });
-                      })} />
-                      <span className="absolute right-2 bottom-2 text-[10px] text-slate-400">{p.text.length}/1100</span>
+                      }} className="text-red-500 shrink-0 self-start p-2 hover:bg-red-50 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                     </div>
-                    <button type="button" onClick={() => {
-                      const c = { ...form.softSkillTraining! };
-                      const paras = [...c.paragraphs]; paras.splice(i, 1);
-                      setForm({ ...form, softSkillTraining: { ...c, paragraphs: paras } });
-                    }} className="text-red-500 shrink-0 self-start p-2"><Trash2 className="w-4 h-4" /></button>
-                  </div>
-                ))}
+                  )}
+                />
                 {(form.softSkillTraining?.paragraphs?.length || 0) < 3 && (
                   <button type="button" className="btn-add" onClick={() => {
                     const c = form.softSkillTraining ? { ...form.softSkillTraining } : { paragraphs: [], images: [] };
@@ -256,7 +286,7 @@ const MMSPlacementInfoForm: React.FC = () => {
 /* ── Helper Components ── */
 
 const SectionCard = ({ icon, title, children }: any) => (
-  <div className="bg-white rounded-[2rem] p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+  <div className="bg-white rounded-4xl p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
     <div className="flex items-center gap-3 mb-8">
       {icon && <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg shadow-sm border border-slate-100">{icon}</div>}
       <h2 className="text-sm font-black text-[#111827] uppercase tracking-wider">{title}</h2>
@@ -268,7 +298,7 @@ const SectionCard = ({ icon, title, children }: any) => (
 const ImageUploader = ({ value, onFileSelect }: { value?: any; onFileSelect: (f: File) => void }) => {
   const imageUrl = value instanceof File ? URL.createObjectURL(value) : (value && typeof value === 'object' && 'url' in value ? resolveApiUrl((value as any).url) : resolveApiUrl(value as string));
   return (
-    <div className="relative group rounded-xl border-2 border-dashed border-slate-200 p-4 bg-slate-50 hover:bg-slate-100 transition-colors flex flex-col items-center justify-center min-h-[80px] text-center cursor-pointer overflow-hidden">
+    <div className="relative group rounded-xl border-2 border-dashed border-slate-200 p-4 bg-slate-50 hover:bg-slate-100 transition-colors flex flex-col items-center justify-center min-h-20 text-center cursor-pointer overflow-hidden">
       <input id="mmsplacementinfoform-6" name="mmsplacementinfoform-6" aria-label="mmsplacementinfoform field" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={(e) => { if (e.target.files?.[0]) onFileSelect(e.target.files[0]); }} />
       {imageUrl ? (
         <img src={imageUrl} alt="preview" className="absolute inset-0 w-full h-full object-cover" />
@@ -284,32 +314,44 @@ const ImageUploader = ({ value, onFileSelect }: { value?: any; onFileSelect: (f:
 
 const GalleryEditor = ({ items, max, labelLimit, onChange }: { items: any[]; max: number; labelLimit: number; onChange: (items: any[]) => void }) => (
   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    {items.map((item, i) => {
-      const imgUrl = item.image instanceof File ? URL.createObjectURL(item.image) : (item.image && typeof item.image === 'object' && 'url' in item.image ? resolveApiUrl((item.image as any).url) : resolveApiUrl(item.image as string));
-      return (
-      <div key={i} className="p-3 bg-slate-50 border border-slate-200 rounded-lg relative space-y-2">
-        <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 bg-white border border-red-100 rounded text-red-500 z-10 p-0.5"><Trash2 className="w-3 h-3" /></button>
-        <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-20 flex items-center justify-center cursor-pointer overflow-hidden">
-          <input id="mmsplacementinfoform-7" name="mmsplacementinfoform-7" aria-label="mmsplacementinfoform field" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={(e) => {
-            if (e.target.files?.[0]) {
-              const c = [...items]; c[i] = { ...c[i], image: e.target.files[0] }; onChange(c);
-            }
-          }} />
-          {imgUrl ? (
-            <img src={imgUrl} alt="preview" className="absolute inset-0 w-full h-full object-cover" />
-          ) : (
-            <ImageIcon className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
-          )}
-        </div>
-        <input id="mmsplacementinfoform-8" name="mmsplacementinfoform-8" aria-label="mmsplacementinfoform field" className="admin-input-small text-center relative z-20" placeholder={`Label (Max ${labelLimit})`} value={item.label} onChange={e => {
-          if (e.target.value.length <= labelLimit) {
-            const c = [...items]; c[i] = { ...c[i], label: e.target.value }; onChange(c);
-          }
-        }} />
-      </div>
-    )})}
+    <SortableListContext
+      items={items}
+      onChange={onChange}
+      renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => {
+        const imgUrl = item.image instanceof File ? URL.createObjectURL(item.image) : (item.image && typeof item.image === 'object' && 'url' in item.image ? resolveApiUrl((item.image as any).url) : resolveApiUrl(item.image as string));
+        return (
+          <div ref={setNodeRef} style={style} className={`p-3 bg-slate-50 border border-slate-200 rounded-lg relative space-y-2 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                <div className="w-3 h-0.5 bg-current mb-0.5" />
+                <div className="w-3 h-0.5 bg-current mb-0.5" />
+                <div className="w-3 h-0.5 bg-current" />
+              </div>
+              <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="bg-white border border-red-100 rounded text-red-500 p-0.5 hover:bg-red-50"><Trash2 className="w-3 h-3" /></button>
+            </div>
+            <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-20 flex items-center justify-center cursor-pointer overflow-hidden">
+              <input id={`mms-gallery-file-${i}`} name={`mms-gallery-file-${i}`} aria-label="mmsplacementinfoform field" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  const c = [...items]; c[i] = { ...c[i], image: e.target.files[0] }; onChange(c);
+                }
+              }} />
+              {imgUrl ? (
+                <img src={imgUrl} alt="preview" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <ImageIcon className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+              )}
+            </div>
+            <input id={`mms-gallery-label-${i}`} name={`mms-gallery-label-${i}`} aria-label="mmsplacementinfoform field" className="admin-input-small text-center relative z-20" placeholder={`Label (Max ${labelLimit})`} value={item.label} onChange={e => {
+              if (e.target.value.length <= labelLimit) {
+                const c = [...items]; c[i] = { ...c[i], label: e.target.value }; onChange(c);
+              }
+            }} />
+          </div>
+        );
+      }}
+    />
     {items.length < max && (
-      <button type="button" onClick={() => onChange([...items, { label: '', image: null }])} className="btn-add min-h-[7rem]">
+      <button type="button" onClick={() => onChange([...items, { label: '', image: null }])} className="btn-add min-h-28">
         <Plus className="w-5 h-5 mx-auto mb-1" /> Add Image
       </button>
     )}

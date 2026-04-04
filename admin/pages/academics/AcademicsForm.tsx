@@ -4,6 +4,10 @@ import { pagesApi } from '../../api/pagesApi';
 import { resolveApiUrl } from '../../api/client';
 import type { AcademicsData, AcademicsPayload, AdmissionDocument } from '../../types';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { useListSync } from '../../hooks/useListSync';
 
 /* ── Toast Component ────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -22,7 +26,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 
 /* ── Section Card ─────────────────────────────────────────────────────────── */
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-[2rem] shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
+  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
     <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
       <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
       <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
@@ -111,10 +115,93 @@ const ImageUpload: React.FC<{
   );
 };
 
+/* ── DnD Hook ─────────────────────────────────────────────────────────────── */
+/* ── DnD Hook ─────────────────────────────────────────────────────────────── */
 
 /* ── Document List Manager ─────────────────────────────────────────────────── */
 interface DocItem extends AdmissionDocument {
   file?: File | null;
+}
+
+const SortableDocumentItem = ({ id, item, idx, type, removeItem, updateItem }: any) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 1,
+    position: 'relative' as const,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="relative group flex items-start gap-6 bg-slate-50 border border-slate-200 rounded-4xl p-6 transition-all hover:shadow-md hover:border-slate-300">
+      <div className="shrink-0 w-12 h-12 border-2 border-slate-200 rounded-xl flex items-center justify-center text-slate-400 font-black text-lg bg-white cursor-grab active:cursor-grabbing hover:bg-slate-100 transition-colors" {...attributes} {...listeners}>
+        {(idx + 1).toString().padStart(2, '0')}
+      </div>
+      
+      <div className="grow space-y-4">
+        <button 
+          type="button" 
+          onClick={() => removeItem(idx)}
+          className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center shadow-md hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-20"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-1">
+            <label className={labelBase}>Title</label>
+            <input id="academicsform-2" name="academicsform-2" aria-label="academicsform field" 
+              value={item.title} 
+              onChange={e => updateItem(idx, { title: e.target.value })}
+              className={inputBase}
+              placeholder={type === 'booklets' ? "Program Booklet Name" : "Session / Semester Name"}
+            />
+          </div>
+          <div className="md:col-span-1 text-right">
+             <label className={labelBase}>Academic Year</label>
+             <select id="academicsform-select-1" name="academicsform-select-1" aria-label="academicsform select field" 
+                value={item.year} 
+                onChange={e => updateItem(idx, { year: e.target.value })}
+                className={inputBase}
+             >
+                <option value="2025-26">2025-26</option>
+                <option value="2024-25">2024-25</option>
+                <option value="2023-24">2023-24</option>
+             </select>
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelBase}>{type === 'calendars' ? 'Status / Tag (e.g. TENTATIVE)' : 'Description'}</label>
+            <input id="academicsform-3" name="academicsform-3" aria-label="academicsform field" 
+              value={item.description} 
+              onChange={e => updateItem(idx, { description: e.target.value })}
+              className={inputBase}
+              placeholder={type === 'calendars' ? "e.g. TENTATIVE or Confirmed" : "Briefly describe the booklet content..."}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className={labelBase}>PDF Document</label>
+            <div className="relative overflow-hidden bg-white border-2 border-dashed border-slate-200 rounded-2xl p-4 transition-all hover:border-[#2563EB]">
+              <input id="academicsform-4" name="academicsform-4" aria-label="academicsform field" 
+                type="file" 
+                accept="application/pdf"
+                onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
+                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+              />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z" /></svg>
+                </div>
+                <span className="text-xs font-bold text-slate-600 truncate">
+                  {item.file?.name || item.fileName || 'Click or drag to upload PDF'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 const DocumentListManager: React.FC<{
@@ -136,81 +223,37 @@ const DocumentListManager: React.FC<{
     onChange(next);
   };
 
+  const { ids, handleMove, handleRemove } = useListSync(items);
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+
+  const wrappedRemoveItem = (index: number) => {
+    handleRemove(index);
+    removeItem(index);
+  };
+
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = ids.findIndex(id => id === active.id);
+      const newIndex = ids.findIndex(id => id === over.id);
+      handleMove(oldIndex, newIndex);
+      onChange(arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
   return (
     <div className="space-y-4">
-      {Array.isArray(items) && items.map((item, idx) => (
-        <div key={idx} className="relative group flex items-start gap-6 bg-slate-50 border border-slate-200 rounded-[2rem] p-6 transition-all hover:shadow-md hover:border-slate-300">
-          <div className="flex-shrink-0 w-12 h-12 border-2 border-slate-200 rounded-xl flex items-center justify-center text-slate-400 font-black text-lg bg-white">
-            {(idx + 1).toString().padStart(2, '0')}
-          </div>
-          
-          <div className="flex-grow space-y-4">
-            <button 
-              type="button" 
-              onClick={() => removeItem(idx)}
-              className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center shadow-md hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 z-20"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-1">
-                <label className={labelBase}>Title</label>
-                <input id="academicsform-2" name="academicsform-2" aria-label="academicsform field" 
-                  value={item.title} 
-                  onChange={e => updateItem(idx, { title: e.target.value })}
-                  className={inputBase}
-                  placeholder={type === 'booklets' ? "Program Booklet Name" : "Session / Semester Name"}
-                />
-              </div>
-              <div className="md:col-span-1 text-right">
-                 <label className={labelBase}>Academic Year</label>
-                 <select id="academicsform-select-1" name="academicsform-select-1" aria-label="academicsform select field" 
-                    value={item.year} 
-                    onChange={e => updateItem(idx, { year: e.target.value })}
-                    className={inputBase}
-                 >
-                    <option value="2025-26">2025-26</option>
-                    <option value="2024-25">2024-25</option>
-                    <option value="2023-24">2023-24</option>
-                 </select>
-              </div>
-              <div className="md:col-span-2">
-                <label className={labelBase}>{type === 'calendars' ? 'Status / Tag (e.g. TENTATIVE)' : 'Description'}</label>
-                <input id="academicsform-3" name="academicsform-3" aria-label="academicsform field" 
-                  value={item.description} 
-                  onChange={e => updateItem(idx, { description: e.target.value })}
-                  className={inputBase}
-                  placeholder={type === 'calendars' ? "e.g. TENTATIVE or Confirmed" : "Briefly describe the booklet content..."}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className={labelBase}>PDF Document</label>
-                <div className="relative overflow-hidden bg-white border-2 border-dashed border-slate-200 rounded-2xl p-4 transition-all hover:border-[#2563EB]">
-                  <input id="academicsform-4" name="academicsform-4" aria-label="academicsform field" 
-                    type="file" 
-                    accept="application/pdf"
-                    onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
-                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                  />
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z" /></svg>
-                    </div>
-                    <span className="text-xs font-bold text-slate-600 truncate">
-                      {item.file?.name || item.fileName || 'Click or drag to upload PDF'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          {Array.isArray(items) && items.map((item, idx) => (
+            <SortableDocumentItem key={ids[idx]} id={ids[idx]} item={item} idx={idx} type={type} removeItem={wrappedRemoveItem} updateItem={updateItem} />
+          ))}
+        </SortableContext>
+      </DndContext>
       <button 
         type="button" 
         onClick={addItem}
-        className="w-full py-4 border-2 border-dashed border-slate-200 rounded-[2rem] text-slate-400 font-bold hover:border-[#2563EB] hover:text-[#2563EB] transition-all flex items-center justify-center gap-2"
+        className="w-full py-4 border-2 border-dashed border-slate-200 rounded-4xl text-slate-400 font-bold hover:border-[#2563EB] hover:text-[#2563EB] transition-all flex items-center justify-center gap-2"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
         <span>Add Row</span>
@@ -362,7 +405,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
                 <textarea id="academicsform-textarea-2" name="academicsform-textarea-2" aria-label="academicsform textarea field" 
                   value={payload.dean?.message || ''} 
                   onChange={e => setPayload(prev => ({ ...prev, dean: { ...prev.dean!, message: e.target.value } }))}
-                  className={`${inputBase} min-h-[200px] resize-none py-4 leading-relaxed`}
+                  className={`${inputBase} min-h-52 resize-none py-4 leading-relaxed`}
                   placeholder="It is my pleasure to welcome you to..."
                 />
               </div>
@@ -388,7 +431,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
                   <textarea id="academicsform-textarea-3" name="academicsform-textarea-3" aria-label="academicsform textarea field" 
                     value={payload.obe?.description || ''} 
                     onChange={e => setPayload(prev => ({ ...prev, obe: { ...prev.obe!, description: e.target.value } }))}
-                    className={`${inputBase} min-h-[100px] resize-none py-4 leading-relaxed`}
+                    className={`${inputBase} min-h-24 resize-none py-4 leading-relaxed`}
                     placeholder="Our OBE model centers on defined Graduate Attributes (POs)..."
                   />
                 </div>
@@ -405,7 +448,7 @@ const AcademicsForm: React.FC<AcademicsFormProps> = ({ activeSection, onBack }) 
 
 
         {/* Footer Actions */}
-        <div className="bg-white rounded-[2rem] shadow-lg shadow-slate-200/40 border border-slate-100 px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest sm:w-1/2 leading-relaxed">
             All PDF resources support dynamic row management. Multiple entries can be added for booklets and calendars.
           </p>

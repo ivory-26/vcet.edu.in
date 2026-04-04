@@ -4,6 +4,7 @@ import { ChevronDown, ChevronUp, Plus, Trash2, FileText, CheckCircle, AlertTrian
 import type { MMSScholarshipPayload } from '../../types';
 import { mmsScholarshipApi } from '../../api/mmsScholarshipApi';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const emptyForm: MMSScholarshipPayload = {
   overview: [],
@@ -99,37 +100,48 @@ const MMSScholarshipForm: React.FC = () => {
         {/* SECTION 1: OVERVIEW */}
         <SectionCard title="Scholarship Overview" icon="📝">
           <div className="space-y-4">
-            {form.overview?.map((item, i) => (
-              <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3">
-                 <button type="button" onClick={() => {
-                   const c = [...form.overview!]; c.splice(i, 1); setForm({...form, overview: c});
-                 }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                   <div className="relative">
-                     <label className="admin-label">Name (Max 100)</label>
-                     <input id="mmsscholarshipform-1" name="mmsscholarshipform-1" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 100, val => {
-                       const c = [...form.overview!]; c[i].name = val; setForm({...form, overview: c});
-                     })}/>
-                     <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.name?.length || 0}/100</span>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Category (Max 50)</label>
-                     <input id="mmsscholarshipform-2" name="mmsscholarshipform-2" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
-                       const c = [...form.overview!]; c[i].category = val; setForm({...form, overview: c});
-                     })}/>
-                     <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.category?.length || 0}/50</span>
-                   </div>
-                   <div className="md:col-span-2 relative">
-                     <label className="admin-label">Description (Max 150)</label>
-                     <input id="mmsscholarshipform-3" name="mmsscholarshipform-3" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.description} onChange={e => handleTextChange(e.target.value, 150, val => {
-                       const c = [...form.overview!]; c[i].description = val; setForm({...form, overview: c});
-                     })}/>
-                     <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.description?.length || 0}/150</span>
-                   </div>
-                 </div>
-              </div>
-            ))}
+            <SortableListContext
+              items={form.overview || []}
+              onChange={val => setForm({ ...form, overview: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.overview!]; c.splice(i, 1); setForm({ ...form, overview: c });
+                    }} className="text-red-500 p-1 hover:bg-red-50 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="relative">
+                      <label className="admin-label">Name (Max 100)</label>
+                      <input id={`mms-sch-name-${i}`} name={`mms-sch-name-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 100, val => {
+                        const c = [...form.overview!]; c[i].name = val; setForm({ ...form, overview: c });
+                      })} />
+                      <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.name?.length || 0}/100</span>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Category (Max 50)</label>
+                      <input id={`mms-sch-cat-${i}`} name={`mms-sch-cat-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
+                        const c = [...form.overview!]; c[i].category = val; setForm({ ...form, overview: c });
+                      })} />
+                      <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.category?.length || 0}/50</span>
+                    </div>
+                    <div className="md:col-span-2 relative">
+                      <label className="admin-label">Description (Max 150)</label>
+                      <input id={`mms-sch-desc-${i}`} name={`mms-sch-desc-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.description} onChange={e => handleTextChange(e.target.value, 150, val => {
+                        const c = [...form.overview!]; c[i].description = val; setForm({ ...form, overview: c });
+                      })} />
+                      <span className="absolute right-2 top-8 text-[10px] text-slate-400">{item.description?.length || 0}/150</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            />
             {(form.overview?.length || 0) < 10 && (
               <button type="button" onClick={() => setForm({...form, overview: [...(form.overview||[]), {name: '', category: '', description: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Scholarship
@@ -159,34 +171,45 @@ const MMSScholarshipForm: React.FC = () => {
         {/* SECTION 3: EBC */}
         <SectionCard title="EBC Scholarship" icon="🏛️">
           <div className="space-y-4">
-            {form.ebc?.map((item, i) => (
-              <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3">
-                 <button type="button" onClick={() => {
-                   const c = [...form.ebc!]; c.splice(i, 1); setForm({...form, ebc: c});
-                 }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                   <div className="relative md:col-span-2">
-                     <label className="admin-label">Scheme Name (Max 120)</label>
-                     <input id="mmsscholarshipform-6" name="mmsscholarshipform-6" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.schemeName} onChange={e => handleTextChange(e.target.value, 120, val => {
-                       const c = [...form.ebc!]; c[i].schemeName = val; setForm({...form, ebc: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Category (Max 50)</label>
-                     <input id="mmsscholarshipform-7" name="mmsscholarshipform-7" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
-                       const c = [...form.ebc!]; c[i].category = val; setForm({...form, ebc: c});
-                     })}/>
-                   </div>
-                   <div className="relative md:col-span-3">
-                     <label className="admin-label">Applicable GR Dates (Max 100)</label>
-                     <input id="mmsscholarshipform-8" name="mmsscholarshipform-8" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.grDates} onChange={e => handleTextChange(e.target.value, 100, val => {
-                       const c = [...form.ebc!]; c[i].grDates = val; setForm({...form, ebc: c});
-                     })}/>
-                   </div>
-                 </div>
-              </div>
-            ))}
+            <SortableListContext
+              items={form.ebc || []}
+              onChange={val => setForm({ ...form, ebc: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.ebc!]; c.splice(i, 1); setForm({ ...form, ebc: c });
+                    }} className="text-red-500 p-1 hover:bg-red-50 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="relative md:col-span-2">
+                      <label className="admin-label">Scheme Name (Max 120)</label>
+                      <input id={`mms-ebc-name-${i}`} name={`mms-ebc-name-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.schemeName} onChange={e => handleTextChange(e.target.value, 120, val => {
+                        const c = [...form.ebc!]; c[i].schemeName = val; setForm({ ...form, ebc: c });
+                      })} />
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Category (Max 50)</label>
+                      <input id={`mms-ebc-cat-${i}`} name={`mms-ebc-cat-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
+                        const c = [...form.ebc!]; c[i].category = val; setForm({ ...form, ebc: c });
+                      })} />
+                    </div>
+                    <div className="relative md:col-span-3">
+                      <label className="admin-label">Applicable GR Dates (Max 100)</label>
+                      <input id={`mms-ebc-gr-${i}`} name={`mms-ebc-gr-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.grDates} onChange={e => handleTextChange(e.target.value, 100, val => {
+                        const c = [...form.ebc!]; c[i].grDates = val; setForm({ ...form, ebc: c });
+                      })} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            />
             {(form.ebc?.length || 0) < 3 && (
               <button type="button" onClick={() => setForm({...form, ebc: [...(form.ebc||[]), {schemeName: '', category: '', grDates: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add EBC Item
@@ -198,34 +221,45 @@ const MMSScholarshipForm: React.FC = () => {
         {/* SECTION 4: CATEGORY BASED */}
         <SectionCard title="Category-Based Scholarships" icon="🏷️">
           <div className="space-y-4">
-            {form.categoryBased?.map((item, i) => (
-              <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3">
-                 <button type="button" onClick={() => {
-                   const c = [...form.categoryBased!]; c.splice(i, 1); setForm({...form, categoryBased: c});
-                 }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                   <div className="relative md:col-span-2">
-                     <label className="admin-label">Scholarship Name (Max 120)</label>
-                     <input id="mmsscholarshipform-9" name="mmsscholarshipform-9" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 120, val => {
-                       const c = [...form.categoryBased!]; c[i].name = val; setForm({...form, categoryBased: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Category (Max 50)</label>
-                     <input id="mmsscholarshipform-10" name="mmsscholarshipform-10" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
-                       const c = [...form.categoryBased!]; c[i].category = val; setForm({...form, categoryBased: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Funding Authority (Max 50)</label>
-                     <input id="mmsscholarshipform-11" name="mmsscholarshipform-11" aria-label="mmsscholarshipform field" className="admin-input-small" value={item.authority} onChange={e => handleTextChange(e.target.value, 50, val => {
-                       const c = [...form.categoryBased!]; c[i].authority = val; setForm({...form, categoryBased: c});
-                     })}/>
-                   </div>
-                 </div>
-              </div>
-            ))}
+            <SortableListContext
+              items={form.categoryBased || []}
+              onChange={val => setForm({ ...form, categoryBased: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.categoryBased!]; c.splice(i, 1); setForm({ ...form, categoryBased: c });
+                    }} className="text-red-500 p-1 hover:bg-red-50 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="relative md:col-span-2">
+                      <label className="admin-label">Scholarship Name (Max 120)</label>
+                      <input id={`mms-cat-name-${i}`} name={`mms-cat-name-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.name} onChange={e => handleTextChange(e.target.value, 120, val => {
+                        const c = [...form.categoryBased!]; c[i].name = val; setForm({ ...form, categoryBased: c });
+                      })} />
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Category (Max 50)</label>
+                      <input id={`mms-cat-cat-${i}`} name={`mms-cat-cat-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.category} onChange={e => handleTextChange(e.target.value, 50, val => {
+                        const c = [...form.categoryBased!]; c[i].category = val; setForm({ ...form, categoryBased: c });
+                      })} />
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Funding Authority (Max 50)</label>
+                      <input id={`mms-cat-auth-${i}`} name={`mms-cat-auth-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small" value={item.authority} onChange={e => handleTextChange(e.target.value, 50, val => {
+                        const c = [...form.categoryBased!]; c[i].authority = val; setForm({ ...form, categoryBased: c });
+                      })} />
+                    </div>
+                  </div>
+                </div>
+              )}
+            />
             {(form.categoryBased?.length || 0) < 3 && (
               <button type="button" onClick={() => setForm({...form, categoryBased: [...(form.categoryBased||[]), {name: '', category: '', authority: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Category Scholarship
@@ -256,32 +290,43 @@ const MMSScholarshipForm: React.FC = () => {
         <SectionCard title="Scholarship Details (PDF)" icon="📄">
           <p className="text-xs text-slate-500 mb-3 font-medium">Upload up to 2 PDFs for detailed scholarship rules.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {form.pdf?.map((pdfItem, i) => (
-              <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-lg relative space-y-3">
-                <button type="button" onClick={() => {
-                  const c = [...form.pdf!]; c.splice(i, 1); setForm({...form, pdf: c});
-                }} className="absolute top-2 right-2 text-red-500 z-10 hover:bg-red-50 p-1 rounded"><Trash2 className="w-4 h-4"/></button>
-                
-                <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-24 flex flex-col items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer">
-                  <input id="mmsscholarshipform-14" name="mmsscholarshipform-14" aria-label="mmsscholarshipform field" type="file" accept="application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
-                    if (e.target.files && e.target.files[0]) {
-                       const c = [...form.pdf!]; c[i].fileUrl = e.target.files[0]; setForm({...form, pdf: c});
-                    }
-                  }}/>
-                  <FileText className={`w-6 h-6 ${pdfItem.fileUrl ? 'text-blue-500' : 'text-slate-300 group-hover:text-blue-400'}`}/>
-                  <span className="text-[10px] text-slate-500 font-medium mt-1">{pdfItem.fileUrl ? 'File Selected' : 'Upload PDF'}</span>
+            <SortableListContext
+              items={form.pdf || []}
+              onChange={val => setForm({ ...form, pdf: val })}
+              renderItem={(pdfItem, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-4 bg-slate-50 border border-slate-200 rounded-lg relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.pdf!]; c.splice(i, 1); setForm({ ...form, pdf: c });
+                    }} className="text-red-500 z-10 hover:bg-red-50 p-1 rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+
+                  <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-24 flex flex-col items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer">
+                    <input id={`mms-sch-pdf-file-${i}`} name={`mms-sch-pdf-file-${i}`} aria-label="mmsscholarshipform field" type="file" accept="application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
+                      if (e.target.files && e.target.files[0]) {
+                        const c = [...form.pdf!]; c[i].fileUrl = e.target.files[0]; setForm({ ...form, pdf: c });
+                      }
+                    }} />
+                    <FileText className={`w-6 h-6 ${pdfItem.fileUrl ? 'text-blue-500' : 'text-slate-300 group-hover:text-blue-400'}`} />
+                    <span className="text-[10px] text-slate-500 font-medium mt-1">{pdfItem.fileUrl ? 'File Selected' : 'Upload PDF'}</span>
+                  </div>
+
+                  <div className="relative">
+                    <label className="admin-label text-[10px]">PDF Label / Name</label>
+                    <input id={`mms-sch-pdf-label-${i}`} name={`mms-sch-pdf-label-${i}`} aria-label="mmsscholarshipform field" className="admin-input-small text-xs" placeholder="Label / Name" value={pdfItem.label || ''} onChange={e => {
+                      const c = [...form.pdf!]; c[i].label = e.target.value; setForm({ ...form, pdf: c });
+                    }} />
+                  </div>
                 </div>
-                
-                <div className="relative">
-                  <label className="admin-label text-[10px]">PDF Label / Name</label>
-                  <input id="mmsscholarshipform-15" name="mmsscholarshipform-15" aria-label="mmsscholarshipform field" className="admin-input-small text-xs" placeholder="Label / Name" value={pdfItem.label || ''} onChange={e => {
-                      const c = [...form.pdf!]; c[i].label = e.target.value; setForm({...form, pdf: c});
-                  }} />
-                </div>
-              </div>
-            ))}
+              )}
+            />
             {(form.pdf?.length || 0) < 2 && (
-              <button type="button" onClick={() => setForm({...form, pdf: [...(form.pdf||[]), {fileUrl: null as any, label: ''}]})} className="btn-add min-h-[12rem]">
+              <button type="button" onClick={() => setForm({...form, pdf: [...(form.pdf||[]), {fileUrl: null as any, label: ''}]})} className="btn-add min-h-48">
                 <Plus className="w-5 h-5 mx-auto mb-1" /> Add PDF (Max 2)
               </button>
             )}
@@ -302,7 +347,7 @@ const MMSScholarshipForm: React.FC = () => {
 
 const SectionCard = ({ icon, title, children }: any) => {
   return (
-    <div className="bg-white rounded-[2rem] p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+    <div className="bg-white rounded-4xl p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
       <div className="flex items-center gap-3 mb-8">
          {icon && <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg shadow-sm border border-slate-100">{icon}</div>}
          <h2 className="text-sm font-black text-[#111827] uppercase tracking-wider">{title}</h2>

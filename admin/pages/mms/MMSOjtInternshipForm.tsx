@@ -4,6 +4,7 @@ import { Plus, Trash2, CheckCircle, AlertTriangle } from 'lucide-react';
 import type { TrainingPlacementPayload } from '../../types';
 import { trainingPlacementApi } from '../../api/trainingPlacement';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const MMSOjtInternshipForm: React.FC = () => {
   const navigate = useNavigate();
@@ -90,6 +91,7 @@ const MMSOjtInternshipForm: React.FC = () => {
             <table className="w-full text-xs text-left text-slate-600">
               <thead className="bg-slate-50 text-[10px] uppercase font-extrabold text-slate-400">
                 <tr>
+                  <th className="px-4 py-3 w-10"></th>
                   <th className="px-4 py-3 w-16">Sr.</th>
                   <th className="px-4 py-3">Student Name <span className="text-slate-300 font-normal">(Max 50)</span></th>
                   <th className="px-4 py-3 w-32">Spec <span className="text-slate-300 font-normal">(Max 15)</span></th>
@@ -98,35 +100,46 @@ const MMSOjtInternshipForm: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {form.internshipList?.map((item, i) => (
-                  <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="p-2">
-                      <input id="mmsojtinternshipform-1" name="mmsojtinternshipform-1" aria-label="mmsojtinternshipform field" className="admin-input-small w-14 text-center" value={item.srNo} onChange={e => {
-                        const c = [...form.internshipList!]; c[i] = { ...c[i], srNo: e.target.value }; setForm({ ...form, internshipList: c });
-                      }} />
-                    </td>
-                    <td className="p-2">
-                      <input id="mmsojtinternshipform-2" name="mmsojtinternshipform-2" aria-label="mmsojtinternshipform field" className="admin-input-small w-full" value={item.studentName} placeholder="Student name" onChange={e => handleTextChange(e.target.value, 50, val => {
-                        const c = [...form.internshipList!]; c[i] = { ...c[i], studentName: val }; setForm({ ...form, internshipList: c });
-                      })} />
-                    </td>
-                    <td className="p-2">
-                      <input id="mmsojtinternshipform-3" name="mmsojtinternshipform-3" aria-label="mmsojtinternshipform field" className="admin-input-small w-full" value={item.specialization} placeholder="Spec" onChange={e => handleTextChange(e.target.value, 15, val => {
-                        const c = [...form.internshipList!]; c[i] = { ...c[i], specialization: val }; setForm({ ...form, internshipList: c });
-                      })} />
-                    </td>
-                    <td className="p-2">
-                      <input id="mmsojtinternshipform-4" name="mmsojtinternshipform-4" aria-label="mmsojtinternshipform field" className="admin-input-small w-full" value={item.company} placeholder="Company name" onChange={e => handleTextChange(e.target.value, 45, val => {
-                        const c = [...form.internshipList!]; c[i] = { ...c[i], company: val }; setForm({ ...form, internshipList: c });
-                      })} />
-                    </td>
-                    <td className="p-2 text-center">
-                      <button type="button" onClick={() => {
-                        const c = [...form.internshipList!]; c.splice(i, 1); setForm({ ...form, internshipList: c });
-                      }} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 className="w-4 h-4" /></button>
-                    </td>
-                  </tr>
-                ))}
+                <SortableListContext
+                  items={form.internshipList || []}
+                  onChange={val => setForm({ ...form, internshipList: val })}
+                  renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                    <tr ref={setNodeRef} style={style} className={`transition-colors h-14 ${isDragging ? 'z-50 bg-white ring-2 ring-blue-500 shadow-xl' : 'hover:bg-slate-50/50'}`}>
+                      <td className="p-2 w-10">
+                        <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                          <div className="w-4 h-0.5 bg-current mb-0.5" />
+                          <div className="w-4 h-0.5 bg-current mb-0.5" />
+                          <div className="w-4 h-0.5 bg-current" />
+                        </div>
+                      </td>
+                      <td className="p-2">
+                        <input id={`mms-ojt-sr-${i}`} name={`mms-ojt-sr-${i}`} aria-label="mmsojtinternshipform field" className="admin-input-small w-14 text-center" value={item.srNo} onChange={e => {
+                          const c = [...form.internshipList!]; c[i] = { ...c[i], srNo: e.target.value }; setForm({ ...form, internshipList: c });
+                        }} />
+                      </td>
+                      <td className="p-2">
+                        <input id={`mms-ojt-name-${i}`} name={`mms-ojt-name-${i}`} aria-label="mmsojtinternshipform field" className="admin-input-small w-full" value={item.studentName} placeholder="Student name" onChange={e => handleTextChange(e.target.value, 50, val => {
+                          const c = [...form.internshipList!]; c[i] = { ...c[i], studentName: val }; setForm({ ...form, internshipList: c });
+                        })} />
+                      </td>
+                      <td className="p-2">
+                        <input id={`mms-ojt-spec-${i}`} name={`mms-ojt-spec-${i}`} aria-label="mmsojtinternshipform field" className="admin-input-small w-full" value={item.specialization} placeholder="Spec" onChange={e => handleTextChange(e.target.value, 15, val => {
+                          const c = [...form.internshipList!]; c[i] = { ...c[i], specialization: val }; setForm({ ...form, internshipList: c });
+                        })} />
+                      </td>
+                      <td className="p-2">
+                        <input id={`mms-ojt-comp-${i}`} name={`mms-ojt-comp-${i}`} aria-label="mmsojtinternshipform field" className="admin-input-small w-full" value={item.company} placeholder="Company name" onChange={e => handleTextChange(e.target.value, 45, val => {
+                          const c = [...form.internshipList!]; c[i] = { ...c[i], company: val }; setForm({ ...form, internshipList: c });
+                        })} />
+                      </td>
+                      <td className="p-2 text-center">
+                        <button type="button" onClick={() => {
+                          const c = [...form.internshipList!]; c.splice(i, 1); setForm({ ...form, internshipList: c });
+                        }} className="text-red-500 hover:bg-red-50 p-1 rounded"><Trash2 className="w-4 h-4" /></button>
+                      </td>
+                    </tr>
+                  )}
+                />
               </tbody>
             </table>
           </div>
@@ -156,7 +169,7 @@ const MMSOjtInternshipForm: React.FC = () => {
 /* ── Helper Components ── */
 
 const SectionCard = ({ icon, title, children }: any) => (
-  <div className="bg-white rounded-[2rem] p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+  <div className="bg-white rounded-4xl p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
     <div className="flex items-center gap-3 mb-8">
       {icon && <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg shadow-sm border border-slate-100">{icon}</div>}
       <h2 className="text-sm font-black text-[#111827] uppercase tracking-wider">{title}</h2>

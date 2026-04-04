@@ -3,6 +3,10 @@ import { pagesApi } from '../../api/pagesApi';
 import type { ResearchData } from '../../types';
 import { resolveUploadedAssetUrl } from '../../../utils/uploadedAssets';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { useListSync } from '../../hooks/useListSync';
 
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
   useEffect(() => {
@@ -23,7 +27,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 };
 
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode; subtitle?: string }> = ({ title, icon, children, subtitle }) => (
-  <div className="bg-white rounded-[2rem] shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
+  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
     <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between gap-3 flex-wrap">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
@@ -85,7 +89,7 @@ const LimitedInput: React.FC<{
           value={value || ''}
           maxLength={max}
           onChange={e => onChange(e.target.value)}
-          className={`${inputBase} min-h-[100px] resize-y`}
+          className={`${inputBase} min-h-24 resize-y`}
           placeholder={placeholder}
         />
       )}
@@ -101,6 +105,91 @@ const CountBadge: React.FC<{ used: number; max: number; exact?: boolean }> = ({ 
   return (
     <div className={`px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-wider ${valid ? 'bg-slate-50 text-slate-600 border-slate-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
       {used}/{max} {exact ? 'Required' : 'Used'}
+    </div>
+  );
+};
+
+/* ── DnD Hook ─────────────────────────────────────────────────────────────── */
+/* ── DnD Hook ─────────────────────────────────────────────────────────────── */
+
+const SortableLinkItem = ({ id, item, idx, labelMax, urlLabel, allowFileUpload, exactCount, del, upd }: any) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 1,
+    position: 'relative' as const,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="p-5 bg-slate-50 border border-slate-100 rounded-3xl flex gap-4 group shadow-sm transition-all">
+      <div className="flex flex-col pt-8 pr-2 border-r border-slate-200 cursor-grab active:cursor-grabbing text-slate-400 hover:text-blue-500" {...attributes} {...listeners}>
+        <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+      </div>
+      <div className="grid md:grid-cols-2 gap-4 grow">
+        <LimitedInput
+          label="Label"
+          value={item.label || item.title || ''}
+          max={labelMax}
+          placeholder="Button / Link label"
+          onChange={v => upd(idx, { label: v, title: v })}
+        />
+        <LimitedInput
+          label={urlLabel}
+          value={item.url || item.fileUrl || ''}
+          max={280}
+          placeholder="https://..."
+          onChange={v => upd(idx, { url: v, fileUrl: v })}
+        />
+        {allowFileUpload && (
+          <div className="space-y-2">
+            <label className={labelBase}>Upload PDF</label>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4">
+              <input id={`researchform-pdf-${idx}`} name={`researchform-pdf-${idx}`} aria-label="researchform field"
+                type="file"
+                accept="application/pdf"
+                className="text-sm font-semibold text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-blue-700"
+                onChange={e => {
+                  const file = e.target.files?.[0] || null;
+                  if (file) {
+                    upd(idx, { file, fileName: file.name, url: '', fileUrl: '' });
+                  }
+                }}
+              />
+              <div className="mt-2 text-xs text-slate-500 break-all">
+                {item.file instanceof File
+                  ? `Selected: ${item.file.name}`
+                  : (item.fileName || item.fileUrl || item.url || 'No PDF selected')}
+              </div>
+              {(item.file || item.fileUrl || item.url) && (
+                <div className="mt-3 flex gap-2">
+                  <a
+                    href={item.file instanceof File ? getFilePreviewUrl(item.file) : (resolveUploadedAssetUrl(item.fileUrl || item.url || '') || item.fileUrl || item.url || '#')}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-wider hover:bg-blue-100"
+                  >
+                    Preview PDF
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => upd(idx, { file: null, fileName: null, url: '', fileUrl: '' })}
+                    className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider hover:bg-red-100"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      {!exactCount && (
+        <button onClick={() => del(idx)} className="self-start mt-8 p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      )}
     </div>
   );
 };
@@ -128,6 +217,25 @@ const LinkListManager: React.FC<{
     onChange(next);
   };
 
+  const { ids, handleMove, handleRemove } = useListSync(items);
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+
+  const wrappedDel = (idx: number) => {
+    if (exactCount) return;
+    handleRemove(idx);
+    del(idx);
+  };
+
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = ids.findIndex(id => id === active.id);
+      const newIndex = ids.findIndex(id => id === over.id);
+      handleMove(oldIndex, newIndex);
+      onChange(arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -135,79 +243,62 @@ const LinkListManager: React.FC<{
         <CountBadge used={items.length} max={maxItems} exact={exactCount} />
       </div>
 
-      {items.map((item, idx) => (
-        <div key={idx} className="p-5 bg-slate-50 border border-slate-100 rounded-3xl flex gap-4 group">
-          <div className="grid md:grid-cols-2 gap-4 flex-grow">
-            <LimitedInput
-              label="Label"
-              value={item.label || item.title || ''}
-              max={labelMax}
-              placeholder="Button / Link label"
-              onChange={v => upd(idx, { label: v, title: v })}
-            />
-            <LimitedInput
-              label={urlLabel}
-              value={item.url || item.fileUrl || ''}
-              max={280}
-              placeholder="https://..."
-              onChange={v => upd(idx, { url: v, fileUrl: v })}
-            />
-            {allowFileUpload && (
-              <div className="space-y-2">
-                <label className={labelBase}>Upload PDF</label>
-                <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <input id="researchform-2" name="researchform-2" aria-label="researchform field"
-                    type="file"
-                    accept="application/pdf"
-                    className="text-sm font-semibold text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-blue-700"
-                    onChange={e => {
-                      const file = e.target.files?.[0] || null;
-                      if (file) {
-                        upd(idx, { file, fileName: file.name, url: '', fileUrl: '' });
-                      }
-                    }}
-                  />
-                  <div className="mt-2 text-xs text-slate-500 break-all">
-                    {item.file instanceof File
-                      ? `Selected: ${item.file.name}`
-                      : (item.fileName || item.fileUrl || item.url || 'No PDF selected')}
-                  </div>
-                  {(item.file || item.fileUrl || item.url) && (
-                    <div className="mt-3 flex gap-2">
-                      <a
-                        href={item.file instanceof File ? getFilePreviewUrl(item.file) : (resolveUploadedAssetUrl(item.fileUrl || item.url || '') || item.fileUrl || item.url || '#')}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-wider hover:bg-blue-100"
-                      >
-                        Preview PDF
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => upd(idx, { file: null, fileName: null, url: '', fileUrl: '' })}
-                        className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider hover:bg-red-100"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          {!exactCount && (
-            <button onClick={() => del(idx)} className="self-start mt-8 p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          )}
-        </div>
-      ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          {items.map((item, idx) => (
+            <SortableLinkItem key={ids[idx]} id={ids[idx]} item={item} idx={idx} labelMax={labelMax} urlLabel={urlLabel} allowFileUpload={allowFileUpload} exactCount={exactCount} del={wrappedDel} upd={upd} />
+          ))}
+        </SortableContext>
+      </DndContext>
 
       {items.length < maxItems && (
         <button onClick={add} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all">
           Add Item
         </button>
       )}
+    </div>
+  );
+};
+
+const SortablePhDItem = ({ id, item, idx, countRef, del, upd }: any) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 1,
+    position: 'relative' as const,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="grid grid-cols-12 gap-4 items-center group p-4 bg-slate-50 border border-slate-100 rounded-2xl transition-all shadow-sm">
+      <div className="col-span-1 flex items-center justify-center cursor-grab active:cursor-grabbing text-slate-400 hover:text-blue-500" {...attributes} {...listeners}>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+      </div>
+      <div className="col-span-7">
+        <LimitedInput
+          label="Department"
+          value={item.department || ''}
+          max={36}
+          placeholder="Department name"
+          onChange={v => upd(idx, { department: v })}
+        />
+      </div>
+      <div className="col-span-3">
+        <label className={labelBase}>Count</label>
+        <input id={`researchform-phd-${idx}`} name={`researchform-phd-${idx}`} aria-label="researchform field"
+          type="number"
+          min={0}
+          value={item.count ?? 0}
+          onChange={e => upd(idx, { count: Number(e.target.value) || 0 })}
+          className={`${inputBase} text-center`}
+        />
+      </div>
+      <div className="col-span-1 pt-7">
+        <button onClick={() => del(idx)} className="text-red-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
     </div>
   );
 };
@@ -222,6 +313,24 @@ const PhDManager: React.FC<{ title: string; items: any[]; onChange: (v: any[]) =
   };
   const total = items.reduce((acc: number, it: any) => acc + (Number(it.count) || 0), 0);
 
+  const { ids, handleMove, handleRemove } = useListSync(items);
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+
+  const wrappedDel = (idx: number) => {
+    handleRemove(idx);
+    del(idx);
+  };
+
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = ids.findIndex(id => id === active.id);
+      const newIndex = ids.findIndex(id => id === over.id);
+      handleMove(oldIndex, newIndex);
+      onChange(arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -231,37 +340,139 @@ const PhDManager: React.FC<{ title: string; items: any[]; onChange: (v: any[]) =
           <div className="text-[10px] font-black uppercase text-slate-900 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">Total: <span className="text-[#2563EB] text-xs ml-1">{total}</span></div>
         </div>
       </div>
-      {items.map((item, idx) => (
-        <div key={idx} className="grid grid-cols-12 gap-4 items-center group p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-          <div className="col-span-8">
-            <LimitedInput
-              label="Department"
-              value={item.department || ''}
-              max={36}
-              placeholder="Department name"
-              onChange={v => upd(idx, { department: v })}
-            />
-          </div>
-          <div className="col-span-3">
-            <label className={labelBase}>Count</label>
-            <input id="researchform-3" name="researchform-3" aria-label="researchform field"
-              type="number"
-              min={0}
-              value={item.count ?? 0}
-              onChange={e => upd(idx, { count: Number(e.target.value) || 0 })}
-              className={`${inputBase} text-center`}
-            />
-          </div>
-          <div className="col-span-1 pt-7">
-            <button onClick={() => del(idx)} className="text-red-300 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-          </div>
-        </div>
-      ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          {items.map((item, idx) => (
+            <SortablePhDItem key={ids[idx]} id={ids[idx]} item={item} idx={idx} del={wrappedDel} upd={upd} />
+          ))}
+        </SortableContext>
+      </DndContext>
       {items.length < maxItems && (
         <button onClick={add} className="text-[10px] font-black uppercase text-[#2563EB] hover:underline">+ Add Department</button>
       )}
+    </div>
+  );
+};
+
+const SortableTableItem = ({ id, item, idx, fields, resolveMediaUrl, getFilePreviewUrl, resolveUploadedAssetUrl, del, upd }: any) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : 1,
+    position: 'relative' as const,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl group shadow-sm transition-all">
+      <div className="flex flex-col pt-8 pr-2 border-r border-slate-200 cursor-grab active:cursor-grabbing text-slate-400 hover:text-blue-500" {...attributes} {...listeners}>
+        <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4 grow">
+        {fields.map((f: any) => (
+          <div key={f.key}>
+            {f.type === 'select' ? (
+              <div>
+                <label className={labelBase}>{f.label}</label>
+                <select id={`researchform-select-${idx}-${f.key}`} name={`researchform-select-${idx}-${f.key}`} aria-label="researchform select field" value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={inputBase}>
+                  {(f.options || []).map((opt: string) => <option key={opt} value={opt}>{opt || 'Blank'}</option>)}
+                </select>
+              </div>
+            ) : f.type === 'file-image' ? (
+              <div>
+                <label className={labelBase}>{f.label}</label>
+                <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-3">
+                  <div className="relative aspect-16/10 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                    <input id={`researchform-img-${idx}`} name={`researchform-img-${idx}`} aria-label="researchform field"
+                      type="file"
+                      accept="image/*"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      onChange={e => {
+                        const file = e.target.files?.[0] || null;
+                        if (file) upd(idx, { [f.key]: file, imageUrl: file.name });
+                      }}
+                    />
+                    {resolveMediaUrl(item[f.key]) || resolveMediaUrl(item.imageUrl) ? (
+                      <img
+                        src={resolveMediaUrl(item[f.key]) || resolveMediaUrl(item.imageUrl) || ''}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-xs font-black uppercase tracking-wider text-slate-400">
+                        Click to upload
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-500 break-all">
+                    {item[f.key] instanceof File ? item[f.key].name : (item.fileName || item.imageUrl || 'No image selected')}
+                  </div>
+                  {(item[f.key] || item.imageUrl) && (
+                    <button
+                      type="button"
+                      onClick={() => upd(idx, { [f.key]: null, imageUrl: '' })}
+                      className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider hover:bg-red-100"
+                    >
+                      Remove Image
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : f.type === 'file-pdf' ? (
+              <div>
+                <label className={labelBase}>{f.label}</label>
+                <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-3">
+                  <input id={`researchform-pdf-${idx}`} name={`researchform-pdf-${idx}`} aria-label="researchform field"
+                    type="file"
+                    accept="application/pdf"
+                    className="text-sm font-semibold text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-blue-700"
+                    onChange={e => {
+                      const file = e.target.files?.[0] || null;
+                      if (file) upd(idx, { [f.key]: file, fileName: file.name, fileUrl: '' });
+                    }}
+                  />
+                  <div className="text-xs text-slate-500 break-all">
+                    {item[f.key] instanceof File ? item[f.key].name : (item.fileName || item.fileUrl || item.url || 'No PDF selected')}
+                  </div>
+                  {(item[f.key] || item.fileUrl || item.url) && (
+                    <div className="flex gap-2">
+                      <a
+                        href={item[f.key] instanceof File ? getFilePreviewUrl(item[f.key]) : (resolveUploadedAssetUrl(item.fileUrl || item.url || '') || item.fileUrl || item.url || '#')}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-wider hover:bg-blue-100"
+                      >
+                        Preview PDF
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => upd(idx, { [f.key]: null, fileName: null, fileUrl: '', url: '' })}
+                        className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider hover:bg-red-100"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <LimitedInput
+                label={f.label}
+                value={item[f.key] || ''}
+                max={f.max}
+                type={f.type || 'text'}
+                exactLength={f.exactLength}
+                placeholder={f.placeholder}
+                onChange={v => upd(idx, { [f.key]: v })}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+      <button onClick={() => del(idx)} className="self-start mt-8 p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
     </div>
   );
 };
@@ -291,120 +502,37 @@ const TableManager: React.FC<{
     onChange(next);
   };
 
+  const { ids, handleMove, handleRemove } = useListSync(items);
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+
+  const wrappedDel = (idx: number) => {
+    handleRemove(idx);
+    del(idx);
+  };
+
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = ids.findIndex(id => id === active.id);
+      const newIndex = ids.findIndex(id => id === over.id);
+      handleMove(oldIndex, newIndex);
+      onChange(arrayMove(items, oldIndex, newIndex));
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-xs font-black uppercase tracking-wider text-slate-500">{title}</p>
         <CountBadge used={items.length} max={maxItems} />
       </div>
-      {items.map((item, idx) => (
-        <div key={idx} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl group">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4 flex-grow">
-            {fields.map(f => (
-              <div key={f.key}>
-                {f.type === 'select' ? (
-                  <div>
-                    <label className={labelBase}>{f.label}</label>
-                    <select id="researchform-select-1" name="researchform-select-1" aria-label="researchform select field" value={item[f.key] || ''} onChange={e => upd(idx, { [f.key]: e.target.value })} className={inputBase}>
-                      {(f.options || []).map(opt => <option key={opt} value={opt}>{opt || 'Blank'}</option>)}
-                    </select>
-                  </div>
-                ) : f.type === 'file-image' ? (
-                  <div>
-                    <label className={labelBase}>{f.label}</label>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-3">
-                      <div className="relative aspect-[16/10] rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
-                        <input id="researchform-4" name="researchform-4" aria-label="researchform field"
-                          type="file"
-                          accept="image/*"
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          onChange={e => {
-                            const file = e.target.files?.[0] || null;
-                            if (file) upd(idx, { [f.key]: file, imageUrl: file.name });
-                          }}
-                        />
-                        {resolveMediaUrl(item[f.key]) || resolveMediaUrl(item.imageUrl) ? (
-                          <img
-                            src={resolveMediaUrl(item[f.key]) || resolveMediaUrl(item.imageUrl) || ''}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs font-black uppercase tracking-wider text-slate-400">
-                            Click to upload
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-500 break-all">
-                        {item[f.key] instanceof File ? item[f.key].name : (item.fileName || item.imageUrl || 'No image selected')}
-                      </div>
-                      {(item[f.key] || item.imageUrl) && (
-                        <button
-                          type="button"
-                          onClick={() => upd(idx, { [f.key]: null, imageUrl: '' })}
-                          className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider hover:bg-red-100"
-                        >
-                          Remove Image
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ) : f.type === 'file-pdf' ? (
-                  <div>
-                    <label className={labelBase}>{f.label}</label>
-                    <div className="rounded-2xl border border-slate-200 bg-white p-3 space-y-3">
-                      <input id="researchform-5" name="researchform-5" aria-label="researchform field"
-                        type="file"
-                        accept="application/pdf"
-                        className="text-sm font-semibold text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-bold file:text-white hover:file:bg-blue-700"
-                        onChange={e => {
-                          const file = e.target.files?.[0] || null;
-                          if (file) upd(idx, { [f.key]: file, fileName: file.name, fileUrl: '' });
-                        }}
-                      />
-                      <div className="text-xs text-slate-500 break-all">
-                        {item[f.key] instanceof File ? item[f.key].name : (item.fileName || item.fileUrl || item.url || 'No PDF selected')}
-                      </div>
-                      {(item[f.key] || item.fileUrl || item.url) && (
-                        <div className="flex gap-2">
-                          <a
-                            href={item[f.key] instanceof File ? getFilePreviewUrl(item[f.key]) : (resolveUploadedAssetUrl(item.fileUrl || item.url || '') || item.fileUrl || item.url || '#')}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-black uppercase tracking-wider hover:bg-blue-100"
-                          >
-                            Preview PDF
-                          </a>
-                          <button
-                            type="button"
-                            onClick={() => upd(idx, { [f.key]: null, fileName: null, fileUrl: '', url: '' })}
-                            className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider hover:bg-red-100"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <LimitedInput
-                    label={f.label}
-                    value={item[f.key] || ''}
-                    max={f.max}
-                    type={f.type || 'text'}
-                    exactLength={f.exactLength}
-                    placeholder={f.placeholder}
-                    onChange={v => upd(idx, { [f.key]: v })}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-          <button onClick={() => del(idx)} className="p-2 h-max bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 mt-8">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-      ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+          {items.map((item, idx) => (
+             <SortableTableItem key={ids[idx]} id={ids[idx]} item={item} idx={idx} fields={fields} resolveMediaUrl={resolveMediaUrl} getFilePreviewUrl={getFilePreviewUrl} resolveUploadedAssetUrl={resolveUploadedAssetUrl} del={wrappedDel} upd={upd} />
+          ))}
+        </SortableContext>
+      </DndContext>
       {items.length < maxItems && (
         <button onClick={add} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all">Add Row</button>
       )}

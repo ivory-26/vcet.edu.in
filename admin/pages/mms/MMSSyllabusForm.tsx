@@ -89,7 +89,7 @@ const MMSSyllabusForm: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden shadow-slate-200/50">
+      <div className="bg-white rounded-5xl border border-slate-200 shadow-xl overflow-hidden shadow-slate-200/50">
         <div className="p-8 border-b border-slate-100 bg-slate-50/50">
           <h3 className="text-xl font-bold text-slate-800">Syllabus PDF</h3>
           <p className="text-sm text-slate-500 font-medium mt-1">Upload the curriculum document for {isFirstYear ? 'Semester I & II' : 'Semester III & IV'}.</p>
@@ -109,7 +109,7 @@ const MMSSyllabusForm: React.FC = () => {
                     }
                   }}
                 />
-                <div className={`aspect-[16/6] rounded-[2rem] border-4 border-dashed transition-all flex flex-col items-center justify-center gap-4 ${pdfData.url ? 'border-emerald-100 bg-emerald-50/30' : 'border-slate-100 bg-slate-50/30 group-hover:border-blue-200 group-hover:bg-blue-50/30'}`}>
+                <div className={`aspect-16/6 rounded-4xl border-4 border-dashed transition-all flex flex-col items-center justify-center gap-4 ${pdfData.url ? 'border-emerald-100 bg-emerald-50/30' : 'border-slate-100 bg-slate-50/30 group-hover:border-blue-200 group-hover:bg-blue-50/30'}`}>
                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110 ${pdfData.url ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-white text-slate-400 shadow-slate-100 group-hover:text-blue-500 group-hover:shadow-blue-100'}`}>
                     {pdfData.url ? <CheckCircle className="w-8 h-8" /> : <Upload className="w-8 h-8" />}
                   </div>

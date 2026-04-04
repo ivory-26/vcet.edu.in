@@ -5,6 +5,7 @@ import type { TrainingPlacementPayload } from '../../types';
 import { trainingPlacementApi } from '../../api/trainingPlacement';
 import { resolveApiUrl } from '../../../services/api';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const MMSStudentPlacementsForm: React.FC = () => {
   const navigate = useNavigate();
@@ -93,11 +94,21 @@ const MMSStudentPlacementsForm: React.FC = () => {
         <SectionCard title="Student Placements" icon="🎓">
           <p className="text-xs text-slate-500 mb-4 font-medium">Add placed students (max 6). Includes student photo, name, specialization, and company.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {form.studentPlacements?.map((item, i) => (
-              <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3">
-                <button type="button" onClick={() => {
-                  const c = [...form.studentPlacements!]; c.splice(i, 1); setForm({ ...form, studentPlacements: c });
-                }} className="absolute top-2 right-2 text-red-500 z-10 p-1 bg-white rounded-md shadow-sm border border-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+            <SortableListContext
+              items={form.studentPlacements || []}
+              onChange={val => setForm({ ...form, studentPlacements: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.studentPlacements!]; c.splice(i, 1); setForm({ ...form, studentPlacements: c });
+                    }} className="text-red-500 z-10 p-1 bg-white rounded-md shadow-sm border border-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
 
                   <ImageUploader 
                     value={item.image}
@@ -108,34 +119,35 @@ const MMSStudentPlacementsForm: React.FC = () => {
                     }}
                   />
 
-                <div className="relative">
-                  <label className="admin-label">Sr. No</label>
-                  <input id="mmsstudentplacementsform-1" name="mmsstudentplacementsform-1" aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="Sr No" value={item.srNo} onChange={e => {
-                    const c = [...form.studentPlacements!]; c[i] = { ...c[i], srNo: e.target.value }; setForm({ ...form, studentPlacements: c });
-                  }} />
+                  <div className="relative">
+                    <label className="admin-label">Sr. No</label>
+                    <input id={`mms-std-sr-${i}`} name={`mms-std-sr-${i}`} aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="Sr No" value={item.srNo} onChange={e => {
+                      const c = [...form.studentPlacements!]; c[i] = { ...c[i], srNo: e.target.value }; setForm({ ...form, studentPlacements: c });
+                    }} />
+                  </div>
+                  <div className="relative">
+                    <label className="admin-label">Student Name <span className="text-slate-400 normal-case">({item.studentName.length}/25)</span></label>
+                    <input id={`mms-std-name-${i}`} name={`mms-std-name-${i}`} aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="Full name" value={item.studentName} onChange={e => handleTextChange(e.target.value, 25, val => {
+                      const c = [...form.studentPlacements!]; c[i] = { ...c[i], studentName: val }; setForm({ ...form, studentPlacements: c });
+                    })} />
+                  </div>
+                  <div className="relative">
+                    <label className="admin-label">Specialization <span className="text-slate-400 normal-case">({item.specialization.length}/15)</span></label>
+                    <input id={`mms-std-spec-${i}`} name={`mms-std-spec-${i}`} aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="e.g. Finance" value={item.specialization} onChange={e => handleTextChange(e.target.value, 15, val => {
+                      const c = [...form.studentPlacements!]; c[i] = { ...c[i], specialization: val }; setForm({ ...form, studentPlacements: c });
+                    })} />
+                  </div>
+                  <div className="relative">
+                    <label className="admin-label">Company <span className="text-slate-400 normal-case">({item.company.length}/40)</span></label>
+                    <input id={`mms-std-comp-${i}`} name={`mms-std-comp-${i}`} aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="Company name" value={item.company} onChange={e => handleTextChange(e.target.value, 40, val => {
+                      const c = [...form.studentPlacements!]; c[i] = { ...c[i], company: val }; setForm({ ...form, studentPlacements: c });
+                    })} />
+                  </div>
                 </div>
-                <div className="relative">
-                  <label className="admin-label">Student Name <span className="text-slate-400 normal-case">({item.studentName.length}/25)</span></label>
-                  <input id="mmsstudentplacementsform-2" name="mmsstudentplacementsform-2" aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="Full name" value={item.studentName} onChange={e => handleTextChange(e.target.value, 25, val => {
-                    const c = [...form.studentPlacements!]; c[i] = { ...c[i], studentName: val }; setForm({ ...form, studentPlacements: c });
-                  })} />
-                </div>
-                <div className="relative">
-                  <label className="admin-label">Specialization <span className="text-slate-400 normal-case">({item.specialization.length}/15)</span></label>
-                  <input id="mmsstudentplacementsform-3" name="mmsstudentplacementsform-3" aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="e.g. Finance" value={item.specialization} onChange={e => handleTextChange(e.target.value, 15, val => {
-                    const c = [...form.studentPlacements!]; c[i] = { ...c[i], specialization: val }; setForm({ ...form, studentPlacements: c });
-                  })} />
-                </div>
-                <div className="relative">
-                  <label className="admin-label">Company <span className="text-slate-400 normal-case">({item.company.length}/40)</span></label>
-                  <input id="mmsstudentplacementsform-4" name="mmsstudentplacementsform-4" aria-label="mmsstudentplacementsform field" className="admin-input-small" placeholder="Company name" value={item.company} onChange={e => handleTextChange(e.target.value, 40, val => {
-                    const c = [...form.studentPlacements!]; c[i] = { ...c[i], company: val }; setForm({ ...form, studentPlacements: c });
-                  })} />
-                </div>
-              </div>
-            ))}
+              )}
+            />
             {(form.studentPlacements?.length || 0) < 6 && (
-              <button type="button" onClick={() => setForm({ ...form, studentPlacements: [...(form.studentPlacements || []), { srNo: '', studentName: '', specialization: '', company: '' }] })} className="btn-add min-h-[18rem]">
+              <button type="button" onClick={() => setForm({ ...form, studentPlacements: [...(form.studentPlacements || []), { srNo: '', studentName: '', specialization: '', company: '' }] })} className="btn-add min-h-72">
                 <Plus className="w-5 h-5 mx-auto mb-2" /> Add Student (Max 6)
               </button>
             )}
@@ -189,7 +201,7 @@ const MMSStudentPlacementsForm: React.FC = () => {
 /* ── Helper Components ── */
 
 const SectionCard = ({ icon, title, children }: any) => (
-  <div className="bg-white rounded-[2rem] p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+  <div className="bg-white rounded-4xl p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
     <div className="flex items-center gap-3 mb-8">
       {icon && <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg shadow-sm border border-slate-100">{icon}</div>}
       <h2 className="text-sm font-black text-[#111827] uppercase tracking-wider">{title}</h2>
@@ -201,7 +213,7 @@ const SectionCard = ({ icon, title, children }: any) => (
 const ImageUploader = ({ value, onFileSelect }: { value?: any; onFileSelect: (f: File) => void }) => {
   const imageUrl = value instanceof File ? URL.createObjectURL(value) : (value && typeof value === 'object' && 'url' in value ? resolveApiUrl((value as any).url) : resolveApiUrl(value as string));
   return (
-    <div className="relative group rounded-xl border-2 border-dashed border-slate-200 p-4 bg-slate-50 hover:bg-slate-100 transition-colors flex flex-col items-center justify-center min-h-[80px] text-center cursor-pointer overflow-hidden">
+    <div className="relative group rounded-xl border-2 border-dashed border-slate-200 p-4 bg-slate-50 hover:bg-slate-100 transition-colors flex flex-col items-center justify-center min-h-20 text-center cursor-pointer overflow-hidden">
       <input id="mmsstudentplacementsform-6" name="mmsstudentplacementsform-6" aria-label="mmsstudentplacementsform field" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={(e) => { if (e.target.files?.[0]) onFileSelect(e.target.files[0]); }} />
       {imageUrl ? (
         <img src={imageUrl} alt="preview" className="absolute inset-0 w-full h-full object-cover" />
@@ -217,32 +229,44 @@ const ImageUploader = ({ value, onFileSelect }: { value?: any; onFileSelect: (f:
 
 const GalleryEditor = ({ items, max, labelLimit, onChange }: { items: any[]; max: number; labelLimit: number; onChange: (items: any[]) => void }) => (
   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    {items.map((item, i) => {
-      const imgUrl = item.image instanceof File ? URL.createObjectURL(item.image) : (item.image && typeof item.image === 'object' && 'url' in item.image ? resolveApiUrl((item.image as any).url) : resolveApiUrl(item.image as string));
-      return (
-      <div key={i} className="p-3 bg-slate-50 border border-slate-200 rounded-lg relative space-y-2">
-        <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="absolute top-1 right-1 bg-white border border-red-100 rounded text-red-500 z-10 p-0.5"><Trash2 className="w-3 h-3" /></button>
-        <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-20 flex items-center justify-center cursor-pointer overflow-hidden">
-          <input id="mmsstudentplacementsform-7" name="mmsstudentplacementsform-7" aria-label="mmsstudentplacementsform field" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={(e) => {
-            if (e.target.files?.[0]) {
-              const c = [...items]; c[i] = { ...c[i], image: e.target.files[0] }; onChange(c);
-            }
-          }} />
-          {imgUrl ? (
-            <img src={imgUrl} alt="preview" className="absolute inset-0 w-full h-full object-cover" />
-          ) : (
-            <ImageIcon className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
-          )}
-        </div>
-        <input id="mmsstudentplacementsform-8" name="mmsstudentplacementsform-8" aria-label="mmsstudentplacementsform field" className="admin-input-small text-center relative z-20" placeholder={`Label (Max ${labelLimit})`} value={item.label} onChange={e => {
-          if (e.target.value.length <= labelLimit) {
-            const c = [...items]; c[i] = { ...c[i], label: e.target.value }; onChange(c);
-          }
-        }} />
-      </div>
-    )})}
+    <SortableListContext
+      items={items}
+      onChange={onChange}
+      renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => {
+        const imgUrl = item.image instanceof File ? URL.createObjectURL(item.image) : (item.image && typeof item.image === 'object' && 'url' in item.image ? resolveApiUrl((item.image as any).url) : resolveApiUrl(item.image as string));
+        return (
+          <div ref={setNodeRef} style={style} className={`p-3 bg-slate-50 border border-slate-200 rounded-lg relative space-y-2 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                <div className="w-3 h-0.5 bg-current mb-0.5" />
+                <div className="w-3 h-0.5 bg-current mb-0.5" />
+                <div className="w-3 h-0.5 bg-current" />
+              </div>
+              <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="bg-white border border-red-100 rounded text-red-500 p-0.5 hover:bg-red-50 transition-colors"><Trash2 className="w-3 h-3" /></button>
+            </div>
+            <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-20 flex items-center justify-center cursor-pointer overflow-hidden">
+              <input id={`mms-std-gal-file-${i}`} name={`mms-std-gal-file-${i}`} aria-label="mmsstudentplacementsform field" type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  const c = [...items]; c[i] = { ...c[i], image: e.target.files[0] }; onChange(c);
+                }
+              }} />
+              {imgUrl ? (
+                <img src={imgUrl} alt="preview" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <ImageIcon className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+              )}
+            </div>
+            <input id={`mms-std-gal-label-${i}`} name={`mms-std-gal-label-${i}`} aria-label="mmsstudentplacementsform field" className="admin-input-small text-center relative z-20" placeholder={`Label (Max ${labelLimit})`} value={item.label} onChange={e => {
+              if (e.target.value.length <= labelLimit) {
+                const c = [...items]; c[i] = { ...c[i], label: e.target.value }; onChange(c);
+              }
+            }} />
+          </div>
+        );
+      }}
+    />
     {items.length < max && (
-      <button type="button" onClick={() => onChange([...items, { label: '', image: null }])} className="btn-add min-h-[7rem]">
+      <button type="button" onClick={() => onChange([...items, { label: '', image: null }])} className="btn-add min-h-28">
         <Plus className="w-5 h-5 mx-auto mb-1" /> Add Image
       </button>
     )}

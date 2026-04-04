@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { pagesApi } from '../../api/pagesApi';
 import type { FacilityData, FacilityPayload } from '../../types';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 import { resolveUploadedAssetUrl } from '../../../utils/uploadedAssets';
 
 /* ── Toast Component ────────────────────────────────────────────────────────── */
@@ -21,7 +22,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 
 /* ── UI Components ─────────────────────────────────────────────────────────── */
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-[2rem] shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
+  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
     <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
       <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
       <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
@@ -184,7 +185,7 @@ const LimitedInput: React.FC<{ value: string; onChange: (v: string) => void; max
     {type === 'text' ? (
       <input id="facilitiesform-1" name="facilitiesform-1" aria-label="facilitiesform field" value={value || ''} onChange={e => { if (e.target.value.length <= max) onChange(e.target.value) }} className={`${inputBase} p-4`} placeholder={placeholder} />
     ) : (
-      <textarea id="facilitiesform-textarea-1" name="facilitiesform-textarea-1" aria-label="facilitiesform textarea field" value={value || ''} onChange={e => { if (e.target.value.length <= max) onChange(e.target.value) }} className={`${inputBase} p-4 min-h-[100px] resize-y`} placeholder={placeholder} />
+      <textarea id="facilitiesform-textarea-1" name="facilitiesform-textarea-1" aria-label="facilitiesform textarea field" value={value || ''} onChange={e => { if (e.target.value.length <= max) onChange(e.target.value) }} className={`${inputBase} p-4 min-h-24 resize-y`} placeholder={placeholder} />
     )}
     <div className={`absolute bottom-3 right-4 text-[10px] font-bold ${value?.length >= max ? 'text-red-500' : 'text-slate-400'}`}>
       {value?.length || 0} / {max}
@@ -192,7 +193,7 @@ const LimitedInput: React.FC<{ value: string; onChange: (v: string) => void; max
   </div>
 );
 
-// Generic Items List Manager (Allows adding/editing objects in an array with Up/Down arrows)
+// Generic Items List Manager (Allows reordering with drag-and-drop)
 const DynamicListManager: React.FC<{ 
   items: any[]; 
   maxItems: number; 
@@ -201,21 +202,23 @@ const DynamicListManager: React.FC<{
 }> = ({ items = [], maxItems, fields, onChange }) => {
   const add = () => { if (items.length < maxItems) { const empty: any = {}; fields.forEach(f => empty[f.key] = ''); onChange([...items, empty]); } };
   const upd = (i: number, u: any) => { const n = [...items]; n[i] = { ...n[i], ...u }; onChange(n); };
-  const del = (i: number) => onChange(items.filter((_, idx) => idx !== i));
-  const move = (i: number, up: boolean) => {
-    if (up && i > 0) { const n = [...items]; [n[i], n[i-1]] = [n[i-1], n[i]]; onChange(n); }
-    if (!up && i < items.length - 1) { const n = [...items]; [n[i], n[i+1]] = [n[i+1], n[i]]; onChange(n); }
+  const del = (i: number) => {
+    const next = [...items];
+    next.splice(i, 1);
+    onChange(next);
   };
 
   return (
     <div className="space-y-4">
-      {items.map((item, idx) => (
-         <div key={idx} className="flex gap-4 p-5 bg-slate-50 border border-slate-100 rounded-3xl relative transition-all group overflow-hidden">
-            <div className="flex flex-col gap-2 pt-8 pr-2 border-r border-slate-200">
-              <button disabled={idx===0} onClick={() => move(idx, true)} className="text-slate-400 hover:text-blue-500 disabled:opacity-30"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7"/></svg></button>
-              <button disabled={idx===items.length-1} onClick={() => move(idx, false)} className="text-slate-400 hover:text-blue-500 disabled:opacity-30"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/></svg></button>
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-5 bg-slate-50 border border-slate-100 rounded-3xl relative transition-all group overflow-hidden shadow-sm">
+            <div className="flex flex-col gap-2 pt-8 pr-2 border-r border-slate-200 cursor-grab active:cursor-grabbing text-slate-400 hover:text-blue-500" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
-            <div className="grid grid-cols-1 gap-y-4 flex-grow">
+            <div className="grid grid-cols-1 gap-y-4 grow">
                {fields.map(f => (
                   <LimitedInput key={f.key} label={f.label} max={f.max} type={f.type} value={item[f.key]} onChange={v => upd(idx, { [f.key]: v })} />
                ))}
@@ -223,8 +226,9 @@ const DynamicListManager: React.FC<{
             <button onClick={() => del(idx)} className="self-start mt-8 p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
-         </div>
-      ))}
+          </div>
+        )}
+      />
       <button onClick={add} disabled={items.length >= maxItems} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 disabled:bg-slate-50 disabled:hover:border-slate-200 disabled:text-slate-300 transition-all flex items-center justify-center gap-2">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
         Add Item ({items.length}/{maxItems})
@@ -233,30 +237,33 @@ const DynamicListManager: React.FC<{
   );
 };
 
-// String Array Manager
+// String Array Manager (Allows reordering with drag-and-drop)
 const StringListManager: React.FC<{ items: string[]; maxItems: number; maxLength: number; onChange: (val: string[]) => void; label?: string }> = ({ items = [], maxItems, maxLength, onChange, label='Entry' }) => {
   const add = () => { if (items.length < maxItems) onChange([...items, '']); };
   const upd = (i: number, v: string) => { const n = [...items]; n[i] = v; onChange(n); };
-  const del = (i: number) => onChange(items.filter((_, idx) => idx !== i));
-  const move = (i: number, up: boolean) => {
-    if (up && i > 0) { const n = [...items]; [n[i], n[i-1]] = [n[i-1], n[i]]; onChange(n); }
-    if (!up && i < items.length - 1) { const n = [...items]; [n[i], n[i+1]] = [n[i+1], n[i]]; onChange(n); }
+  const del = (i: number) => {
+    const next = [...items];
+    next.splice(i, 1);
+    onChange(next);
   };
 
   return (
     <div className="space-y-3">
-      {items.map((str, idx) => (
-         <div key={idx} className="flex gap-3 items-center group">
-            <div className="flex gap-1">
-              <button disabled={idx===0} onClick={() => move(idx, true)} className="text-slate-300 hover:text-blue-500 disabled:opacity-30"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 15l7-7 7 7"/></svg></button>
-              <button disabled={idx===items.length-1} onClick={() => move(idx, false)} className="text-slate-300 hover:text-blue-500 disabled:opacity-30"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"/></svg></button>
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(str, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-3 items-center group bg-white">
+            <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-blue-500 opacity-50 group-hover:opacity-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
-            <div className="flex-grow">
+            <div className="grow">
                <LimitedInput label={`${label} ${idx+1}`} max={maxLength} value={str} onChange={v => upd(idx, v)} />
             </div>
             <button onClick={() => del(idx)} className="p-2 text-red-400 hover:text-red-500 opacity-0 group-hover:opacity-100 mt-6"><svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
-         </div>
-      ))}
+          </div>
+        )}
+      />
       <button onClick={add} disabled={items.length >= maxItems} className="text-xs font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest disabled:opacity-50">+ Add {label} ({items.length}/{maxItems})</button>
     </div>
   );

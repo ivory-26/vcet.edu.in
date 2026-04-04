@@ -5,6 +5,7 @@ import type { MMSFacilitiesPayload, GalleryItem } from '../../types';
 import { mmsFacilitiesApi } from '../../api/mmsFacilitiesApi';
 import { resolveApiUrl } from '../../api/client';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const resolvePreviewImage = (image: unknown): string => {
   if (typeof image === 'string') return image;
@@ -118,7 +119,7 @@ const MMSFacilitiesForm: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden shadow-slate-200/50">
+      <div className="bg-white rounded-5xl border border-slate-200 shadow-xl overflow-hidden shadow-slate-200/50">
         <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold text-slate-800">Gallery Items</h3>
@@ -131,64 +132,75 @@ const MMSFacilitiesForm: React.FC = () => {
 
         <div className="p-8">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {items.map((item, i) => (
-              <div key={i} className="group relative bg-slate-50 rounded-3xl border border-slate-200 p-4 transition-all hover:shadow-xl hover:shadow-slate-200/50 animate-fade-in shadow-inner">
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    const newItems = items.filter((_, idx) => idx !== i);
-                    setForm({ ...form, [config.key]: newItems });
-                  }} 
-                  className="absolute -top-2 -right-2 w-8 h-8 bg-white border border-red-100 rounded-full text-red-500 flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors z-10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-
-                <div className="relative aspect-video rounded-2xl overflow-hidden bg-white border border-slate-200 mb-4 group-hover:border-blue-200 transition-colors shadow-sm">
-                  <input id="mmsfacilitiesform-1" name="mmsfacilitiesform-1" aria-label="mmsfacilitiesform field" 
-                    type="file" 
-                    accept="image/*" 
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const newItems = [...items];
-                        newItems[i] = { ...newItems[i], image: file };
-                        setForm({ ...form, [config.key]: newItems });
-                      }
-                    }}
-                  />
-                  {item.image ? (
-                    <img src={typeof item.image === 'string' ? item.image : ((item.image as any) instanceof File || (item.image as any) instanceof Blob ? URL.createObjectURL(item.image as any) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                       <ImageIcon className="w-8 h-8 text-slate-200 group-hover:text-blue-500 transition-colors" />
-                       <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Select Image</span>
+            <SortableListContext
+              items={items}
+              onChange={val => setForm({ ...form, [config.key]: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+                <div ref={setNodeRef} style={style} className={`group relative bg-slate-50 rounded-3xl border border-slate-200 p-4 transition-all hover:shadow-xl hover:shadow-slate-200/50 animate-fade-in shadow-inner ${isDragging ? 'shadow-2xl z-50 ring-2 ring-blue-500' : ''}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
                     </div>
-                  )}
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-center px-1">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Label</label>
-                    <span className={`text-[10px] font-bold ${(item.label?.length || 0) > config.limit * 0.9 ? 'text-amber-500' : 'text-slate-400'}`}>
-                      {item.label?.length || 0} / {config.limit}
-                    </span>
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        const newItems = items.filter((_, idx) => idx !== i);
+                        setForm({ ...form, [config.key]: newItems });
+                      }} 
+                      className="w-8 h-8 bg-white border border-red-100 rounded-full text-red-500 flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors z-10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <input id="mmsfacilitiesform-2" name="mmsfacilitiesform-2" aria-label="mmsfacilitiesform field" 
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100 transition-all placeholder:text-slate-300"
-                    placeholder="e.g. Modern Lab..."
-                    value={item.label || ''}
-                    maxLength={config.limit}
-                    onChange={(e) => {
-                      const newItems = [...items];
-                      newItems[i] = { ...newItems[i], label: e.target.value };
-                      setForm({ ...form, [config.key]: newItems });
-                    }}
-                  />
+
+                  <div className="relative aspect-video rounded-2xl overflow-hidden bg-white border border-slate-200 mb-4 group-hover:border-blue-200 transition-colors shadow-sm">
+                    <input id={`mms-fac-file-${i}`} name={`mms-fac-file-${i}`} aria-label="mmsfacilitiesform field" 
+                      type="file" 
+                      accept="image/*" 
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const newItems = [...items];
+                          newItems[i] = { ...newItems[i], image: file };
+                          setForm({ ...form, [config.key]: newItems });
+                        }
+                      }}
+                    />
+                    {item.image ? (
+                      <img src={typeof item.image === 'string' ? item.image : ((item.image as any) instanceof File || (item.image as any) instanceof Blob ? URL.createObjectURL(item.image as any) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                         <ImageIcon className="w-8 h-8 text-slate-200 group-hover:text-blue-500 transition-colors" />
+                         <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Select Image</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center px-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Label</label>
+                      <span className={`text-[10px] font-bold ${(item.label?.length || 0) > config.limit * 0.9 ? 'text-amber-500' : 'text-slate-400'}`}>
+                        {item.label?.length || 0} / {config.limit}
+                      </span>
+                    </div>
+                    <input id={`mms-fac-label-${i}`} name={`mms-fac-label-${i}`} aria-label="mmsfacilitiesform field" 
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100 transition-all placeholder:text-slate-300"
+                      placeholder="e.g. Modern Lab..."
+                      value={item.label || ''}
+                      maxLength={config.limit}
+                      onChange={(e) => {
+                        const newItems = [...items];
+                        newItems[i] = { ...newItems[i], label: e.target.value };
+                        setForm({ ...form, [config.key]: newItems });
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              )}
+            />
 
             {true && (
               <button 
@@ -197,7 +209,7 @@ const MMSFacilitiesForm: React.FC = () => {
                   const newItems = [...items, { label: '', image: null }];
                   setForm({ ...form, [config.key]: newItems });
                 }} 
-                className="aspect-video lg:aspect-auto min-h-[12rem] bg-white border-4 border-dashed border-slate-100 rounded-[2.5rem] flex flex-col items-center justify-center gap-3 text-slate-300 hover:border-blue-200 hover:text-blue-500 hover:bg-blue-50/10 transition-all group shadow-sm shadow-slate-100"
+                className="aspect-video lg:aspect-auto min-h-48 bg-white border-4 border-dashed border-slate-100 rounded-5xl flex flex-col items-center justify-center gap-3 text-slate-300 hover:border-blue-200 hover:text-blue-500 hover:bg-blue-50/10 transition-all group shadow-sm shadow-slate-100"
               >
                 <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                   <Plus className="w-6 h-6" />

@@ -4,6 +4,7 @@ import { bestPracticeUploadsApi } from '../../api/bestPracticeUploads';
 import { naacScoreUploadsApi } from '../../api/naacScoreUploads';
 import type { BestPracticeUpload, NaacScoreUpload, SssReportUpload } from '../../types';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 /* ── Toast ─────────────────────────────────────────────────────────────────── */
 const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () => void }> = ({ message, type, onClose }) => {
@@ -20,7 +21,7 @@ const Toast: React.FC<{ message: string; type: 'success' | 'error'; onClose: () 
 
 /* ── UI Primitives ──────────────────────────────────────────────────────────── */
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-[2rem] shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
+  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
     <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
       <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
       <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
@@ -134,88 +135,102 @@ const NestedCategoryManager: React.FC<{
 
   return (
     <div className="space-y-5">
-      {(items || []).map((cat, ci) => (
-        <div key={ci} className="border border-slate-200 rounded-3xl overflow-hidden bg-slate-50">
-          {/* Category header */}
-          <div className="flex items-center gap-3 p-5 bg-white border-b border-slate-100">
-            <div className="flex-grow">
-              <label className={labelBase}>{categoryTitle}</label>
-              <input id="naacform-2" name="naacform-2" aria-label="naacform field"
-                value={cat.categoryLabel}
-                onChange={e => updCategory(ci, { categoryLabel: e.target.value })}
-                className={inputBase}
-                placeholder={categoryPlaceholder}
-              />
-            </div>
-            <button
-              onClick={() => delCategory(ci)}
-              className="mt-6 p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Nested entries inside category */}
-          <div className="p-4 space-y-3">
-            {(cat.entries || []).map((entry: any, ei: number) => (
-              <div key={ei} className="flex gap-3 p-4 bg-white border border-slate-100 rounded-2xl group">
-                <div className="flex-grow space-y-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className={labelBase}>{idLabel}</label>
-                      <input id="naacform-3" name="naacform-3" aria-label="naacform field"
-                        value={entry.entryId || entry.extendedId || entry.subCriteria || ''}
-                        onChange={e => updEntry(ci, ei, { entryId: e.target.value })}
-                        maxLength={50}
-                        className={`${inputBase} !py-2.5 !px-4 !rounded-xl !text-xs`}
-                        placeholder="e.g. 1.1"
-                      />
-                    </div>
-                    <div>
-                      <label className={labelBase}>{descLabel}</label>
-                      <input id="naacform-4" name="naacform-4" aria-label="naacform field"
-                        value={entry.description || entry.criteriaHeading || ''}
-                        onChange={e => updEntry(ci, ei, { description: e.target.value })}
-                        maxLength={200}
-                        className={`${inputBase} !py-2.5 !px-4 !rounded-xl !text-xs`}
-                        placeholder="Description..."
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className={labelBase}>Link — PDF Upload</label>
-                    <PdfUploadButton
-                      value={entry.pdfFile}
-                      onChange={v => updEntry(ci, ei, { pdfFile: v })}
-                    />
-                  </div>
-                </div>
-                <button
-                  onClick={() => delEntry(ci, ei)}
-                  className="self-center p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(cat, ci, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="border border-slate-200 rounded-3xl overflow-hidden bg-slate-50">
+            {/* Category header */}
+            <div className="flex items-center gap-3 p-5 bg-white border-b border-slate-100">
+              <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-2" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
               </div>
-            ))}
+              <div className="grow">
+                <label className={labelBase}>{categoryTitle}</label>
+                <input id={`naacform-cat-${ci}`} name={`naacform-cat-${ci}`} aria-label="naacform field"
+                  value={cat.categoryLabel}
+                  onChange={e => updCategory(ci, { categoryLabel: e.target.value })}
+                  className={inputBase}
+                  placeholder={categoryPlaceholder}
+                />
+              </div>
+              <button
+                onClick={() => delCategory(ci)}
+                className="mt-6 p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-            {/* Add entry inside category */}
-            <button
-              onClick={() => addEntry(ci)}
-              className="w-full py-3 border border-dashed border-blue-300 rounded-2xl text-xs font-bold text-blue-400 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" />
-              </svg>
-              {addEntryLabel}
-            </button>
+            {/* Nested entries inside category */}
+            <div className="p-4 space-y-3">
+              <SortableListContext
+                items={cat.entries || []}
+                onChange={val => updCategory(ci, { entries: val })}
+                renderItem={(entry, ei, id2, dragHandleProps2, setNodeRef2, style2, isDragging2, actions2) => (
+                  <div ref={setNodeRef2} style={style2} className="flex gap-3 p-4 bg-white border border-slate-100 rounded-2xl group shadow-sm">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-200 hover:text-blue-400 p-2 self-start mt-6" {...dragHandleProps2.attributes} {...dragHandleProps2.listeners}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+                    </div>
+                    <div className="grow space-y-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className={labelBase}>{idLabel}</label>
+                          <input id={`naacform-entry-id-${ci}-${ei}`} name={`naacform-entry-id-${ci}-${ei}`} aria-label="naacform field"
+                            value={entry.entryId || entry.extendedId || entry.subCriteria || ''}
+                            onChange={e => updEntry(ci, ei, { entryId: e.target.value })}
+                            maxLength={50}
+                            className={`${inputBase} py-2.5! px-4! rounded-xl! text-xs!`}
+                            placeholder="e.g. 1.1"
+                          />
+                        </div>
+                        <div>
+                          <label className={labelBase}>{descLabel}</label>
+                          <input id={`naacform-entry-desc-${ci}-${ei}`} name={`naacform-entry-desc-${ci}-${ei}`} aria-label="naacform field"
+                            value={entry.description || entry.criteriaHeading || ''}
+                            onChange={e => updEntry(ci, ei, { description: e.target.value })}
+                            maxLength={200}
+                            className={`${inputBase} py-2.5! px-4! rounded-xl! text-xs!`}
+                            placeholder="Description..."
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className={labelBase}>Link — PDF Upload</label>
+                        <PdfUploadButton
+                          value={entry.pdfFile}
+                          onChange={v => updEntry(ci, ei, { pdfFile: v })}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => delEntry(ci, ei)}
+                      className="self-center p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              />
+
+              {/* Add entry inside category */}
+              <button
+                onClick={() => addEntry(ci)}
+                className="w-full py-3 border border-dashed border-blue-300 rounded-2xl text-xs font-bold text-blue-400 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" />
+                </svg>
+                {addEntryLabel}
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        )}
+      />
 
       {/* Add new category */}
       <button
@@ -244,39 +259,46 @@ const TableWithPdfManager: React.FC<{
 
   return (
     <div className="space-y-4">
-      {(items || []).map((item, idx) => (
-        <div key={idx} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 group">
-          <div className="flex-grow space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-4">
-              {textFields.map(f => (
-                <div key={f.key} className={f.isTextarea ? 'col-span-1 md:col-span-2 lg:col-span-3' : ''}>
-                  <label className={labelBase}>{f.label}</label>
-                  {f.isTextarea
-                    ? <textarea id="naacform-textarea-1" name="naacform-textarea-1" aria-label="naacform textarea field" maxLength={f.maxLength} value={item[f.key]} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs h-20 resize-none`} placeholder={f.placeholder} />
-                    : <input id="naacform-5" name="naacform-5" aria-label="naacform field" maxLength={f.maxLength} value={item[f.key]} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} !py-3 !px-4 !rounded-xl !text-xs`} placeholder={f.placeholder} />
-                  }
-                </div>
-              ))}
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 group">
+            <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-2 self-start mt-4" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
-            {/* PDF Upload */}
-            <div>
-              <label className={labelBase}>Link — PDF Upload</label>
-              <PdfUploadButton
-                value={item.pdfFile}
-                onChange={v => upd(idx, { pdfFile: v })}
-              />
+            <div className="grow space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-4">
+                {textFields.map(f => (
+                  <div key={f.key} className={f.isTextarea ? 'col-span-1 md:col-span-2 lg:col-span-3' : ''}>
+                    <label className={labelBase}>{f.label}</label>
+                    {f.isTextarea
+                      ? <textarea id={`naacform-ta-${idx}-${f.key}`} name={`naacform-ta-${idx}-${f.key}`} aria-label="naacform textarea field" maxLength={f.maxLength} value={item[f.key]} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} py-3! px-4! rounded-xl! text-xs! h-20 resize-none`} placeholder={f.placeholder} />
+                      : <input id={`naacform-input-${idx}-${f.key}`} name={`naacform-input-${idx}-${f.key}`} aria-label="naacform field" maxLength={f.maxLength} value={item[f.key]} onChange={e => upd(idx, { [f.key]: e.target.value })} className={`${inputBase} py-3! px-4! rounded-xl! text-xs!`} placeholder={f.placeholder} />
+                    }
+                  </div>
+                ))}
+              </div>
+              {/* PDF Upload */}
+              <div>
+                <label className={labelBase}>Link — PDF Upload</label>
+                <PdfUploadButton
+                  value={item.pdfFile}
+                  onChange={v => upd(idx, { pdfFile: v })}
+                />
+              </div>
             </div>
+            <button
+              onClick={() => del(idx)}
+              className="mt-6 p-2 h-max bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button
-            onClick={() => del(idx)}
-            className="self-center p-2 h-max bg-red-50 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      ))}
+        )}
+      />
       <button onClick={add} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all flex items-center justify-center gap-2">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" />
@@ -300,27 +322,36 @@ const SimplePdfManager: React.FC<{
 
   return (
     <div className="space-y-4">
-      {(items || []).map((item, idx) => (
-        <div key={idx} className="flex gap-4 p-5 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:border-slate-200 group">
-          <div className="flex-grow space-y-4">
-            {extraFields.map(f => (
-              <div key={f.key}>
-                <label className={labelBase}>{f.label}</label>
-                <input id="naacform-6" name="naacform-6" aria-label="naacform field" maxLength={f.maxLength} value={item[f.key]} onChange={e => upd(idx, { [f.key]: e.target.value })} className={inputBase} placeholder={f.placeholder} />
-              </div>
-            ))}
-            <div>
-              <label className={labelBase}>PDF Upload</label>
-              <PdfUploadButton value={item.pdfFile} onChange={v => upd(idx, { pdfFile: v })} />
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-5 bg-slate-50 border border-slate-100 rounded-3xl transition-all hover:border-slate-200 group">
+            <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-2 self-start mt-6" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
+            <div className="grow space-y-4">
+              {extraFields.map(f => (
+                <div key={f.key}>
+                  <label className={labelBase}>{f.label}</label>
+                  <input id={`naac-simple-${idx}-${f.key}`} name={`naac-simple-${idx}-${f.key}`} aria-label="naacform field" maxLength={f.maxLength} value={item[f.key]} onChange={e => upd(idx, { [f.key]: e.target.value })} className={inputBase} placeholder={f.placeholder} />
+                </div>
+              ))}
+              <div>
+                <label className={labelBase}>PDF Upload</label>
+                <PdfUploadButton value={item.pdfFile} onChange={v => upd(idx, { pdfFile: v })} />
+              </div>
+            </div>
+            <button onClick={() => del(idx)} className="mt-8 p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
           </div>
-          <button onClick={() => del(idx)} className="self-center p-2 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-      ))}
+        )}
+      />
       <button onClick={add} className="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-sm font-bold text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all flex items-center justify-center gap-2">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" />
+        </svg>
         {addLabel}
       </button>
     </div>
@@ -360,58 +391,68 @@ const SSSPdfUploadManager: React.FC<{ items: SSSUploadFormItem[]; onChange: (val
 
   return (
     <div className="space-y-4">
-      {(items || []).map((item, idx) => (
-        <div key={idx} className="p-5 bg-slate-50 border border-slate-100 rounded-3xl space-y-4">
-          <div>
-            <label className={labelBase}>Title</label>
-            <input id="naacform-7" name="naacform-7" aria-label="naacform field"
-              value={item.title || ''}
-              onChange={e => upd(idx, { title: e.target.value })}
-              className={inputBase}
-              placeholder="SSS REPORT 2021-22"
-            />
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="p-5 bg-slate-50 border border-slate-100 rounded-3xl space-y-4 relative group">
+            <div className="absolute top-8 -left-6 flex items-center gap-2 cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+              <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M8 9h8m-8 6h8"/></svg>
+              </div>
+            </div>
+  
+            <div>
+              <label className={labelBase}>Title</label>
+              <input id={`naac-sss-title-${idx}`} name={`naac-sss-title-${idx}`} aria-label="naacform field"
+                value={item.title || ''}
+                onChange={e => upd(idx, { title: e.target.value })}
+                className={inputBase}
+                placeholder="SSS REPORT 2021-22"
+              />
+            </div>
+  
+            <div>
+              <label className={labelBase}>Upload PDF</label>
+              <input id={`naac-sss-file-${idx}`} name={`naac-sss-file-${idx}`} aria-label="naacform field"
+                type="file"
+                accept="application/pdf"
+                onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  upd(idx, { file, fileName: file.name });
+                }}
+                className={`${inputBase} file:mr-4 file:rounded-xl file:border-0 file:bg-slate-200 file:px-4 file:py-2 file:text-xs file:font-black file:text-slate-700`}
+              />
+            </div>
+  
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => openPreview(item)}
+                disabled={!item?.file && !item?.fileUrl}
+                className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-black uppercase tracking-wider disabled:opacity-50"
+              >
+                Preview PDF
+              </button>
+  
+              {(item?.fileName || item?.fileUrl) && (
+                <span className="text-xs font-bold text-slate-500 truncate max-w-full">
+                  {item.fileName || item.fileUrl}
+                </span>
+              )}
+  
+              <button
+                type="button"
+                onClick={() => del(idx)}
+                className="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-black uppercase tracking-wider hover:bg-red-100"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-
-          <div>
-            <label className={labelBase}>Upload PDF</label>
-            <input id="naacform-8" name="naacform-8" aria-label="naacform field"
-              type="file"
-              accept="application/pdf"
-              onChange={e => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                upd(idx, { file, fileName: file.name });
-              }}
-              className={`${inputBase} file:mr-4 file:rounded-xl file:border-0 file:bg-slate-200 file:px-4 file:py-2 file:text-xs file:font-black file:text-slate-700`}
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => openPreview(item)}
-              disabled={!item?.file && !item?.fileUrl}
-              className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-black uppercase tracking-wider disabled:opacity-50"
-            >
-              Preview PDF
-            </button>
-
-            {(item?.fileName || item?.fileUrl) && (
-              <span className="text-xs font-bold text-slate-500 truncate max-w-full">
-                {item.fileName || item.fileUrl}
-              </span>
-            )}
-
-            <button
-              type="button"
-              onClick={() => del(idx)}
-              className="px-4 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-black uppercase tracking-wider hover:bg-red-100"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
+        )}
+      />
 
       <button
         type="button"

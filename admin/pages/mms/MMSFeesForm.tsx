@@ -4,6 +4,7 @@ import { Plus, Trash2, FileText, CheckCircle, AlertTriangle } from 'lucide-react
 import type { MMSFeesPayload } from '../../types';
 import { mmsFeesApi } from '../../api/mmsFeesApi';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const emptyForm: MMSFeesPayload = {
   overview: [],
@@ -95,34 +96,46 @@ const MMSFeesForm: React.FC = () => {
         {/* SECTION 1: OVERVIEW */}
         <SectionCard title="Fees Overview" icon="📋">
           <div className="space-y-4">
-            {form.overview?.map((item, i) => (
-              <div key={i} className="flex gap-3 items-start p-4 bg-slate-50 border border-slate-200 rounded-xl relative">
-                 <button type="button" onClick={() => {
-                   const c = [...form.overview!]; c.splice(i, 1); setForm({...form, overview: c});
-                 }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full border-r-[30px] border-transparent">
-                   <div className="relative">
-                     <label className="admin-label">Category Name (Max 100)</label>
-                     <input id="mmsfeesform-1" name="mmsfeesform-1" aria-label="mmsfeesform field" className="admin-input-small" value={item.categoryName} placeholder="e.g. Open Category" onChange={e => handleTextChange(e.target.value, 100, val => {
-                       const c = [...form.overview!]; c[i].categoryName = val; setForm({...form, overview: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Student Type (Max 20)</label>
-                     <input id="mmsfeesform-2" name="mmsfeesform-2" aria-label="mmsfeesform field" className="admin-input-small" value={item.studentType} placeholder="e.g. All" onChange={e => handleTextChange(e.target.value, 20, val => {
-                       const c = [...form.overview!]; c[i].studentType = val; setForm({...form, overview: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Fees Amount (Max 20)</label>
-                     <input id="mmsfeesform-3" name="mmsfeesform-3" aria-label="mmsfeesform field" className="admin-input-small" value={item.amount} placeholder="e.g. ₹ 1,00,000" onChange={e => handleTextChange(e.target.value, 20, val => {
-                       const c = [...form.overview!]; c[i].amount = val; setForm({...form, overview: c});
-                     })}/>
-                   </div>
-                 </div>
-              </div>
-            ))}
+            <SortableListContext
+              items={form.overview || []}
+              onChange={val => setForm({ ...form, overview: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`flex gap-3 items-start p-4 bg-slate-50 border border-slate-200 rounded-xl relative ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 mt-6" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full border-r-30 border-transparent">
+                    <div className="relative">
+                      <label className="admin-label">Category Name (Max 100)</label>
+                      <input id={`mms-fees-overview-cat-${i}`} name={`mms-fees-overview-cat-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.categoryName} placeholder="e.g. Open Category" onChange={e => handleTextChange(e.target.value, 100, val => {
+                        const c = [...form.overview!]; c[i].categoryName = val; setForm({...form, overview: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Student Type (Max 20)</label>
+                      <input id={`mms-fees-overview-type-${i}`} name={`mms-fees-overview-type-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.studentType} placeholder="e.g. All" onChange={e => handleTextChange(e.target.value, 20, val => {
+                        const c = [...form.overview!]; c[i].studentType = val; setForm({...form, overview: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Fees Amount (Max 20)</label>
+                      <input id={`mms-fees-overview-amount-${i}`} name={`mms-fees-overview-amount-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.amount} placeholder="e.g. ₹ 1,00,000" onChange={e => handleTextChange(e.target.value, 20, val => {
+                        const c = [...form.overview!]; c[i].amount = val; setForm({...form, overview: c});
+                      })}/>
+                    </div>
+                  </div>
+
+                  <button type="button" onClick={() => {
+                    const c = [...form.overview!]; c.splice(i, 1); setForm({...form, overview: c});
+                  }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded">
+                    <Trash2 className="w-4 h-4"/>
+                  </button>
+                </div>
+              )}
+            />
             {(form.overview?.length || 0) < 6 && (
               <button type="button" onClick={() => setForm({...form, overview: [...(form.overview||[]), {categoryName: '', studentType: '', amount: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Overview Category (Max 6)
@@ -194,34 +207,46 @@ const MMSFeesForm: React.FC = () => {
         {/* SECTION 4: OFFLINE PAYMENT */}
         <SectionCard title="Payment Method (Offline)" icon="💵">
           <div className="space-y-4">
-            {form.offlinePayment?.map((item, i) => (
-              <div key={i} className="flex gap-3 items-start p-4 bg-slate-50 border border-slate-200 rounded-xl relative">
-                 <button type="button" onClick={() => {
-                   const c = [...form.offlinePayment!]; c.splice(i, 1); setForm({...form, offlinePayment: c});
-                 }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full border-r-[30px] border-transparent">
-                   <div className="relative">
-                     <label className="admin-label">Mode (Max 50)</label>
-                     <input id="mmsfeesform-9" name="mmsfeesform-9" aria-label="mmsfeesform field" className="admin-input-small" value={item.mode} placeholder="DD / Pay Order" onChange={e => handleTextChange(e.target.value, 50, val => {
-                       const c = [...form.offlinePayment!]; c[i].mode = val; setForm({...form, offlinePayment: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Payee Name (Max 120)</label>
-                     <input id="mmsfeesform-10" name="mmsfeesform-10" aria-label="mmsfeesform field" className="admin-input-small" value={item.payeeName} placeholder="Favoring Name" onChange={e => handleTextChange(e.target.value, 120, val => {
-                       const c = [...form.offlinePayment!]; c[i].payeeName = val; setForm({...form, offlinePayment: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Payable Location (Max 50)</label>
-                     <input id="mmsfeesform-11" name="mmsfeesform-11" aria-label="mmsfeesform field" className="admin-input-small" value={item.location} placeholder="e.g. Mumbai" onChange={e => handleTextChange(e.target.value, 50, val => {
-                       const c = [...form.offlinePayment!]; c[i].location = val; setForm({...form, offlinePayment: c});
-                     })}/>
-                   </div>
-                 </div>
-              </div>
-            ))}
+            <SortableListContext
+              items={form.offlinePayment || []}
+              onChange={val => setForm({ ...form, offlinePayment: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`flex gap-3 items-start p-4 bg-slate-50 border border-slate-200 rounded-xl relative ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 mt-6" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current mb-0.5" />
+                    <div className="w-4 h-0.5 bg-current" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full border-r-30 border-transparent">
+                    <div className="relative">
+                      <label className="admin-label">Mode (Max 50)</label>
+                      <input id={`mms-fees-offline-mode-${i}`} name={`mms-fees-offline-mode-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.mode} placeholder="DD / Pay Order" onChange={e => handleTextChange(e.target.value, 50, val => {
+                        const c = [...form.offlinePayment!]; c[i].mode = val; setForm({...form, offlinePayment: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Payee Name (Max 120)</label>
+                      <input id={`mms-fees-offline-payee-${i}`} name={`mms-fees-offline-payee-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.payeeName} placeholder="Favoring Name" onChange={e => handleTextChange(e.target.value, 120, val => {
+                        const c = [...form.offlinePayment!]; c[i].payeeName = val; setForm({...form, offlinePayment: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Payable Location (Max 50)</label>
+                      <input id={`mms-fees-offline-loc-${i}`} name={`mms-fees-offline-loc-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.location} placeholder="e.g. Mumbai" onChange={e => handleTextChange(e.target.value, 50, val => {
+                        const c = [...form.offlinePayment!]; c[i].location = val; setForm({...form, offlinePayment: c});
+                      })}/>
+                    </div>
+                  </div>
+
+                  <button type="button" onClick={() => {
+                    const c = [...form.offlinePayment!]; c.splice(i, 1); setForm({...form, offlinePayment: c});
+                  }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded">
+                    <Trash2 className="w-4 h-4"/>
+                  </button>
+                </div>
+              )}
+            />
             {(form.offlinePayment?.length || 0) < 3 && (
               <button type="button" onClick={() => setForm({...form, offlinePayment: [...(form.offlinePayment||[]), {mode: '', payeeName: '', location: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Offline Method (Max 3)
@@ -233,46 +258,59 @@ const MMSFeesForm: React.FC = () => {
         {/* SECTION 5: ONLINE PAYMENT */}
         <SectionCard title="Payment Method (Online - RTGS/NEFT)" icon="🏦">
           <div className="space-y-4">
-            {form.onlinePayment?.map((item, i) => (
-              <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3">
-                 <button type="button" onClick={() => {
-                   const c = [...form.onlinePayment!]; c.splice(i, 1); setForm({...form, onlinePayment: c});
-                 }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
-                 
-                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                   <div className="relative md:col-span-2">
-                     <label className="admin-label">Bank Account Name (Max 120)</label>
-                     <input id="mmsfeesform-12" name="mmsfeesform-12" aria-label="mmsfeesform field" className="admin-input-small" value={item.accountName} onChange={e => handleTextChange(e.target.value, 120, val => {
-                       const c = [...form.onlinePayment!]; c[i].accountName = val; setForm({...form, onlinePayment: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Bank Name (Max 100)</label>
-                     <input id="mmsfeesform-13" name="mmsfeesform-13" aria-label="mmsfeesform field" className="admin-input-small" value={item.bankName} onChange={e => handleTextChange(e.target.value, 100, val => {
-                       const c = [...form.onlinePayment!]; c[i].bankName = val; setForm({...form, onlinePayment: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Account Number (Max 30)</label>
-                     <input id="mmsfeesform-14" name="mmsfeesform-14" aria-label="mmsfeesform field" className="admin-input-small" value={item.accountNumber} onChange={e => handleTextChange(e.target.value, 30, val => {
-                       const c = [...form.onlinePayment!]; c[i].accountNumber = val; setForm({...form, onlinePayment: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">Account Type (Max 20)</label>
-                     <input id="mmsfeesform-15" name="mmsfeesform-15" aria-label="mmsfeesform field" className="admin-input-small" value={item.accountType} onChange={e => handleTextChange(e.target.value, 20, val => {
-                       const c = [...form.onlinePayment!]; c[i].accountType = val; setForm({...form, onlinePayment: c});
-                     })}/>
-                   </div>
-                   <div className="relative">
-                     <label className="admin-label">IFSC Code (Max 20)</label>
-                     <input id="mmsfeesform-16" name="mmsfeesform-16" aria-label="mmsfeesform field" className="admin-input-small" value={item.ifsc} onChange={e => handleTextChange(e.target.value, 20, val => {
-                       const c = [...form.onlinePayment!]; c[i].ifsc = val; setForm({...form, onlinePayment: c});
-                     })}/>
-                   </div>
-                 </div>
-              </div>
-            ))}
+            <SortableListContext
+              items={form.onlinePayment || []}
+              onChange={val => setForm({ ...form, onlinePayment: val })}
+              renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-4 bg-slate-50 border border-slate-200 rounded-xl relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.onlinePayment!]; c.splice(i, 1); setForm({...form, onlinePayment: c});
+                    }} className="text-red-500 p-1 hover:bg-red-50 rounded">
+                      <Trash2 className="w-4 h-4"/>
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="relative md:col-span-2">
+                      <label className="admin-label">Bank Account Name (Max 120)</label>
+                      <input id={`mms-fees-online-acc-${i}`} name={`mms-fees-online-acc-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.accountName} onChange={e => handleTextChange(e.target.value, 120, val => {
+                        const c = [...form.onlinePayment!]; c[i].accountName = val; setForm({...form, onlinePayment: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Bank Name (Max 100)</label>
+                      <input id={`mms-fees-online-bank-${i}`} name={`mms-fees-online-bank-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.bankName} onChange={e => handleTextChange(e.target.value, 100, val => {
+                        const c = [...form.onlinePayment!]; c[i].bankName = val; setForm({...form, onlinePayment: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Account Number (Max 30)</label>
+                      <input id={`mms-fees-online-no-${i}`} name={`mms-fees-online-no-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.accountNumber} onChange={e => handleTextChange(e.target.value, 30, val => {
+                        const c = [...form.onlinePayment!]; c[i].accountNumber = val; setForm({...form, onlinePayment: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">Account Type (Max 20)</label>
+                      <input id={`mms-fees-online-type-${i}`} name={`mms-fees-online-type-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.accountType} onChange={e => handleTextChange(e.target.value, 20, val => {
+                        const c = [...form.onlinePayment!]; c[i].accountType = val; setForm({...form, onlinePayment: c});
+                      })}/>
+                    </div>
+                    <div className="relative">
+                      <label className="admin-label">IFSC Code (Max 20)</label>
+                      <input id={`mms-fees-online-ifsc-${i}`} name={`mms-fees-online-ifsc-${i}`} aria-label="mmsfeesform field" className="admin-input-small" value={item.ifsc} onChange={e => handleTextChange(e.target.value, 20, val => {
+                        const c = [...form.onlinePayment!]; c[i].ifsc = val; setForm({...form, onlinePayment: c});
+                      })}/>
+                    </div>
+                  </div>
+                </div>
+              )}
+            />
             {(form.onlinePayment?.length || 0) < 5 && (
               <button type="button" onClick={() => setForm({...form, onlinePayment: [...(form.onlinePayment||[]), {accountName: '', bankName: '', accountNumber: '', accountType: '', ifsc: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Online Account (Max 5)
@@ -306,32 +344,45 @@ const MMSFeesForm: React.FC = () => {
         <SectionCard title="Fee Details (PDF)" icon="📄">
           <p className="text-xs text-slate-500 mb-3 font-medium">Upload 1 PDF fee circular.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {form.feePdf?.map((pdfItem, i) => (
-              <div key={i} className="p-4 bg-slate-50 border border-slate-200 rounded-lg relative space-y-3">
-                <button type="button" onClick={() => {
-                  const c = [...form.feePdf!]; c.splice(i, 1); setForm({...form, feePdf: c});
-                }} className="absolute top-2 right-2 text-red-500 z-10 hover:bg-red-50 p-1 rounded"><Trash2 className="w-4 h-4"/></button>
-                
-                <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-24 flex flex-col items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer">
-                  <input id="mmsfeesform-18" name="mmsfeesform-18" aria-label="mmsfeesform field" type="file" accept="application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
-                    if (e.target.files && e.target.files[0]) {
-                       const c = [...form.feePdf!]; c[i].fileUrl = e.target.files[0]; setForm({...form, feePdf: c});
-                    }
-                  }}/>
-                  <FileText className={`w-6 h-6 ${pdfItem.fileUrl ? 'text-blue-500' : 'text-slate-300 group-hover:text-blue-400'}`}/>
-                  <span className="text-[10px] text-slate-500 font-medium mt-1">{pdfItem.fileUrl ? 'File Selected' : 'Upload PDF'}</span>
+            <SortableListContext
+              items={form.feePdf || []}
+              onChange={val => setForm({ ...form, feePdf: val })}
+              renderItem={(pdfItem, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                <div ref={setNodeRef} style={style} className={`p-4 bg-white border border-slate-200 rounded-lg relative space-y-3 ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current mb-0.5" />
+                      <div className="w-4 h-0.5 bg-current" />
+                    </div>
+                    <button type="button" onClick={() => {
+                      const c = [...form.feePdf!]; c.splice(i, 1); setForm({...form, feePdf: c});
+                    }} className="text-red-500 z-10 hover:bg-red-50 p-1 rounded">
+                      <Trash2 className="w-4 h-4"/>
+                    </button>
+                  </div>
+                  
+                  <div className="relative group rounded-lg border border-dashed border-slate-300 bg-white h-24 flex flex-col items-center justify-center hover:bg-slate-100 transition-colors cursor-pointer">
+                    <input id={`mms-fees-pdf-file-${i}`} name={`mms-fees-pdf-file-${i}`} aria-label="mmsfeesform field" type="file" accept="application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onChange={e => {
+                      if (e.target.files && e.target.files[0]) {
+                        const c = [...form.feePdf!]; c[i].fileUrl = e.target.files[0]; setForm({...form, feePdf: c});
+                      }
+                    }}/>
+                    <FileText className={`w-6 h-6 ${pdfItem.fileUrl ? 'text-blue-500' : 'text-slate-300 group-hover:text-blue-400'}`}/>
+                    <span className="text-[10px] text-slate-500 font-medium mt-1">{pdfItem.fileUrl ? 'File Selected' : 'Upload PDF'}</span>
+                  </div>
+                  
+                  <div className="relative">
+                    <label className="admin-label text-[10px]">PDF Label / Name</label>
+                    <input id={`mms-fees-pdf-label-${i}`} name={`mms-fees-pdf-label-${i}`} aria-label="mmsfeesform field" className="admin-input-small text-xs" placeholder="Label / Name" value={pdfItem.label || ''} onChange={e => {
+                        const c = [...form.feePdf!]; c[i].label = e.target.value; setForm({...form, feePdf: c});
+                    }} />
+                  </div>
                 </div>
-                
-                <div className="relative">
-                  <label className="admin-label text-[10px]">PDF Label / Name</label>
-                  <input id="mmsfeesform-19" name="mmsfeesform-19" aria-label="mmsfeesform field" className="admin-input-small text-xs" placeholder="Label / Name" value={pdfItem.label || ''} onChange={e => {
-                      const c = [...form.feePdf!]; c[i].label = e.target.value; setForm({...form, feePdf: c});
-                  }} />
-                </div>
-              </div>
-            ))}
+              )}
+            />
             {(form.feePdf?.length || 0) < 1 && (
-              <button type="button" onClick={() => setForm({...form, feePdf: [...(form.feePdf||[]), {fileUrl: null as any, label: ''}]})} className="btn-add min-h-[12rem]">
+              <button type="button" onClick={() => setForm({...form, feePdf: [...(form.feePdf||[]), {fileUrl: null as any, label: ''}]})} className="btn-add min-h-48">
                 <Plus className="w-5 h-5 mx-auto mb-1" /> Add PDF (Max 1)
               </button>
             )}
@@ -353,7 +404,7 @@ const MMSFeesForm: React.FC = () => {
 
 const SectionCard = ({ icon, title, children }: any) => {
   return (
-    <div className="bg-white rounded-[2rem] p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
+    <div className="bg-white rounded-4xl p-8 shadow-[0_2px_20px_-10px_rgba(0,0,0,0.05)] border border-slate-100">
       <div className="flex items-center gap-3 mb-8">
          {icon && <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-lg shadow-sm border border-slate-100">{icon}</div>}
          <h2 className="text-sm font-black text-[#111827] uppercase tracking-wider">{title}</h2>

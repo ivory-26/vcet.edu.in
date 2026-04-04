@@ -5,6 +5,7 @@ import type { MMSStudentsLifePayload, GalleryItem } from '../../types';
 import { mmsStudentsLifeApi } from '../../api/mmsStudentsLifeApi';
 import { resolveApiUrl } from '../../../services/api';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const resolvePreviewImage = (image: unknown): string => {
   if (typeof image === 'string') return image;
@@ -120,29 +121,40 @@ const MMSStudentsLifeForm: React.FC = () => {
         </div>
       </div>
       <div className="space-y-2">
-        {items.map((item, i) => (
-          <div key={i} className="flex gap-2 group animate-fade-in">
-             <div className="flex-1 relative">
-                <input id="mmsstudentslifeform-1" name="mmsstudentslifeform-1" aria-label="mmsstudentslifeform field" 
-                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-4 focus:ring-blue-100 focus:border-[#2563EB] transition-all"
-                  value={item.text}
-                  maxLength={charLimit}
-                  onChange={(e) => {
-                    const newItems = [...items];
-                    newItems[i].text = e.target.value;
-                    onChange(newItems);
-                  }}
-                  placeholder={`Item ${i + 1}...`}
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-300 group-focus-within:text-blue-400">
-                  {item.text.length} / {charLimit}
-                </span>
-             </div>
-             <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="p-3 bg-red-50 text-red-500 border border-red-100 rounded-xl hover:bg-red-100 transition-colors shadow-sm">
-               <Trash2 className="w-5 h-5" />
-             </button>
-          </div>
-        ))}
+        <SortableListContext
+          items={items}
+          onChange={onChange}
+          renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+            <div ref={setNodeRef} style={style} className={`flex gap-2 group animate-fade-in ${isDragging ? 'z-50' : ''}`}>
+              <div className="flex items-center px-2 bg-slate-50 border border-slate-200 rounded-xl cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                <div className="flex flex-col gap-0.5">
+                  <div className="w-3 h-0.5 bg-current" />
+                  <div className="w-3 h-0.5 bg-current" />
+                  <div className="w-3 h-0.5 bg-current" />
+                </div>
+              </div>
+              <div className="flex-1 relative">
+                  <input id={`mms-life-list-${i}`} name={`mms-life-list-${i}`} aria-label="mmsstudentslifeform field" 
+                    className={`w-full ${isDragging ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'} border rounded-xl px-4 py-3 text-sm font-medium focus:ring-4 focus:ring-blue-100 focus:border-[#2563EB] transition-all`}
+                    value={item.text}
+                    maxLength={charLimit}
+                    onChange={(e) => {
+                      const newItems = [...items];
+                      newItems[i].text = e.target.value;
+                      onChange(newItems);
+                    }}
+                    placeholder={`Item ${i + 1}...`}
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-slate-300 group-focus-within:text-blue-400">
+                    {item.text.length} / {charLimit}
+                  </span>
+              </div>
+              <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="p-3 bg-red-50 text-red-500 border border-red-100 rounded-xl hover:bg-red-100 transition-colors shadow-sm">
+                <Trash2 className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+        />
         {items.length < maxItems && (
           <button type="button" onClick={() => onChange([...items, { text: '' }])} className="w-full py-3 bg-white border-2 border-dashed border-slate-100 rounded-xl flex items-center justify-center gap-2 text-slate-400 font-bold text-xs hover:border-blue-200 hover:bg-blue-50/50 transition-all uppercase tracking-widest">
             <Plus className="w-4 h-4" /> Add Item
@@ -161,27 +173,38 @@ const MMSStudentsLifeForm: React.FC = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {items.map((item, i) => (
-          <div key={i} className="group relative bg-slate-50 rounded-2xl border border-slate-200 p-3 transition-all">
-            <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="absolute -top-2 -right-2 w-6 h-6 bg-white border border-red-100 rounded-full text-red-500 flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors z-10"><Trash2 className="w-3" /></button>
-            <div className="relative aspect-video rounded-xl bg-white border border-slate-200 mb-2 overflow-hidden flex items-center justify-center">
-               <input id="mmsstudentslifeform-2" name="mmsstudentslifeform-2" aria-label="mmsstudentslifeform field" type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={async (e) => {
-                 const file = e.target.files?.[0];
-                 if (file) { const newItems = [...items]; newItems[i].image = file; onChange(newItems); }
-               }}/>
-               {item.image ? (
-                  <img src={typeof item.image === 'string' ? item.image : ((item.image as any) instanceof File || (item.image as any) instanceof Blob ? URL.createObjectURL(item.image as any) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} className="w-full h-full object-cover" alt="" />
-               ) : (
-                <ImageIcon className="w-6 h-6 text-slate-300" />
-               )}
+        <SortableListContext
+          items={items}
+          onChange={onChange}
+          renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+            <div ref={setNodeRef} style={style} className={`group relative bg-slate-50 rounded-2xl border border-slate-200 p-3 transition-all ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                  <div className="w-3 h-0.5 bg-current mb-0.5" />
+                  <div className="w-3 h-0.5 bg-current mb-0.5" />
+                  <div className="w-3 h-0.5 bg-current" />
+                </div>
+                <button type="button" onClick={() => onChange(items.filter((_, idx) => idx !== i))} className="w-6 h-6 bg-white border border-red-100 rounded-full text-red-500 flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors z-10"><Trash2 className="w-3" /></button>
+              </div>
+              <div className="relative aspect-video rounded-xl bg-white border border-slate-200 mb-2 overflow-hidden flex items-center justify-center">
+                 <input id={`mms-life-gal-file-${i}`} name={`mms-life-gal-file-${i}`} aria-label="mmsstudentslifeform field" type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={async (e) => {
+                   const file = e.target.files?.[0];
+                   if (file) { const newItems = [...items]; newItems[i].image = file; onChange(newItems); }
+                 }}/>
+                 {item.image ? (
+                    <img src={typeof item.image === 'string' ? item.image : ((item.image as any) instanceof File || (item.image as any) instanceof Blob ? URL.createObjectURL(item.image as any) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} className="w-full h-full object-cover" alt="" />
+                 ) : (
+                  <ImageIcon className="w-6 h-6 text-slate-300" />
+                 )}
+              </div>
+              <input id={`mms-life-gal-label-${i}`} name={`mms-life-gal-label-${i}`} aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-600 outline-none focus:border-blue-300" placeholder="Label..." value={item.label || ''} maxLength={charLimit} onChange={e => {
+                 const newItems = [...items]; newItems[i].label = e.target.value; onChange(newItems);
+              }}/>
             </div>
-            <input id="mmsstudentslifeform-3" name="mmsstudentslifeform-3" aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] font-bold text-slate-600 outline-none focus:border-blue-300" placeholder="Label..." value={item.label || ''} maxLength={charLimit} onChange={e => {
-               const newItems = [...items]; newItems[i].label = e.target.value; onChange(newItems);
-            }}/>
-          </div>
-        ))}
+          )}
+        />
         {items.length < maxItems && (
-           <button type="button" onClick={() => onChange([...items, { label: '', image: null }])} className="min-h-[6rem] bg-white border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center gap-1 text-slate-300 hover:border-blue-100 hover:text-blue-400 hover:bg-blue-50/20 transition-all font-black uppercase text-[10px]">
+           <button type="button" onClick={() => onChange([...items, { label: '', image: null }])} className="min-h-24 bg-white border-2 border-dashed border-slate-100 rounded-2xl flex flex-col items-center justify-center gap-1 text-slate-300 hover:border-blue-100 hover:text-blue-400 hover:bg-blue-50/20 transition-all font-black uppercase text-[10px]">
              <Plus className="w-4 h-4" /> Add Image
            </button>
         )}
@@ -195,7 +218,7 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'overview' && (
         <>
           {renderSectionHeader('Student Life Overview', 'CORE DEPARTMENT HIGHLIGHTS')}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+          <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
             {renderTextArea('Description', form.overview?.description || '', 300, 500, (v) => setForm({ ...form, overview: { ...form.overview!, description: v } }))}
             {renderListEditor('Highlights', form.overview?.highlights || [], 4, 80, (l) => setForm({ ...form, overview: { ...form.overview!, highlights: l } }))}
           </div>
@@ -205,7 +228,7 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'v-ecstatic' && (
         <>
           {renderSectionHeader('V-Ecstatic', 'ANNUAL FESTIVAL CMS')}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+          <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
             {renderTextArea('Description', form.vEcstatic?.description || '', 200, 300, (v) => setForm({ ...form, vEcstatic: { ...form.vEcstatic!, description: v } }))}
             {renderListEditor('Activities', form.vEcstatic?.activities || [], 5, 80, (l) => setForm({ ...form, vEcstatic: { ...form.vEcstatic!, activities: l } }))}
             {renderGalleryEditor('Event Images', form.vEcstatic?.images || [], 5, 35, (g) => setForm({ ...form, vEcstatic: { ...form.vEcstatic!, images: g } }))}
@@ -216,7 +239,7 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'dlle' && (
         <>
           {renderSectionHeader('DLLE', 'EXTENSION ACTIVITIES CMS')}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+          <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
             {renderTextArea('Description', form.dlle?.description || '', 200, 300, (v) => setForm({ ...form, dlle: { ...form.dlle!, description: v } }))}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {renderListEditor('Projects', form.dlle?.projects || [], 5, 50, (l) => setForm({ ...form, dlle: { ...form.dlle!, projects: l } }))}
@@ -230,7 +253,7 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'book-review' && (
         <>
           {renderSectionHeader('Book Review', 'LITERARY ACTIVITIES CMS')}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+          <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
             {renderTextArea('Description', form.bookReview?.description || '', 150, 250, (v) => setForm({ ...form, bookReview: { ...form.bookReview!, description: v } }))}
             {renderListEditor('Benefits', form.bookReview?.benefits || [], 4, 80, (l) => setForm({ ...form, bookReview: { ...form.bookReview!, benefits: l } }))}
             {renderGalleryEditor('Section Images', form.bookReview?.images || [], 4, 35, (g) => setForm({ ...form, bookReview: { ...form.bookReview!, images: g } }))}
@@ -241,7 +264,7 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'add-on-courses' && (
         <>
           {renderSectionHeader('Add-On Courses', 'SKILL DEVELOPMENT CMS')}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+          <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
             {renderTextArea('Description', form.addOnCourses?.description || '', 200, 300, (v) => setForm({ ...form, addOnCourses: { ...form.addOnCourses!, description: v } }))}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {renderListEditor('Topics Covered', form.addOnCourses?.topics || [], 6, 50, (l) => setForm({ ...form, addOnCourses: { ...form.addOnCourses!, topics: l } }))}
@@ -254,7 +277,7 @@ const MMSStudentsLifeForm: React.FC = () => {
         {section === 'add-on-courses-powerbi' && (
           <>
             {renderSectionHeader('Add-On Courses on Powerbi', 'SKILL DEVELOPMENT CMS')}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+            <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
               {renderTextArea('Description', form.powerBi?.description || '', 200, 300, (v) => setForm({ ...form, powerBi: { ...form.powerBi!, description: v } }))}
               {renderListEditor('Objectives', form.powerBi?.objectives || [], 5, 80, (l) => setForm({ ...form, powerBi: { ...form.powerBi!, objectives: l } }))}
               {renderGalleryEditor('Highlights/Images', form.powerBi?.images || [], 5, 35, (g) => setForm({ ...form, powerBi: { ...form.powerBi!, images: g } }))}
@@ -265,7 +288,7 @@ const MMSStudentsLifeForm: React.FC = () => {
         {section === 'advance-excel' && (
           <>
             {renderSectionHeader('ADD ON COURSES ON ADVANCE EXCEL', 'SKILL DEVELOPMENT CMS')}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+            <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
               {renderTextArea('Description', form.advanceExcel?.description || '', 200, 300, (v) => setForm({ ...form, advanceExcel: { ...form.advanceExcel!, description: v } }))}
               {renderListEditor('Objectives', form.advanceExcel?.objectives || [], 5, 80, (l) => setForm({ ...form, advanceExcel: { ...form.advanceExcel!, objectives: l } }))}
               {renderGalleryEditor('Training Images', form.advanceExcel?.images || [], 5, 35, (g) => setForm({ ...form, advanceExcel: { ...form.advanceExcel!, images: g } }))}
@@ -275,7 +298,7 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'industry-sessions' && (
         <>
           {renderSectionHeader('Industry Sessions', 'EXPERT LECTURES / VISITS CMS')}
-          <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+          <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
             {renderTextArea('Description', form.industrySessions?.description || '', 150, 250, (v) => setForm({ ...form, industrySessions: { ...form.industrySessions!, description: v } }))}
             {renderListEditor('Key Learning Points', form.industrySessions?.learningPoints || [], 4, 80, (l) => setForm({ ...form, industrySessions: { ...form.industrySessions!, learningPoints: l } }))}
             {renderGalleryEditor('Session Images', form.industrySessions?.sessions || [], 3, 35, (g) => setForm({ ...form, industrySessions: { ...form.industrySessions!, sessions: g } }))}
@@ -286,7 +309,7 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'ideation' && (
           <>
             {renderSectionHeader('Ideation', 'STUDENT INNOVATION')}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+            <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
               {renderTextArea('Description', form.ideation?.description || '', 120, 200, (v) => setForm({...form, ideation: { ...form.ideation, description: v, images: form.ideation?.images || [] }} as any))}
               {renderGalleryEditor('Ideation Gallery', form.ideation?.images || [], 5, 45, (g) => setForm({...form, ideation: { ...form.ideation, images: g, description: form.ideation?.description || '' }} as any))}
             </div>
@@ -296,7 +319,7 @@ const MMSStudentsLifeForm: React.FC = () => {
         {section === 'oscillations' && (
           <>
             {renderSectionHeader('Oscillations', 'ANNUAL FESTIVAL')}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+            <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
               {renderTextArea('Description', form.oscillations?.description || '', 120, 200, (v) => setForm({...form, oscillations: { ...form.oscillations, description: v, images: form.oscillations?.images || [] }} as any))}
               {renderGalleryEditor('Oscillations Gallery', form.oscillations?.images || [], 8, 45, (g) => setForm({...form, oscillations: { ...form.oscillations, images: g, description: form.oscillations?.description || '' }} as any))}     
             </div>
@@ -306,7 +329,7 @@ const MMSStudentsLifeForm: React.FC = () => {
         {section === 'nsimTraining' && (
           <>
             {renderSectionHeader('NSIM Training', 'SKILL DEVELOPMENT')}
-            <div className="bg-white rounded-[2.5rem] p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
+            <div className="bg-white rounded-5xl p-8 border border-slate-200 shadow-xl space-y-8 animate-fade-in">
               {renderTextArea('Description', form.nsimTraining?.description || '', 120, 200, (v) => setForm({...form, nsimTraining: { ...form.nsimTraining, description: v, images: form.nsimTraining?.images || [] }} as any))}
               {renderGalleryEditor('Training Gallery', form.nsimTraining?.images || [], 5, 45, (g) => setForm({...form, nsimTraining: { ...form.nsimTraining, images: g, description: form.nsimTraining?.description || '' }} as any))}
             </div>
@@ -316,22 +339,36 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'custom-events' && (
         <>
           {renderSectionHeader('Custom Events', 'DYNAMIC EVENTS')}
-          <div className="bg-white rounded-[2.5rem] p-10 border border-slate-200 shadow-xl animate-fade-in relative overflow-hidden">
+          <div className="bg-white rounded-5xl p-10 border border-slate-200 shadow-xl animate-fade-in relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-blue-500" />
             <div className="space-y-12">
-              {form.customEvents?.map((ev, i) => (
-                <div key={i} className="bg-slate-50 border border-slate-200 p-6 rounded-3xl relative">
-                  <button type="button" onClick={() => { const n = [...form.customEvents!]; n.splice(i, 1); setForm({...form, customEvents: n}) }} className="absolute -top-4 -right-4 w-10 h-10 bg-red-50 text-red-500 flex items-center justify-center rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-md z-10"><Trash2 className="w-5 h-5"/></button>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <input id="mmsstudentslifeform-4" name="mmsstudentslifeform-4" aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700" placeholder="Event Name (e.g. Activity 1)" value={ev.name} onChange={e => { const n = [...form.customEvents!]; n[i].name = e.target.value; n[i].slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''); setForm({...form, customEvents: n}); }}/>
-                    <input id="mmsstudentslifeform-5" name="mmsstudentslifeform-5" aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-400 cursor-not-allowed" placeholder="URL Slug (auto-generated)" value={ev.slug} readOnly />
+              <SortableListContext
+                items={form.customEvents || []}
+                onChange={val => setForm({ ...form, customEvents: val })}
+                renderItem={(ev, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                  <div ref={setNodeRef} style={style} className={`bg-slate-50 border border-slate-200 p-6 rounded-3xl relative ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : ''}`}>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-4 cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                        <div className="flex flex-col gap-0.5">
+                          <div className="w-6 h-0.5 bg-current" />
+                          <div className="w-6 h-0.5 bg-current" />
+                          <div className="w-6 h-0.5 bg-current" />
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-widest text-slate-400">Event #{i + 1}</span>
+                      </div>
+                      <button type="button" onClick={() => { const n = [...form.customEvents!]; n.splice(i, 1); setForm({...form, customEvents: n}) }} className="w-10 h-10 bg-red-50 text-red-500 flex items-center justify-center rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><Trash2 className="w-5 h-5"/></button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <input id={`mms-life-event-name-${i}`} name={`mms-life-event-name-${i}`} aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700" placeholder="Event Name (e.g. Activity 1)" value={ev.name} onChange={e => { const n = [...form.customEvents!]; n[i].name = e.target.value; n[i].slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''); setForm({...form, customEvents: n}); }}/>
+                      <input id={`mms-life-event-slug-${i}`} name={`mms-life-event-slug-${i}`} aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-400 cursor-not-allowed" placeholder="URL Slug (auto-generated)" value={ev.slug} readOnly />
+                    </div>
+                    {renderTextArea(`Description for ${ev.name || 'Event'}`, ev.description || '', 10, 800, (v) => { const n = [...form.customEvents!]; n[i].description = v; setForm({...form, customEvents: n}); })}
+                    <div className="mt-6">
+                      {renderGalleryEditor(`Gallery for ${ev.name || 'Event'}`, ev.images || [], 10, 45, (g) => { const n = [...form.customEvents!]; n[i].images = g; setForm({...form, customEvents: n}); })}
+                    </div>
                   </div>
-                  {renderTextArea(`Description for ${ev.name || 'Event'}`, ev.description || '', 10, 800, (v) => { const n = [...form.customEvents!]; n[i].description = v; setForm({...form, customEvents: n}); })}
-                  <div className="mt-6">
-                    {renderGalleryEditor(`Gallery for ${ev.name || 'Event'}`, ev.images || [], 10, 45, (g) => { const n = [...form.customEvents!]; n[i].images = g; setForm({...form, customEvents: n}); })}
-                  </div>
-                </div>
-              ))}
+                )}
+              />
               <div className="pt-4">
                 <button type="button" onClick={() => setForm({...form, customEvents: [...(form.customEvents || []), { id: Date.now().toString(), name: '', slug: '', description: '', images: [] }]})} className="w-full py-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center gap-2 text-slate-400 font-bold text-xs hover:border-blue-400 hover:text-blue-500 transition-all uppercase tracking-widest"><Plus className="w-5 h-5"/> Add New Dynamic Event</button>
               </div>
@@ -343,19 +380,30 @@ const MMSStudentsLifeForm: React.FC = () => {
       {section === 'pdfs' && (
         <>
           {renderSectionHeader('PDF Resources', 'DOCUMENTS & DOWNLOADS')}
-          <div className="bg-white rounded-[2.5rem] p-10 border border-slate-200 shadow-xl animate-fade-in relative overflow-hidden">
+          <div className="bg-white rounded-5xl p-10 border border-slate-200 shadow-xl animate-fade-in relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-blue-500" />
             <div className="space-y-4">
-              {form.pdfs?.map((pdf, i) => (
-                <div key={i} className="flex gap-4 items-center bg-slate-50 border border-slate-200 p-6 rounded-3xl transition-all hover:bg-white hover:shadow-lg">
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm"><FileText className="w-6 h-6 text-red-500" /></div>
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input id="mmsstudentslifeform-6" name="mmsstudentslifeform-6" aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-4 focus:ring-blue-100" placeholder="Document Title..." value={pdf.title} maxLength={80} onChange={e => { const n = [...form.pdfs!]; n[i].title = e.target.value; setForm({...form, pdfs: n}); }}/>
-                    <input id="mmsstudentslifeform-7" name="mmsstudentslifeform-7" aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-blue-500 focus:ring-4 focus:ring-blue-100" placeholder="Document URL..." value={pdf.url} onChange={e => { const n = [...form.pdfs!]; n[i].url = e.target.value; setForm({...form, pdfs: n}); }}/>
+              <SortableListContext
+                items={form.pdfs || []}
+                onChange={val => setForm({ ...form, pdfs: val })}
+                renderItem={(pdf, i, id, dragHandleProps, setNodeRef, style, isDragging) => (
+                  <div ref={setNodeRef} style={style} className={`flex gap-4 items-center bg-slate-50 border border-slate-200 p-6 rounded-3xl transition-all ${isDragging ? 'z-50 ring-2 ring-blue-500 shadow-xl bg-white' : 'hover:bg-white hover:shadow-lg'}`}>
+                    <div className="cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-2" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="flex flex-col gap-1">
+                        <div className="w-5 h-0.5 bg-current" />
+                        <div className="w-5 h-0.5 bg-current" />
+                        <div className="w-5 h-0.5 bg-current" />
+                      </div>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm shrink-0"><FileText className="w-6 h-6 text-red-500" /></div>
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input id={`mms-life-pdf-title-${i}`} name={`mms-life-pdf-title-${i}`} aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-4 focus:ring-blue-100" placeholder="Document Title..." value={pdf.title} maxLength={80} onChange={e => { const n = [...form.pdfs!]; n[i].title = e.target.value; setForm({...form, pdfs: n}); }}/>
+                      <input id={`mms-life-pdf-url-${i}`} name={`mms-life-pdf-url-${i}`} aria-label="mmsstudentslifeform field" className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-blue-500 focus:ring-4 focus:ring-blue-100" placeholder="Document URL..." value={pdf.url} onChange={e => { const n = [...form.pdfs!]; n[i].url = e.target.value; setForm({...form, pdfs: n}); }}/>
+                    </div>
+                    <button type="button" onClick={() => setForm({...form, pdfs: form.pdfs!.filter((_,idx) => idx !== i)})} className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shrink-0"><Trash2 className="w-5 h-5"/></button>
                   </div>
-                  <button type="button" onClick={() => setForm({...form, pdfs: form.pdfs!.filter((_,idx) => idx !== i)})} className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><Trash2 className="w-5 h-5"/></button>
-                </div>
-              ))}
+                )}
+              />
               {(form.pdfs?.length || 0) < 2 && (
                 <button type="button" onClick={() => setForm({...form, pdfs: [...(form.pdfs || []), { title: '', url: '' }]})} className="w-full py-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center gap-2 text-slate-400 font-bold text-xs hover:border-blue-400 hover:text-blue-500 transition-all uppercase tracking-widest"><Plus className="w-5 h-5"/> Add PDF Document</button>
               )}

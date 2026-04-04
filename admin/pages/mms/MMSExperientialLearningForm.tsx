@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronDown, ChevronUp, Plus, Trash2, Image as ImageIcon, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2, Image as ImageIcon, CheckCircle, AlertTriangle, GripVertical } from 'lucide-react';
 import type { MMSExperientialLearningPayload, GalleryItem } from '../../types';
 import { mmsExperientialLearningApi } from '../../api/mmsExperientialLearning';
 import { resolveApiUrl } from '../../../services/api';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const resolvePreviewImage = (image: unknown): string => {
   if (typeof image === 'string') return image;
@@ -121,7 +122,7 @@ const MMSExperientialLearningForm: React.FC = () => {
       )}
 
       {/* EDITOR SECTION */}
-      <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden shadow-slate-200/50">
+      <div className="bg-white rounded-5xl border border-slate-200 shadow-xl overflow-hidden shadow-slate-200/50">
         <div className="p-8 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
           <div>
             <h3 className="text-xl font-bold text-slate-800">Gallery Items</h3>
@@ -134,21 +135,30 @@ const MMSExperientialLearningForm: React.FC = () => {
 
         <div className="p-8">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {items.map((item, i) => (
-              <div key={i} className="group relative bg-slate-50 rounded-3xl border border-slate-200 p-4 transition-all hover:shadow-xl hover:shadow-slate-200/50 animate-fade-in">
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    const newItems = items.filter((_, idx) => idx !== i);
-                    setForm({ ...form, [config.key]: newItems });
-                  }} 
-                  className="absolute -top-2 -right-2 w-8 h-8 bg-white border border-red-100 rounded-full text-red-500 flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors z-10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+           <SortableListContext
+            items={items}
+            onChange={val => setForm({ ...form, [config.key]: val })}
+            renderItem={(item, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+              <div ref={setNodeRef} style={style} className={`group relative bg-slate-50 rounded-3xl border border-slate-200 p-4 transition-all hover:shadow-xl hover:shadow-slate-200/50 animate-fade-in ${isDragging ? 'shadow-2xl z-50 ring-2 ring-blue-500' : ''}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2 cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                    <GripVertical className="w-5 h-5" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Image #{i + 1}</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      const newItems = items.filter((_, idx) => idx !== i);
+                      setForm({ ...form, [config.key]: newItems });
+                    }} 
+                    className="w-8 h-8 bg-white border border-red-100 rounded-full text-red-500 flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors z-10"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
 
                 <div className="relative aspect-video rounded-2xl overflow-hidden bg-white border border-slate-200 mb-4 group-hover:border-blue-200 transition-colors">
-                  <input id="mmsexperientiallearningform-1" name="mmsexperientiallearningform-1" aria-label="mmsexperientiallearningform field" 
+                  <input id={`mms-exp-file-${i}`} name={`mms-exp-file-${i}`} aria-label="mmsexperientiallearningform field" 
                     type="file" 
                     accept="image/*" 
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
@@ -162,7 +172,7 @@ const MMSExperientialLearningForm: React.FC = () => {
                     }}
                   />
                   {item.image ? (
-                    <img src={typeof item.image === 'string' ? item.image : ((item.image as any) instanceof File || (item.image as any) instanceof Blob ? URL.createObjectURL(item.image as any) : ((item.image as any)?.url ? (resolveApiUrl((item.image as any).url) || '') : ''))} alt="" className="w-full h-full object-cover" />
+                    <img src={resolvePreviewImage(item.image)} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                        <ImageIcon className="w-8 h-8 text-slate-300 group-hover:text-blue-500 transition-colors" />
@@ -178,7 +188,7 @@ const MMSExperientialLearningForm: React.FC = () => {
                       {item.label?.length || 0} / {config.limit}
                     </span>
                   </div>
-                  <input id="mmsexperientiallearningform-2" name="mmsexperientiallearningform-2" aria-label="mmsexperientiallearningform field" 
+                  <input id={`mms-exp-label-${i}`} name={`mms-exp-label-${i}`} aria-label="mmsexperientiallearningform field" 
                     className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-blue-100 transition-all placeholder:text-slate-300"
                     placeholder="Enter label..."
                     value={item.label || ''}
@@ -191,7 +201,8 @@ const MMSExperientialLearningForm: React.FC = () => {
                   />
                 </div>
               </div>
-            ))}
+            )}
+           />
 
             {items.length < config.max && (
               <button 
@@ -200,7 +211,7 @@ const MMSExperientialLearningForm: React.FC = () => {
                   const newItems = [...items, { label: '', image: null }];
                   setForm({ ...form, [config.key]: newItems });
                 }} 
-                className="aspect-video lg:aspect-auto min-h-[12rem] bg-white border-4 border-dashed border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-3 text-slate-300 hover:border-blue-200 hover:text-blue-500 hover:bg-blue-50/30 transition-all group"
+                className="aspect-video lg:aspect-auto min-h-48 bg-white border-4 border-dashed border-slate-100 rounded-4xl flex flex-col items-center justify-center gap-3 text-slate-300 hover:border-blue-200 hover:text-blue-500 hover:bg-blue-50/30 transition-all group"
               >
                 <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                   <Plus className="w-6 h-6" />

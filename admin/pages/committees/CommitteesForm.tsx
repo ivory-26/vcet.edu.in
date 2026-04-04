@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { pagesApi } from '../../api/pagesApi';
 import { CommitteeData, CommitteePayload, CommitteeMember, CommitteeReport } from '../../types';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 /* ── UI Components ────────────────────────────────────────────────────────── */
 const SectionCard: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white border border-slate-200/60 rounded-[2.5rem] overflow-hidden shadow-sm transition-all hover:shadow-md">
+  <div className="bg-white border border-slate-200/60 rounded-5xl overflow-hidden shadow-sm transition-all hover:shadow-md">
     <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center gap-4">
       <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#2563EB]">
         {icon}
@@ -38,49 +39,39 @@ const ListManager: React.FC<{
     next[idx] = val;
     onChange(next);
   };
-  const moveItem = (idx: number, direction: 'up' | 'down') => {
-    const next = [...items];
-    const target = direction === 'up' ? idx - 1 : idx + 1;
-    if (target >= 0 && target < next.length) {
-      [next[idx], next[target]] = [next[target], next[idx]];
-      onChange(next);
-    }
-  };
-
   return (
     <div className="space-y-4">
-      {items.map((item, idx) => (
-        <div key={idx} className="flex gap-4 group items-start">
-          <div className="flex flex-col gap-1 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button type="button" onClick={() => moveItem(idx, 'up')} disabled={idx === 0} className="text-slate-400 hover:text-[#2563EB] disabled:opacity-20 flex items-center justify-center p-0.5">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 15l7-7 7 7" /></svg>
-            </button>
-            <button type="button" onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1} className="text-slate-400 hover:text-[#2563EB] disabled:opacity-20 flex items-center justify-center p-0.5">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 group items-start">
+            <div className="flex flex-col gap-1 pt-2 opacity-50 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB]" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+            </div>
+            <div className="grow">
+              <input id={`committeesform-list-${idx}`} name={`committeesform-list-${idx}`} aria-label="committeesform field" 
+                value={item} 
+                onChange={e => updateItem(idx, e.target.value)}
+                className={inputBase}
+                placeholder={`Enter ${title.toLowerCase()}...`}
+              />
+              {charLimit && (
+                <p className={`text-[10px] mt-1 ml-1 font-bold uppercase tracking-wider ${item.length > charLimit[1] ? 'text-red-500' : 'text-slate-400'}`}>
+                  {item.length} / {charLimit[1]} Characters
+                </p>
+              )}
+            </div>
+            <button 
+              type="button" 
+              onClick={() => removeItem(idx)}
+              className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 mt-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
-          <div className="flex-grow">
-            <input id="committeesform-1" name="committeesform-1" aria-label="committeesform field" 
-              value={item} 
-              onChange={e => updateItem(idx, e.target.value)}
-              className={inputBase}
-              placeholder={`Enter ${title.toLowerCase()}...`}
-            />
-            {charLimit && (
-              <p className={`text-[10px] mt-1 ml-1 font-bold uppercase tracking-wider ${item.length > charLimit[1] ? 'text-red-500' : 'text-slate-400'}`}>
-                {item.length} / {charLimit[1]} Characters
-              </p>
-            )}
-          </div>
-          <button 
-            type="button" 
-            onClick={() => removeItem(idx)}
-            className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 mt-1"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-      ))}
+        )}
+      />
       {items.length < maxItems && (
         <button type="button" onClick={addItem} className="text-[#2563EB] text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
           + Add {title}
@@ -117,18 +108,26 @@ const TableManager: React.FC<{
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-100/50">
+              <th className="w-10 px-4 py-4"></th>
               {columns.map(col => (
                 <th key={col.key as string} className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">{col.label}</th>
               ))}
               <th className="w-16 px-6 py-4"></th>
             </tr>
           </thead>
-          <tbody>
-            {items.map((item, idx) => (
-              <tr key={idx} className="border-t border-slate-100 group">
+          <SortableListContext
+            items={items}
+            onChange={onChange}
+            renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+              <tr ref={setNodeRef} style={{...style, display: 'table-row'}} className="border-t border-slate-100 group bg-white">
+                <td className="px-4 py-4 w-10">
+                  <div className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+                  </div>
+                </td>
                 {columns.map(col => (
                   <td key={col.key as string} className="px-6 py-4">
-                    <input id="committeesform-2" name="committeesform-2" aria-label="committeesform field" 
+                    <input id={`committeesform-table-${idx}-${col.key as string}`} name={`committeesform-table-${idx}-${col.key as string}`} aria-label="committeesform field" 
                       value={item[col.key] || ''} 
                       onChange={e => updateItem(idx, col.key, e.target.value)}
                       className="w-full bg-transparent border-none text-sm font-semibold text-slate-700 focus:ring-0 p-0"
@@ -143,8 +142,8 @@ const TableManager: React.FC<{
                   </button>
                 </td>
               </tr>
-            ))}
-          </tbody>
+            )}
+          />
         </table>
       </div>
       {items.length < maxItems && (
@@ -178,42 +177,52 @@ const ReportManager: React.FC<{
 
   return (
     <div className="space-y-4">
-      {items.map((item, idx) => (
-        <div key={idx} className="flex flex-col md:flex-row gap-4 p-6 bg-slate-50 border border-slate-200 rounded-[2rem] group relative">
-          <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-sm">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-          
-          <div className="w-full md:w-1/3">
-            <label className={labelBase}>Academic Year</label>
-            <select id="committeesform-select-1" name="committeesform-select-1" aria-label="committeesform select field" 
-              value={item.year} 
-              onChange={e => updateItem(idx, { year: e.target.value })}
-              className={inputBase}
-            >
-              {years.map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-200 rounded-4xl group relative">
+            <div className="flex flex-col justify-center items-center mr-2 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+               <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
+            </div>
+            
+            <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-sm">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            
+            <div className="flex flex-col md:flex-row gap-4 grow w-full">
+              <div className="w-full md:w-1/3">
+                <label className={labelBase}>Academic Year</label>
+                <select id={`committeesform-select-${idx}`} name={`committeesform-select-${idx}`} aria-label="committeesform select field" 
+                  value={item.year} 
+                  onChange={e => updateItem(idx, { year: e.target.value })}
+                  className={inputBase}
+                >
+                  {years.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
 
-          <div className="flex-grow">
-            <label className={labelBase}>PDF Report</label>
-            <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
-               <input id="committeesform-3" name="committeesform-3" aria-label="committeesform field" 
-                 type="file" 
-                 accept=".pdf" 
-                 onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
-                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
-               />
-               <span className="text-sm font-medium text-slate-500 truncate">
-                 {(item as any).file?.name || item.fileName || 'Select PDF file...'}
-               </span>
-               <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-[#2563EB]">
-                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-               </div>
+              <div className="grow">
+                <label className={labelBase}>PDF Report</label>
+                <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
+                   <input id={`committeesform-pdf-${idx}`} name={`committeesform-pdf-${idx}`} aria-label="committeesform field" 
+                     type="file" 
+                     accept=".pdf" 
+                     onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
+                     className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                   />
+                   <span className="text-sm font-medium text-slate-500 truncate">
+                     {(item as any).file?.name || item.fileName || 'Select PDF file...'}
+                   </span>
+                   <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-[#2563EB]">
+                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                   </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        )}
+      />
       {items.length < maxItems && (
         <button type="button" onClick={addItem} className="text-[#2563EB] text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
           + Add Report
@@ -244,53 +253,63 @@ const PDFDocumentManager: React.FC<{
 
   return (
     <div className="space-y-4">
-      {items.map((item, idx) => (
-        <div key={idx} className="p-6 bg-slate-50 border border-slate-200 rounded-[2rem] group relative space-y-4">
-           <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-sm">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={labelBase}>Document Title</label>
-              <input id="committeesform-4" name="committeesform-4" aria-label="committeesform field" 
-                value={item.title} 
-                onChange={e => updateItem(idx, { title: e.target.value })}
-                className={inputBase}
-                placeholder="e.g. Committee Guideline 2024"
-              />
+      <SortableListContext
+        items={items}
+        onChange={onChange}
+        renderItem={(item, idx, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+          <div ref={setNodeRef} style={style} className="flex gap-4 p-6 bg-slate-50 border border-slate-200 rounded-4xl group relative space-y-4">
+            <div className="flex flex-col pt-8 justify-start items-center mr-2 cursor-grab active:cursor-grabbing text-slate-400 hover:text-[#2563EB] opacity-50 group-hover:opacity-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+               <svg className="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16"/></svg>
             </div>
-            <div>
-              <label className={labelBase}>File Upload</label>
-              <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
-                 <input id="committeesform-5" name="committeesform-5" aria-label="committeesform field" 
-                   type="file" 
-                   accept=".pdf" 
-                   onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
-                   className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                 />
-                 <span className="text-sm font-medium text-slate-500 truncate">
-                   {item.file?.name || item.fileName || 'Upload PDF...'}
-                 </span>
-                 <div className="w-6 h-6 rounded-lg bg-[#2563EB]/5 text-[#2563EB] flex items-center justify-center">
-                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                 </div>
+
+             <button type="button" onClick={() => removeItem(idx)} className="absolute -top-3 -right-3 w-8 h-8 bg-red-50 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white shadow-sm">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            
+            <div className="grow space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelBase}>Document Title</label>
+                  <input id={`committeesform-doctitle-${idx}`} name={`committeesform-doctitle-${idx}`} aria-label="committeesform field" 
+                    value={item.title} 
+                    onChange={e => updateItem(idx, { title: e.target.value })}
+                    className={inputBase}
+                    placeholder="e.g. Committee Guideline 2024"
+                  />
+                </div>
+                <div>
+                  <label className={labelBase}>File Upload</label>
+                  <div className="relative h-[2.85rem] bg-white border border-slate-200 rounded-xl px-4 flex items-center justify-between overflow-hidden">
+                     <input id={`committeesform-docpdf-${idx}`} name={`committeesform-docpdf-${idx}`} aria-label="committeesform field" 
+                       type="file" 
+                       accept=".pdf" 
+                       onChange={e => updateItem(idx, { file: e.target.files?.[0] || null })}
+                       className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                     />
+                     <span className="text-sm font-medium text-slate-500 truncate">
+                       {item.file?.name || item.fileName || 'Upload PDF...'}
+                     </span>
+                     <div className="w-6 h-6 rounded-lg bg-[#2563EB]/5 text-[#2563EB] flex items-center justify-center">
+                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                     </div>
+                  </div>
+                </div>
               </div>
+              {showUrlField && (
+                <div>
+                  <label className={labelBase}>External PDF URL (Optional)</label>
+                  <input id={`committeesform-docurl-${idx}`} name={`committeesform-docurl-${idx}`} aria-label="committeesform field" 
+                    value={item.pdfUrl} 
+                    onChange={e => updateItem(idx, { pdfUrl: e.target.value })}
+                    className={inputBase}
+                    placeholder="https://example.com/document.pdf"
+                  />
+                </div>
+              )}
             </div>
           </div>
-          {showUrlField && (
-            <div>
-              <label className={labelBase}>External PDF URL (Optional)</label>
-              <input id="committeesform-6" name="committeesform-6" aria-label="committeesform field" 
-                value={item.pdfUrl} 
-                onChange={e => updateItem(idx, { pdfUrl: e.target.value })}
-                className={inputBase}
-                placeholder="https://example.com/document.pdf"
-              />
-            </div>
-          )}
-        </div>
-      ))}
+        )}
+      />
       {items.length < maxItems && (
         <button type="button" onClick={addItem} className="text-[#2563EB] text-xs font-bold uppercase tracking-widest flex items-center gap-2 hover:opacity-80 transition-opacity">
           + Add Document
@@ -347,7 +366,7 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center h-96 bg-white border border-slate-200/60 rounded-[3rem] animate-pulse">
+    <div className="flex items-center justify-center h-96 bg-white border border-slate-200/60 rounded-6xl animate-pulse">
       <div className="flex flex-col items-center gap-4">
         <div className="w-12 h-12 border-4 border-[#2563EB] border-t-transparent rounded-full animate-spin"></div>
         <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Fetching Committee Details...</p>

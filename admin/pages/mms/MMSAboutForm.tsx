@@ -5,6 +5,7 @@ import type { MMSAboutPayload } from '../../types';
 import { mmsAboutApi } from '../../api/mmsAboutApi';
 import { resolveApiUrl } from '../../api/client';
 import PageEditorHeader from '../../../components/admin/PageEditorHeader';
+import { SortableListContext } from '../../components/SortableList';
 
 const emptyForm: MMSAboutPayload = {
   aboutMMS: { description: '', image: null },
@@ -126,13 +127,13 @@ const MMSAboutForm: React.FC = () => {
 
       {error && (
         <div className="bg-red-50 border border-red-100 rounded-xl px-5 py-4 text-sm text-red-600 font-medium flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 flex-shrink-0" /> {error}
+          <AlertTriangle className="w-5 h-5 shrink-0" /> {error}
         </div>
       )}
       
       {successMsg && (
         <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-5 py-4 text-sm text-emerald-600 font-medium flex items-center gap-3">
-          <CheckCircle className="w-5 h-5 flex-shrink-0" /> {successMsg}
+          <CheckCircle className="w-5 h-5 shrink-0" /> {successMsg}
         </div>
       )}
 
@@ -222,13 +223,19 @@ const MMSAboutForm: React.FC = () => {
         <SectionCard title={`MMS FACULTY (${form.faculty?.length || 0})`} icon="👥">
           <p className="text-xs text-slate-500 mb-4 font-medium">Add faculty members.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {form.faculty?.map((member, i) => (
-              <div key={i} className="flex gap-4 p-4 border border-slate-200 rounded-xl bg-slate-50 relative">
-                {true && (
-                   <button type="button" onClick={() => {
-                     const c = [...form.faculty!]; c.splice(i, 1); setForm({...form, faculty: c});
-                   }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
-                )}
+          <SortableListContext
+            items={form.faculty || []}
+            onChange={val => setForm({ ...form, faculty: val })}
+            renderItem={(member, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+              <div ref={setNodeRef} style={style} className={`flex gap-4 p-4 border border-slate-200 rounded-xl bg-slate-50 relative ${isDragging ? 'shadow-lg z-50' : ''}`}>
+                <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 self-start mt-2" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                  <div className="w-4 h-0.5 bg-current mb-0.5" />
+                  <div className="w-4 h-0.5 bg-current mb-0.5" />
+                  <div className="w-4 h-0.5 bg-current" />
+                </div>
+                <button type="button" onClick={() => {
+                  const c = [...form.faculty!]; c.splice(i, 1); setForm({...form, faculty: c});
+                }} className="absolute top-2 right-2 text-red-500 p-1 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4"/></button>
                 <div className="w-20 shrink-0">
                   <ImageUploader 
                     image={member.photo} 
@@ -239,26 +246,26 @@ const MMSAboutForm: React.FC = () => {
                 <div className="flex-1 space-y-3">
                   <div className="relative">
                      <label className="admin-label">Name <span className="text-slate-400 normal-case">({member.name.length}/40)</span></label>
-                     <input id="mmsaboutform-1" name="mmsaboutform-1" aria-label="mmsaboutform field" className="admin-input-small font-bold" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
+                     <input id={`mms-fac-name-${i}`} name={`mms-fac-name-${i}`} aria-label="mmsaboutform field" className="admin-input-small font-bold" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
                          const c = [...form.faculty!]; c[i].name = val; setForm({...form, faculty: c});
                      })}/>
                   </div>
                   <div className="relative">
                      <label className="admin-label">Designation <span className="text-slate-400 normal-case">({member.designation.length}/60)</span></label>
-                     <input id="mmsaboutform-2" name="mmsaboutform-2" aria-label="mmsaboutform field" className="admin-input-small text-slate-600" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
+                     <input id={`mms-fac-desc-${i}`} name={`mms-fac-desc-${i}`} aria-label="mmsaboutform field" className="admin-input-small text-slate-600" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
                          const c = [...form.faculty!]; c[i].designation = val; setForm({...form, faculty: c});
                      })}/>
                   </div>
                   <div className="relative">
                      <label className="admin-label">Email <span className="text-slate-400 normal-case">({member.email?.length || 0}/50)</span></label>
-                     <input id="mmsaboutform-3" name="mmsaboutform-3" aria-label="mmsaboutform field" className="admin-input-small text-[#2563EB] font-medium" type="email" value={member.email || ''} onChange={e => handleTextChange(e.target.value, 50, val => {
+                     <input id={`mms-fac-mail-${i}`} name={`mms-fac-mail-${i}`} aria-label="mmsaboutform field" className="admin-input-small text-[#2563EB] font-medium" type="email" value={member.email || ''} onChange={e => handleTextChange(e.target.value, 50, val => {
                          const c = [...form.faculty!]; c[i].email = val; setForm({...form, faculty: c});
                      })}/>
                   </div>
-
                 </div>
               </div>
-            ))}
+            )}
+          />
             {true && (
               <button type="button" onClick={() => setForm({...form, faculty: [...(form.faculty||[]), {name: '', designation: '', email: '', photo: null}]})} className="btn-add min-h-[120px]">
                 <Plus className="w-5 h-5 mx-auto mb-1" /> Add Faculty Member
@@ -273,47 +280,54 @@ const MMSAboutForm: React.FC = () => {
         <SectionCard title={`DEPARTMENTAL ADVISORY BOARD (DAB) ()`} icon="👔">
           <p className="text-xs text-slate-500 mb-4 font-medium">Add members of the DAB.</p>
           <div className="space-y-3">
-             {form.dabMembers?.map((member, i) => (
-                <div key={i} className="flex gap-2 p-3 bg-white border border-slate-200 rounded-xl relative">
-                   <div className="w-8 flex items-center justify-center border-r border-slate-100 font-bold text-slate-400 text-sm">
-                      #{i+1}
-                   </div>
-                   <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3 px-2">
-                      <div className="relative">
-                        <label className="admin-label">Name (Max 40)</label>
-                        <input id="mmsaboutform-4" name="mmsaboutform-4" aria-label="mmsaboutform field" className="admin-input-small" placeholder="Name" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
-                           const c = [...form.dabMembers!]; c[i].name = val; setForm({...form, dabMembers: c});
-                        })}/>
-                      </div>
-                      <div className="relative">
-                        <label className="admin-label">Designation (Max 60)</label>
-                        <input id="mmsaboutform-5" name="mmsaboutform-5" aria-label="mmsaboutform field" className="admin-input-small" placeholder="Designation" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
-                           const c = [...form.dabMembers!]; c[i].designation = val; setForm({...form, dabMembers: c});
-                        })}/>
-                      </div>
-                      <div className="relative">
-                        <label className="admin-label">Organization (Max 70)</label>
-                        <input id="mmsaboutform-6" name="mmsaboutform-6" aria-label="mmsaboutform field" className="admin-input-small" placeholder="Organization" value={member.organization} onChange={e => handleTextChange(e.target.value, 70, val => {
-                           const c = [...form.dabMembers!]; c[i].organization = val; setForm({...form, dabMembers: c});
-                        })}/>
-                      </div>
-                      <div className="relative">
-                        <label className="admin-label">Role in DAB (Max 30)</label>
-                        <input id="mmsaboutform-7" name="mmsaboutform-7" aria-label="mmsaboutform field" className="admin-input-small" placeholder="e.g. Chairman" value={member.role} onChange={e => handleTextChange(e.target.value, 30, val => {
-                           const c = [...form.dabMembers!]; c[i].role = val; setForm({...form, dabMembers: c});
-                        })}/>
-                      </div>
-                   </div>
-                   
-                   {true && (
-                     <button type="button" onClick={() => {
-                        const c = [...form.dabMembers!]; c.splice(i, 1); setForm({...form, dabMembers: c});
-                     }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg flex items-center justify-center shrink-0">
-                       <Trash2 className="w-4 h-4"/>
-                     </button>
-                   )}
-                </div>
-             ))}
+             <SortableListContext
+                items={form.dabMembers || []}
+                onChange={val => setForm({ ...form, dabMembers: val })}
+                renderItem={(member, i, id, dragHandleProps, setNodeRef, style, isDragging, actions) => (
+                  <div ref={setNodeRef} style={style} className={`flex gap-2 p-3 bg-white border border-slate-200 rounded-xl relative ${isDragging ? 'shadow-lg z-50' : ''}`}>
+                    <div className="flex flex-col cursor-grab active:cursor-grabbing text-slate-300 hover:text-[#2563EB] transition-colors p-1 px-2 border-r border-slate-100" {...dragHandleProps.attributes} {...dragHandleProps.listeners}>
+                      <div className="w-3 h-0.5 bg-current mb-0.5" />
+                      <div className="w-3 h-0.5 bg-current mb-0.5" />
+                      <div className="w-3 h-0.5 bg-current" />
+                    </div>
+                    <div className="w-6 flex items-center justify-center font-bold text-slate-400 text-[10px]">
+                       #{i+1}
+                    </div>
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3 px-2">
+                       <div className="relative">
+                         <label className="admin-label">Name (Max 40)</label>
+                         <input id={`mms-dab-name-${i}`} name={`mms-dab-name-${i}`} aria-label="mmsaboutform field" className="admin-input-small" placeholder="Name" value={member.name} onChange={e => handleTextChange(e.target.value, 40, val => {
+                            const c = [...form.dabMembers!]; c[i].name = val; setForm({...form, dabMembers: c});
+                         })}/>
+                       </div>
+                       <div className="relative">
+                         <label className="admin-label">Designation (Max 60)</label>
+                         <input id={`mms-dab-desig-${i}`} name={`mms-dab-desig-${i}`} aria-label="mmsaboutform field" className="admin-input-small" placeholder="Designation" value={member.designation} onChange={e => handleTextChange(e.target.value, 60, val => {
+                            const c = [...form.dabMembers!]; c[i].designation = val; setForm({...form, dabMembers: c});
+                         })}/>
+                       </div>
+                       <div className="relative">
+                         <label className="admin-label">Organization (Max 70)</label>
+                         <input id={`mms-dab-org-${i}`} name={`mms-dab-org-${i}`} aria-label="mmsaboutform field" className="admin-input-small" placeholder="Organization" value={member.organization} onChange={e => handleTextChange(e.target.value, 70, val => {
+                            const c = [...form.dabMembers!]; c[i].organization = val; setForm({...form, dabMembers: c});
+                         })}/>
+                       </div>
+                       <div className="relative">
+                         <label className="admin-label">Role in DAB (Max 30)</label>
+                         <input id={`mms-dab-role-${i}`} name={`mms-dab-role-${i}`} aria-label="mmsaboutform field" className="admin-input-small" placeholder="e.g. Chairman" value={member.role} onChange={e => handleTextChange(e.target.value, 30, val => {
+                            const c = [...form.dabMembers!]; c[i].role = val; setForm({...form, dabMembers: c});
+                         })}/>
+                       </div>
+                    </div>
+                    
+                    <button type="button" onClick={() => {
+                       const c = [...form.dabMembers!]; c.splice(i, 1); setForm({...form, dabMembers: c});
+                    }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg flex items-center justify-center shrink-0">
+                      <Trash2 className="w-4 h-4"/>
+                    </button>
+                  </div>
+                )}
+             />
              {true && (
               <button type="button" onClick={() => setForm({...form, dabMembers: [...(form.dabMembers||[]), {srNo: (form.dabMembers?.length || 0)+1, name: '', designation: '', organization: '', role: ''}]})} className="btn-add">
                 <Plus className="w-4 h-4" /> Add Row
@@ -342,7 +356,7 @@ const MMSAboutForm: React.FC = () => {
 // --- Helper Components --- //
 
 const SectionCard: React.FC<{ title: string; icon: string; children: React.ReactNode }> = ({ title, icon, children }) => (
-  <div className="bg-white rounded-[2rem] shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
+  <div className="bg-white rounded-4xl shadow-lg shadow-slate-200/40 border border-slate-100 overflow-hidden">
     <div className="px-8 py-5 border-b border-slate-100 flex items-center gap-3">
       <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500">{icon}</div>
       <h3 className="text-sm font-extrabold text-[#111827] uppercase tracking-wider">{title}</h3>
