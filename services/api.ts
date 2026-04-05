@@ -24,6 +24,108 @@ function resolveApiOrigin(): string {
 const API_ORIGIN = resolveApiOrigin();
 const API_BASE = API_ORIGIN;
 
+type CacheEntry = {
+    ts: number;
+    data: unknown;
+};
+
+const PAGE_CACHE_PREFIX = 'vcet:page-cache:v1:';
+const pageMemoryCache = new Map<string, CacheEntry>();
+const inflightPageFetches = new Map<string, Promise<unknown>>();
+const PAGE_CACHE_ENABLED = (import.meta.env.VITE_ENABLE_PUBLIC_CACHE as string | undefined) !== 'false';
+const PAGE_CACHE_TTL_MS = Number(import.meta.env.VITE_PAGE_CACHE_TTL_MS ?? 10 * 60_000);
+const PAGE_CACHE_REVALIDATE_MS = Number(import.meta.env.VITE_PAGE_CACHE_REVALIDATE_MS ?? 60_000);
+
+function isPublicPageRequest(path: string): boolean {
+    return path.startsWith('/pages/');
+}
+
+function isAdminRoute(): boolean {
+    if (typeof window === 'undefined') return false;
+    return window.location.pathname.startsWith('/admin');
+}
+
+function getPageCacheKey(path: string): string {
+    return `${PAGE_CACHE_PREFIX}${path}`;
+}
+
+function readPageCache(path: string): CacheEntry | null {
+    const key = getPageCacheKey(path);
+    const mem = pageMemoryCache.get(key);
+    if (mem) return mem;
+
+    if (typeof window === 'undefined') return null;
+    try {
+        const raw = window.localStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as CacheEntry;
+        if (!parsed || typeof parsed.ts !== 'number') return null;
+        pageMemoryCache.set(key, parsed);
+        return parsed;
+    } catch {
+        return null;
+    }
+}
+
+function writePageCache(path: string, data: unknown): void {
+    const key = getPageCacheKey(path);
+    const entry: CacheEntry = { ts: Date.now(), data };
+    pageMemoryCache.set(key, entry);
+
+    if (typeof window === 'undefined') return;
+    try {
+        window.localStorage.setItem(key, JSON.stringify(entry));
+    } catch {
+        // Ignore quota/security errors.
+    }
+}
+
+async function fetchJson<T>(path: string): Promise<T> {
+    const response = await fetch(`${API_BASE}/api${path}`, {
+        cache: 'no-store',
+        headers: {
+            Accept: 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
+            Expires: '0',
+        },
+    });
+
+    const data: unknown = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw { status: response.status, data } as ApiError;
+    }
+
+    return data as T;
+}
+
+function fetchAndCachePage<T>(path: string): Promise<T> {
+    const key = getPageCacheKey(path);
+    const existing = inflightPageFetches.get(key) as Promise<T> | undefined;
+    if (existing) return existing;
+
+    const run = fetchJson<T>(path)
+        .then((data) => {
+            writePageCache(path, data);
+            return data;
+        })
+        .finally(() => {
+            inflightPageFetches.delete(key);
+        });
+
+    inflightPageFetches.set(key, run as Promise<unknown>);
+    return run;
+}
+
+export function prefetchPageData(paths: string[]): void {
+    if (!PAGE_CACHE_ENABLED) return;
+    const unique = Array.from(new Set(paths)).filter((path) => path.startsWith('/pages/'));
+    for (const path of unique) {
+        void fetchAndCachePage(path).catch(() => undefined);
+    }
+}
+
 interface ApiError {
     status: number;
     data: Record<string, unknown>;
@@ -68,23 +170,31 @@ export async function put<T>(path: string, body: unknown): Promise<T> {
 }
 
 export async function get<T>(path: string): Promise<T> {
-    const response = await fetch(`${API_BASE}/api${path}`, {
-        cache: 'no-store',
-        headers: {
-            Accept: 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            Pragma: 'no-cache',
-            Expires: '0',
-        },
-    });
+    const shouldUsePageCache = PAGE_CACHE_ENABLED && isPublicPageRequest(path) && !isAdminRoute();
 
-    const data: unknown = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-        throw { status: response.status, data } as ApiError;
+    if (!shouldUsePageCache) {
+        return fetchJson<T>(path);
     }
 
-    return data as T;
+    const cached = readPageCache(path);
+    if (cached) {
+        const age = Date.now() - cached.ts;
+        const isFresh = age <= PAGE_CACHE_TTL_MS;
+        const shouldRevalidate = age >= PAGE_CACHE_REVALIDATE_MS;
+
+        if (shouldRevalidate) {
+            void fetchAndCachePage<T>(path);
+        }
+
+        if (isFresh) {
+            return cached.data as T;
+        }
+
+        // Serve stale data immediately while revalidating in the background.
+        return cached.data as T;
+    }
+
+    return fetchAndCachePage<T>(path);
 }
 
 export function resolveApiUrl(path: any): string | null {
