@@ -4,6 +4,11 @@ import PageBanner from '../../components/PageBanner';
 import { ArrowUpRight, ExternalLink, FileText, Link2 } from 'lucide-react';
 import { getResearchSection } from '../../services/research';
 
+type LinkItem = {
+  label: string;
+  href: string;
+};
+
 const defaultDocButtons = [
   {
     label: 'Form for research recommendation',
@@ -44,16 +49,37 @@ const defaultRightLinks = [
 
 const ResearchDownloads: React.FC = () => {
   const [apiData, setApiData] = useState<any>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     getResearchSection<any>('downloads')
       .then((res) => mounted && setApiData(res))
-      .catch(() => mounted && setApiData(null));
+      .catch(() => mounted && setApiData(null))
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner
+          title="Research Downloads"
+          breadcrumbs={[
+            { label: 'Research', href: '/research' },
+            { label: 'Downloads' },
+          ]}
+        />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const docButtons = useMemo(() => {
     const rows = Array.isArray(apiData?.topButtons)
@@ -109,7 +135,7 @@ const ResearchDownloads: React.FC = () => {
 
         <div className="container mx-auto px-4 sm:px-6 max-w-[1200px]">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 relative z-10">
-            {docButtons.map((button, idx) => (
+            {docButtons.map((button: LinkItem, idx: number) => (
               <a
                 key={button.label}
                 href={button.href}
@@ -155,7 +181,7 @@ const ResearchDownloads: React.FC = () => {
                 style={{ transitionDelay: `${groupIndex * 0.05}s` }}
               >
                 <ul className="space-y-3.5">
-                  {links.map((linkItem, linkIndex) => (
+                  {links.map((linkItem: LinkItem, linkIndex: number) => (
                     <li key={linkItem.label + linkIndex}>
                       <a
                         href={linkItem.href}

@@ -68,6 +68,17 @@ const ECell: React.FC = () => {
     };
   }, [activeId]);
 
+  if (loading) {
+    return (
+      <PageLayout>
+        <PageBanner title="E-Cell" breadcrumbs={[{ label: 'E-Cell' }]} />
+        <section className="py-10 md:py-14 bg-[#F7F9FC]">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout>
       <PageBanner title="E-Cell" breadcrumbs={[{ label: 'E-Cell' }]} />
@@ -101,25 +112,21 @@ const ECell: React.FC = () => {
         <main className="flex-1 w-full min-w-0">
           {activeId === 'about' && (
             <section className="reveal bg-white p-8 lg:p-12 border border-[#E5E7EB] shadow-[4px_4px_0_#E5E7EB]">
-              {loading ? (
-                <div className="text-slate-500">Loading...</div>
-              ) : (
-                <div className="space-y-6 text-[#5b6574] leading-relaxed text-justify md:text-left text-[15px]">
-                  {about.map((line: string, index: number) => (
-                    <p key={`${line}-${index}`}>{line}</p>
-                  ))}
-                  {objectives.length > 0 && (
-                    <div className="mt-8">
-                      <h3 className="text-xl font-bold text-[#1a4b7c] mb-4">Objectives</h3>
-                      <ol className="list-decimal pl-5 space-y-3">
-                        {objectives.map((item: string, index: number) => (
-                          <li key={`${item}-${index}`}>{item}</li>
-                        ))}
-                      </ol>
-                    </div>
-                  )}
+              <div className="space-y-6 text-[#5b6574] leading-relaxed text-justify md:text-left text-[15px]">
+                {about.map((line: string, index: number) => (
+                  <p key={`${line}-${index}`}>{line}</p>
+                ))}
+                {objectives.length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="text-xl font-bold text-[#1a4b7c] mb-4">Objectives</h3>
+                    <ol className="list-decimal pl-5 space-y-3">
+                      {objectives.map((item: string, index: number) => (
+                        <li key={`${item}-${index}`}>{item}</li>
+                      ))}
+                    </ol>
                 </div>
-              )}
+                )}
+              </div>
             </section>
           )}
 

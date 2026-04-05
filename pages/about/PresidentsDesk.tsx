@@ -18,16 +18,31 @@ interface PresidentData {
 
 const PresidentsDesk: React.FC = () => {
   const [data, setData] = useState<PresidentData | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     getAboutSection<PresidentData>('president-desk')
       .then((res) => mounted && setData(res))
-      .catch(() => mounted && setData(null));
+      .catch(() => mounted && setData(null))
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner title="President's Desk" breadcrumbs={[{ label: "President's Desk" }]} />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const intro = data?.intro ?? {};
   const paragraphs = useMemo(() => {

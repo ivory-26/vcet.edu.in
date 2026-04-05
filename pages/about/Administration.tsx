@@ -25,16 +25,31 @@ const fallbackMembers: AdminMember[] = [
 
 const Administration: React.FC = () => {
   const [data, setData] = useState<AdministrationData | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     getAboutSection<AdministrationData>('administration')
       .then((res) => mounted && setData(res))
-      .catch(() => mounted && setData(null));
+      .catch(() => mounted && setData(null))
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner title="Administration" breadcrumbs={[{ label: 'Administration' }]} />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const members = useMemo(() => {
     const rows = (data?.adminCards ?? [])

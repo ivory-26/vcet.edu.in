@@ -31,16 +31,37 @@ const defaultPapersPublished = [
 ];
 const Publications: React.FC = () => {
   const [apiData, setApiData] = useState<any>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     getResearchSection<any>('publications')
       .then((res) => mounted && setApiData(res))
-      .catch(() => mounted && setApiData(null));
+      .catch(() => mounted && setApiData(null))
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner
+          title="Publications (Journals, Conference, Books)"
+          breadcrumbs={[
+            { label: 'Research', href: '/research' },
+            { label: 'Publications' },
+          ]}
+        />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const booksPublished = useMemo(() => {
     const rows = Array.isArray(apiData?.books)

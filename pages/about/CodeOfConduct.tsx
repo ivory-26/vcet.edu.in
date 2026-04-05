@@ -67,16 +67,31 @@ const fallbackSections: ConductSection[] = [
 
 const CodeOfConduct: React.FC = () => {
   const [data, setData] = useState<ConductData | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     getAboutSection<ConductData>('code-of-conduct')
       .then((res) => mounted && setData(res))
-      .catch(() => mounted && setData(null));
+      .catch(() => mounted && setData(null))
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner title="Code of Conduct" breadcrumbs={[{ label: 'Code of Conduct' }]} />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const sections = useMemo(() => {
     const rows = (data?.conductSections ?? [])

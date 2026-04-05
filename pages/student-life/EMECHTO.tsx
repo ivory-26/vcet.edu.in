@@ -465,6 +465,7 @@ const ContactPanel: React.FC = () => {
 const EmechtoPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<TabId>('about');
     const [apiData, setApiData] = useState<Record<string, any> | null>(null);
+    const [apiLoaded, setApiLoaded] = useState(false);
 
     useEffect(() => {
         let mounted = true;
@@ -474,12 +475,33 @@ const EmechtoPage: React.FC = () => {
             })
             .catch(() => {
                 if (mounted) setApiData(null);
+            })
+            .finally(() => {
+                if (mounted) setApiLoaded(true);
             });
 
         return () => {
             mounted = false;
         };
     }, []);
+
+    if (!apiLoaded) {
+        return (
+            <PageLayout>
+                <PageBanner
+                    title="EMECHTO"
+                    subtitle="The Official E-bike team of Vidyavardhini's College of Engineering & Technology."
+                    breadcrumbs={[
+                        { label: 'Students Club', href: '/students-club' },
+                        { label: 'EMECHTO' }
+                    ]}
+                />
+                <section className="py-16 bg-white">
+                    <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+                </section>
+            </PageLayout>
+        );
+    }
 
     const apiCompetitionItems = Array.isArray(apiData?.results)
         ? apiData.results

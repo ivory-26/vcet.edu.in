@@ -58,6 +58,7 @@ const teamRows = [
 
 const SportsCommittee: React.FC = () => {
   const [apiData, setApiData] = useState<Record<string, any> | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -67,12 +68,26 @@ const SportsCommittee: React.FC = () => {
       })
       .catch(() => {
         if (mounted) setApiData(null);
+      })
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
       });
 
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner title="Sports Committee" breadcrumbs={[{ label: 'Sports Committee' }]} />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const pageTitle = String(apiData?.slug ?? '').trim() === 'sports-committee' ? 'Sports Committee' : 'Sports Committee';
   const links = [

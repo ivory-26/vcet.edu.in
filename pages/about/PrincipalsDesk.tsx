@@ -22,16 +22,31 @@ const icons = [GraduationCap, Briefcase, Users, Star];
 
 const PrincipalsDesk: React.FC = () => {
   const [data, setData] = useState<PrincipalData | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     getAboutSection<PrincipalData>('principal-desk')
       .then((res) => mounted && setData(res))
-      .catch(() => mounted && setData(null));
+      .catch(() => mounted && setData(null))
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner title="Principal's Desk" breadcrumbs={[{ label: "Principal's Desk" }]} />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const intro = data?.intro ?? {};
   const name = intro.name || 'Dr. Rakesh Himte';

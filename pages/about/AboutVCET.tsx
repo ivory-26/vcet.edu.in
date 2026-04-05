@@ -12,6 +12,7 @@ interface OverviewData {
 
 const AboutVCET: React.FC = () => {
   const [data, setData] = useState<OverviewData | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -21,12 +22,31 @@ const AboutVCET: React.FC = () => {
       })
       .catch(() => {
         if (mounted) setData(null);
+      })
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
       });
 
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner
+          title="About VCET"
+          breadcrumbs={[
+            { label: 'About VCET' },
+          ]}
+        />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const quickFacts = useMemo(() => {
     const facts = (data?.facts ?? [])

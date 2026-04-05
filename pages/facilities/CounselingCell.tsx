@@ -22,16 +22,36 @@ const mentorRecordItems = [
 
 const CounselingCell: React.FC = () => {
   const [apiData, setApiData] = useState<any>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     getFacilitiesSection<any>('counselling-cell')
       .then((res) => mounted && setApiData(res))
-      .catch(() => mounted && setApiData(null));
+      .catch(() => mounted && setApiData(null))
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
+      });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner
+          title="Counselling Cell"
+          breadcrumbs={[
+            { label: 'Counselling Cell' },
+          ]}
+        />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const general = useMemo(() => {
     const source = apiData?.general ?? {};

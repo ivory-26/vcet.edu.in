@@ -20,6 +20,7 @@ const fallbackMembers = [
 
 const GrievanceRedressal: React.FC = () => {
   const [apiData, setApiData] = useState<Record<string, any> | null>(null);
+  const [apiLoaded, setApiLoaded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -29,11 +30,25 @@ const GrievanceRedressal: React.FC = () => {
       })
       .catch(() => {
         if (mounted) setApiData(null);
+      })
+      .finally(() => {
+        if (mounted) setApiLoaded(true);
       });
     return () => {
       mounted = false;
     };
   }, []);
+
+  if (!apiLoaded) {
+    return (
+      <PageLayout>
+        <PageBanner title="Grievance Redressal Committee" breadcrumbs={[{ label: 'Grievance Redressal' }]} />
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
 
   const objectives = useMemo(() => {
     const source = Array.isArray(apiData?.objectives) ? apiData.objectives : [];
