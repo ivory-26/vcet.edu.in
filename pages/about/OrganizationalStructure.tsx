@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { Building2 } from 'lucide-react';
@@ -31,29 +31,52 @@ interface OrgData {
   orgNodes?: FlatOrgNode[];
 }
 
-const OrgCard: React.FC<{ node: HierarchyNode; delay: number }> = ({ node, delay }) => (
-  <div className="flex flex-col items-center">
-    <div className="reveal group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:border-brand-gold/30 transition-all duration-500 p-6 text-center min-w-[220px] max-w-[280px]" style={{ transitionDelay: `${delay * 0.1}s` }}>
-      <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-brand-blue to-brand-navy flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
-        <Building2 className="w-5 h-5" />
-      </div>
-      <h3 className="text-lg font-display font-bold text-brand-navy">{node.name}</h3>
-      <p className="text-sm text-brand-gold font-semibold mt-1">{node.title}</p>
-    </div>
+interface OrgCardProps {
+  node: HierarchyNode;
+  depth: number;
+  maxRenderDepth: number;
+  animationStep: number;
+}
 
-    {node.children && node.children.length > 0 && (
-      <>
-        <div className="w-px h-10 bg-gradient-to-b from-brand-gold/50 to-brand-blue/30" />
-        <div className="w-3 h-3 rounded-full bg-brand-gold/40 border-2 border-brand-gold -mt-1.5 mb-2" />
-        <div className="flex flex-wrap justify-center gap-8">
-          {node.children.map((child, idx) => (
-            <OrgCard key={`${child.name}-${idx}`} node={child} delay={delay + idx + 1} />
-          ))}
+const OrgCard: React.FC<OrgCardProps> = memo(({ node, depth, maxRenderDepth, animationStep }) => {
+  const transitionDelay = `${Math.min(animationStep * 0.045, 0.22)}s`;
+  const shouldRenderChildren = depth < maxRenderDepth && !!node.children?.length;
+
+  return (
+    <div className="flex flex-col items-center" style={{ contentVisibility: 'auto', containIntrinsicSize: '220px 140px' }}>
+      <div
+        className="reveal group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-gold/30 transition-transform transition-shadow transition-colors duration-300 p-6 text-center min-w-[220px] max-w-[280px] will-change-transform"
+        style={{ transitionDelay }}
+      >
+        <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-brand-blue to-brand-navy flex items-center justify-center text-white group-hover:scale-105 transition-transform duration-200">
+          <Building2 className="w-5 h-5" />
         </div>
-      </>
-    )}
-  </div>
-);
+        <h3 className="text-lg font-display font-bold text-brand-navy">{node.name}</h3>
+        <p className="text-sm text-brand-gold font-semibold mt-1">{node.title}</p>
+      </div>
+
+      {shouldRenderChildren && (
+        <>
+          <div className="w-px h-10 bg-gradient-to-b from-brand-gold/50 to-brand-blue/30" />
+          <div className="w-3 h-3 rounded-full bg-brand-gold/40 border-2 border-brand-gold -mt-1.5 mb-2" />
+          <div className="flex flex-wrap justify-center gap-8">
+            {node.children!.map((child, idx) => (
+              <OrgCard
+                key={`${child.name}-${idx}`}
+                node={child}
+                depth={depth + 1}
+                maxRenderDepth={maxRenderDepth}
+                animationStep={animationStep + idx + 1}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+});
+
+OrgCard.displayName = 'OrgCard';
 
 function normalizeKey(value: string | null | undefined): string {
   return (value ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
@@ -65,7 +88,7 @@ function buildHierarchy(nodes: FlatOrgNode[]): HierarchyNode[] {
     .sort((a, b) => (a.displayOrder ?? a.order ?? a.sortOrder ?? 0) - (b.displayOrder ?? b.order ?? b.sortOrder ?? 0));
 
   if (active.length === 0) {
-    return [{ name: 'Mr. Vikas Vartak', title: 'Chairman', children: [] }];
+    return [];
   }
 
   const map = new Map<string, HierarchyNode>();
@@ -94,18 +117,51 @@ function buildHierarchy(nodes: FlatOrgNode[]): HierarchyNode[] {
 
 const OrganizationalStructure: React.FC = () => {
   const [data, setData] = useState<OrgData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [maxRenderDepth, setMaxRenderDepth] = useState(1);
 
   useEffect(() => {
     let mounted = true;
+    setIsLoading(true);
     getAboutSection<OrgData>('org-structure')
-      .then((res) => mounted && setData(res))
-      .catch(() => mounted && setData(null));
+      .then((res) => {
+        if (mounted) setData(res);
+      })
+      .catch(() => {
+        if (mounted) setData(null);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+
     return () => {
       mounted = false;
     };
   }, []);
 
-  const hierarchies = useMemo(() => buildHierarchy(data?.orgNodes ?? []), [data]);
+  const fetchedHierarchies = useMemo(() => buildHierarchy(data?.orgNodes ?? []), [data]);
+  const hierarchies = useMemo(
+    () => (isLoading ? [] : fetchedHierarchies.length > 0 ? fetchedHierarchies : [{ name: 'Mr. Vikas Vartak', title: 'Chairman', children: [] }]),
+    [isLoading, fetchedHierarchies]
+  );
+
+  useEffect(() => {
+    setMaxRenderDepth(1);
+
+    const rafId = window.requestAnimationFrame(() => {
+      setMaxRenderDepth(2);
+    });
+
+    const timerId = window.setTimeout(() => {
+      setMaxRenderDepth(Number.MAX_SAFE_INTEGER);
+    }, 120);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.clearTimeout(timerId);
+    };
+  }, [hierarchies]);
+
   const intro = data?.orgIntro || "The organizational framework of Vidyavardhini's College of Engineering and Technology";
   const orgChartImage = resolveUploadedAssetUrl(data?.orgChartImage ?? null);
 
@@ -128,15 +184,36 @@ const OrganizationalStructure: React.FC = () => {
 
             {orgChartImage && (
               <div className="reveal mb-10 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-                <img src={orgChartImage} alt="Organizational Chart" className="w-full h-auto object-contain" />
+                <img
+                  src={orgChartImage}
+                  alt="Organizational Chart"
+                  className="w-full h-auto object-contain"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                />
               </div>
             )}
 
-            <div className="flex flex-wrap justify-center gap-10 overflow-x-auto pb-8">
-              {hierarchies.map((root, index) => (
-                <OrgCard key={`${root.name}-${index}`} node={root} delay={index + 1} />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="flex flex-wrap justify-center gap-6 pb-8" aria-live="polite" aria-busy="true">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <div key={idx} className="w-[240px] h-[150px] rounded-2xl border border-gray-100 bg-slate-100 animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap justify-center gap-10 overflow-x-auto pb-8">
+                {hierarchies.map((root, index) => (
+                  <OrgCard
+                    key={`${root.name}-${index}`}
+                    node={root}
+                    depth={0}
+                    maxRenderDepth={maxRenderDepth}
+                    animationStep={index + 1}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
