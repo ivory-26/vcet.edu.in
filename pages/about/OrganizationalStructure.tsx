@@ -35,6 +35,35 @@ interface OrgCardProps {
   node: HierarchyNode;
 }
 
+const ORG_STRUCTURE_CACHE_KEY = 'vcet:org-structure:v1';
+const ORG_STRUCTURE_CACHE_TTL_MS = 1000 * 60 * 15;
+
+function readOrgStructureCache(): OrgData | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(ORG_STRUCTURE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { data?: OrgData; ts?: number };
+    if (!parsed?.data || !parsed?.ts) return null;
+    if (Date.now() - parsed.ts > ORG_STRUCTURE_CACHE_TTL_MS) return null;
+    return parsed.data;
+  } catch {
+    return null;
+  }
+}
+
+function writeOrgStructureCache(data: OrgData): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(
+      ORG_STRUCTURE_CACHE_KEY,
+      JSON.stringify({ data, ts: Date.now() })
+    );
+  } catch {
+    // Ignore storage write failures.
+  }
+}
+
 const OrgCard: React.FC<OrgCardProps> = memo(({ node }) => {
   const shouldRenderChildren = !!node.children?.length;
 
@@ -113,13 +142,23 @@ const OrganizationalStructure: React.FC = () => {
 
   useEffect(() => {
     let mounted = true;
-    setIsLoading(true);
+    const cached = readOrgStructureCache();
+    if (cached) {
+      setData(cached);
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+
     getAboutSection<OrgData>('org-structure')
       .then((res) => {
-        if (mounted) setData(res);
+        if (!mounted) return;
+        setData(res);
+        writeOrgStructureCache(res);
       })
       .catch(() => {
-        if (mounted) setData(null);
+        if (!mounted || cached) return;
+        setData(null);
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
@@ -161,9 +200,9 @@ const OrganizationalStructure: React.FC = () => {
                   src={orgChartImage}
                   alt="Organizational Chart"
                   className="w-full h-auto object-contain"
-                  loading="eager"
+                  loading="lazy"
                   decoding="async"
-                  fetchPriority="high"
+                  fetchPriority="auto"
                 />
               </div>
             )}
