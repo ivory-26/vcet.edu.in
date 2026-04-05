@@ -130,6 +130,17 @@ const Training: React.FC = () => {
     };
   }, [activeId]);
 
+  if (loading) {
+    return (
+      <PageLayout>
+        <PageBanner title="Training" breadcrumbs={[{ label: 'Training' }]} />
+        <section className="py-10 md:py-12 bg-[#F7F9FC]">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout>
       <PageBanner title="Training" breadcrumbs={[{ label: 'Training' }]} />
@@ -163,41 +174,36 @@ const Training: React.FC = () => {
         <main className="flex-1 w-full min-w-0">
           {activeId === 'training' && (
             <section className="reveal bg-white p-8 lg:p-12 border border-[#E5E7EB] shadow-[4px_4px_0_#E5E7EB]">
-              {loading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-slate-500">Loading...</div>
+              <div className="space-y-10 text-[#5b6574] leading-relaxed text-[15px]">
+                <div>
+                  <h3 className="text-2xl font-bold text-[#1a4b7c] border-b border-slate-100 pb-3 mb-6">Training</h3>
+                  {mainContent.length > 0 && <StyledPointList items={mainContent} />}
                 </div>
-              ) : (
-                <div className="space-y-10 text-[#5b6574] leading-relaxed text-[15px]">
+
+                {trainingPrograms.length > 0 && (
                   <div>
-                    <h3 className="text-2xl font-bold text-[#1a4b7c] border-b border-slate-100 pb-3 mb-6">Training</h3>
-                    {mainContent.length > 0 && <StyledPointList items={mainContent} />}
-                  </div>
-
-                  {trainingPrograms.length > 0 && (
-                    <div>
-                      <h4 className="text-xl font-bold text-[#1a4b7c] mb-4">Programs</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {trainingPrograms.map((program, index) => {
-                          const Icon = program.icon;
-                          return (
-                            <div key={`${program.title}-${index}`} className="border border-slate-200 rounded-xl p-5 bg-slate-50/40">
-                              <div className="flex items-center gap-3 mb-3">
-                                <span className="inline-flex w-10 h-10 rounded-lg bg-[#1a4b7c] text-white items-center justify-center">
-                                  <Icon className="w-5 h-5" />
-                                </span>
-                                <h5 className="font-bold text-[#1a4b7c]">{program.title}</h5>
-                              </div>
-                              <p className="text-sm text-slate-700">{program.description}</p>
+                    <h4 className="text-xl font-bold text-[#1a4b7c] mb-4">Programs</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {trainingPrograms.map((program, index) => {
+                        const Icon = program.icon;
+                        return (
+                          <div key={`${program.title}-${index}`} className="border border-slate-200 rounded-xl p-5 bg-slate-50/40">
+                            <div className="flex items-center gap-3 mb-3">
+                              <span className="inline-flex w-10 h-10 rounded-lg bg-[#1a4b7c] text-white items-center justify-center">
+                                <Icon className="w-5 h-5" />
+                              </span>
+                              <h5 className="font-bold text-[#1a4b7c]">{program.title}</h5>
                             </div>
-                          );
-                        })}
-                      </div>
+                            <p className="text-sm text-slate-700">{program.description}</p>
+                          </div>
+                        );
+                      })}
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {stats.length > 0 && (
-                    <div>
+                {stats.length > 0 && (
+                  <div>
                       <h4 className="text-xl font-bold text-[#1a4b7c] mb-4">Training Snapshot</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {stats.map((stat, index) => {
@@ -223,7 +229,6 @@ const Training: React.FC = () => {
                     </div>
                   )}
                 </div>
-              )}
             </section>
           )}
 

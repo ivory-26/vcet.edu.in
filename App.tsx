@@ -20,6 +20,7 @@ import Gallery from './components/Gallery';
 import Testimonials from './components/Testimonials';
 import Footer from './components/Footer';
 import SplashScreen from './components/SplashScreen';
+import { warmPublicPageCache } from './services/pagePrefetch';
 
 
 /* ── Lazy-loaded Pages ── */
@@ -334,6 +335,10 @@ const HomePage: React.FC = () => {
 
 /* ── App with Router ── */
 function App() {
+  useEffect(() => {
+    warmPublicPageCache();
+  }, []);
+
   return (
     <AuthProvider>
       <BrowserRouter>

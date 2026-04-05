@@ -61,6 +61,24 @@ const DeptAIDS: React.FC = () => {
     return () => { clearTimeout(t); observer.disconnect(); };
   }, [activeId]);
 
+  if (loading) {
+    return (
+      <PageLayout>
+        <header className="relative bg-gradient-to-r from-brand-navy to-slate-800 pt-24 md:pt-28 pb-12 md:pb-16 overflow-hidden shadow-lg border-b-4 border-brand-gold">
+          <div className="container mx-auto px-6 max-w-7xl relative z-10">
+            <h1 className="font-display font-bold text-white leading-tight tracking-tight text-center">
+              <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl">Artificial Intelligence</span>
+              <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-3 text-brand-gold font-semibold italic">&amp; Data Science</span>
+            </h1>
+          </div>
+        </header>
+        <section className="py-10 md:py-12 bg-[#F7F9FC]">
+          <div className="container mx-auto px-4 sm:px-6 text-center text-slate-500">Loading content...</div>
+        </section>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout>
 
