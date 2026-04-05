@@ -1,32 +1,33 @@
 import { useState } from 'react';
-import { enquiriesService, type EnquiryPayload } from '../services/enquiries';
+import { submitAdmissionEnquiry } from '../services/enquiries';
+import type { AdmissionEnquiryPayload } from '../services/enquiries';
 
 export function useEnquiryForm() {
-	const [submitting, setSubmitting] = useState(false);
-	const [success, setSuccess] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-	const submit = async (payload: EnquiryPayload) => {
-		setSubmitting(true);
-		setError(null);
-		setSuccess(false);
+  const submit = async (payload: AdmissionEnquiryPayload): Promise<boolean> => {
+    setSubmitting(true);
+    setSuccess(null);
+    setError(null);
 
-		try {
-			await enquiriesService.submit(payload);
-			setSuccess(true);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to submit enquiry');
-			throw err;
-		} finally {
-			setSubmitting(false);
-		}
-	};
+    try {
+      const response = await submitAdmissionEnquiry(payload);
+      setSuccess(response.message || 'Enquiry submitted successfully.');
+      return true;
+    } catch {
+      setError('Failed to submit enquiry. Please check your details and try again.');
+      return false;
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-	const reset = () => {
-		setSubmitting(false);
-		setSuccess(false);
-		setError(null);
-	};
+  const reset = () => {
+    setSuccess(null);
+    setError(null);
+  };
 
-	return { submit, submitting, success, error, reset };
+  return { submit, submitting, success, error, reset };
 }

@@ -20,6 +20,9 @@ const mentorRecordItems = [
   'Parent interaction records',
 ];
 
+const studentSupportDescription =
+  "In today's fast-paced and competitive world, students face personal, social, academic, and career planning challenges. VCET provides professional counseling support to help students manage these challenges effectively.";
+
 const CounselingCell: React.FC = () => {
   const [apiData, setApiData] = useState<any>(null);
   const [apiLoaded, setApiLoaded] = useState(false);
@@ -125,10 +128,7 @@ return (
                         className="text-[17px] md:text-[18px] text-[#333333] leading-8"
                         style={{ fontFamily: 'Cambria, Georgia, serif' }}
                       >
-                        In today's fast-paced and competitive world, students face personal, social,
-                        academic, and career planning challenges. Considering this as a major concern,
-                        VCET provides professional counseling support to help students manage these
-                        challenges effectively.
+                        {studentSupportDescription}
                       </p>
                     </div>
                   </div>

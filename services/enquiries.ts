@@ -1,21 +1,24 @@
 import { post } from './api';
 
-export interface EnquiryPayload {
-	name: string;
-	email: string;
-	phone?: string | null;
-	message?: string | null;
-	course?: string | null;
+export interface AdmissionEnquiryPayload {
+  name: string;
+  email: string;
+  phone: string;
+  state?: string;
+  city?: string;
+  department: string;
+  course: string;
+  specialization?: string;
+  consent: boolean;
 }
 
-interface EnquirySubmitResponse {
-	success?: boolean;
-	message?: string;
-	data?: Record<string, unknown>;
+export interface ContactEnquiryPayload {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
 }
 
-export const enquiriesService = {
-	async submit(payload: EnquiryPayload): Promise<EnquirySubmitResponse> {
-		return post<EnquirySubmitResponse>('/enquiries', payload);
-	},
-};
+export async function submitAdmissionEnquiry(payload: AdmissionEnquiryPayload): Promise<{ message: string; id: number }> {
+  return post<{ message: string; id: number }>('/enquiries', payload);
+}
