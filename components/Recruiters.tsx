@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useHomepageData } from "../context/HomepageDataContext";
 import { placementsService } from "../services/placements";
+import { resolveUploadedAssetUrl } from "../utils/uploadedAssets";
 
 // -- Data (all logos from /public/images/Main Page/recruiters/) ---------------------------
 type Recruiter = { name: string; logo: string; url: string };
@@ -52,6 +53,22 @@ function findLocalLogo(name: string): string | null {
     if (key.includes(mapKey) || mapKey.includes(key)) return path;
   }
   return null;
+}
+
+function resolveRecruiterLogo(raw: any, companyName: string): string | null {
+  const candidate =
+    raw?.logo ??
+    raw?.logo_url ??
+    raw?.logoUrl ??
+    raw?.image ??
+    raw?.image_url ??
+    raw?.imageUrl ??
+    null;
+
+  const backendLogo = resolveUploadedAssetUrl(candidate);
+  if (backendLogo) return backendLogo;
+
+  return findLocalLogo(companyName);
 }
 
 // Default hardcoded recruiters (used when API returns no data)
@@ -320,11 +337,20 @@ const Recruiters: React.FC = () => {
 
   useEffect(() => {
     if (useAggregate) {
-      const recruitersData: Recruiter[] = homepage!.data.placements.map((p: any) => ({
-        name: p.company || p.name,
-        logo: p.logo,
-        url: p.website || '#',
-      }));
+      const recruitersData: Recruiter[] = (homepage?.data?.placements || [])
+        .map((p: any) => {
+          const name = p.company || p.name || '';
+          const logo = resolveRecruiterLogo(p, name);
+          if (!name || !logo) return null;
+
+          return {
+            name,
+            logo,
+            url: p.website || p.url || '#',
+          };
+        })
+        .filter(Boolean) as Recruiter[];
+
       if (recruitersData.length > 0) {
         const half = Math.ceil(recruitersData.length / 2);
         setRowOneData(recruitersData.slice(0, half));
@@ -335,14 +361,11 @@ const Recruiters: React.FC = () => {
 
     placementsService.list().then((partners) => {
       if (partners && partners.length > 0) {
-        // Map API data to recruiters, resolving logos from local images first
+        // Prefer backend-provided logos and only then fall back to local mapped logos.
         const recruitersData: Recruiter[] = partners
           .map((p: any) => {
             const name = p.company || p.name || '';
-            const localLogo = findLocalLogo(name);
-            const apiLogo = p.logo;
-            // Use local logo if available, otherwise use API logo (only if it's a valid URL)
-            const logo = localLogo || (apiLogo && /^https?:\/\//i.test(apiLogo) ? apiLogo : null);
+            const logo = resolveRecruiterLogo(p, name);
             if (!logo) return null; // Skip companies with no usable logo
             return {
               name,
