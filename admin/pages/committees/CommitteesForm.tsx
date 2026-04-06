@@ -63,7 +63,7 @@ const ListManager: React.FC<{
   items: string[];
   onChange: (items: string[]) => void;
   maxItems?: number;
-  charLimit?: number[];
+  charLimit?: [number, number];
 }> = ({ title, items = [], onChange, maxItems = 10, charLimit }) => {
   const addItem = () => {
     if (items.length < maxItems) onChange([...items, '']);
@@ -86,7 +86,7 @@ const ListManager: React.FC<{
             </div>
             <div className="grow">
                <label className={labelBase}>{title} {idx + 1}</label>
-              <input value={item} onChange={e => updateItem(idx, e.target.value)} className={inputBase} placeholder={`Enter ${title.toLowerCase()}...`} />
+              <input value={item} onChange={e => updateItem(idx, e.target.value)} className={inputBase} placeholder={`Enter ${title.toLowerCase()}...`} maxLength={charLimit?.[1]} />
             </div>
             <button type="button" onClick={() => removeItem(idx)} className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 mt-6">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -226,7 +226,7 @@ const ReportManager: React.FC<{
                   onChange={e => updateItem(idx, { year: e.target.value })}
                   className={inputBase}
                 >
-                  {years.map(y => <option key={y} value={y}>{y}</option>)}
+                  {yearOptions.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
               <div className="grow">
@@ -449,9 +449,9 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    saveChanges();
+    void saveChanges();
   };
 
   if (loading) return <div className="p-20 text-center font-black text-slate-300 animate-pulse tracking-widest uppercase">Initializing...</div>;

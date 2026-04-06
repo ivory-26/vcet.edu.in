@@ -100,6 +100,30 @@ const initialContent = {
   facultyAchievements: [{ title: '', description: '', image: undefined as string | File | undefined, pdf: undefined as string | File | undefined }],
   studentAchievements: [{ title: '', description: '', image: undefined as string | File | undefined, pdf: undefined as string | File | undefined }],
   activities: [{ title: '', description: '', image: undefined as string | File | undefined, pdf: undefined as string | File | undefined }],
+  newsletterMagazineSection: {
+    committeeDetails: '',
+    newsletters: [{ label: '', pdf: undefined as string | File | undefined }],
+    magazines: [{ label: '', pdf: undefined as string | File | undefined }],
+    staffIncharge: {
+      name: '',
+      image: undefined as string | File | undefined,
+      email: '',
+      phone: '',
+    },
+    tableTitle: 'ITECH Editorial Committee',
+    tableRows: [{ post: '', name: '' }],
+  },
+};
+
+const newsletterMagazineLimits = {
+  committeeDetails: 2400,
+  pdfButtonLabel: 70,
+  staffName: 80,
+  email: 120,
+  phone: 25,
+  tableTitle: 100,
+  tablePost: 60,
+  tableName: 180,
 };
 
 export default function DepartmentForm() {
@@ -142,7 +166,18 @@ export default function DepartmentForm() {
           setName(dept.name);
           setSlug(dept.slug);
           setIsActive(dept.is_active);
-          setContent({ ...initialContent, ...dept.content });
+          setContent({
+            ...initialContent,
+            ...dept.content,
+            newsletterMagazineSection: {
+              ...initialContent.newsletterMagazineSection,
+              ...(dept.content?.newsletterMagazineSection || {}),
+              staffIncharge: {
+                ...initialContent.newsletterMagazineSection.staffIncharge,
+                ...(dept.content?.newsletterMagazineSection?.staffIncharge || {}),
+              },
+            },
+          });
         })
         .catch(err => {
           console.error(err);
@@ -202,6 +237,45 @@ export default function DepartmentForm() {
 
   const removeArrayItem = <K extends keyof typeof initialContent>(key: K, index: number) => {
     setContent(prev => ({ ...prev, [key]: ((prev[key] as any[]) || []).filter((_, i) => i !== index) }));
+  };
+
+  const updateNmSection = (updates: any) => {
+    setContent(prev => ({
+      ...prev,
+      newsletterMagazineSection: {
+        ...prev.newsletterMagazineSection,
+        ...updates,
+      },
+    }));
+  };
+
+  const updateNmStaff = (updates: any) => {
+    setContent(prev => ({
+      ...prev,
+      newsletterMagazineSection: {
+        ...prev.newsletterMagazineSection,
+        staffIncharge: {
+          ...prev.newsletterMagazineSection?.staffIncharge,
+          ...updates,
+        },
+      },
+    }));
+  };
+
+  const updateNmListItem = (listKey: 'newsletters' | 'magazines' | 'tableRows', index: number, value: any) => {
+    const list = [...((content.newsletterMagazineSection as any)?.[listKey] || [])];
+    list[index] = value;
+    updateNmSection({ [listKey]: list });
+  };
+
+  const addNmListItem = (listKey: 'newsletters' | 'magazines' | 'tableRows', emptyValue: any) => {
+    const list = [...((content.newsletterMagazineSection as any)?.[listKey] || [])];
+    updateNmSection({ [listKey]: [...list, emptyValue] });
+  };
+
+  const removeNmListItem = (listKey: 'newsletters' | 'magazines' | 'tableRows', index: number) => {
+    const list = [...((content.newsletterMagazineSection as any)?.[listKey] || [])];
+    updateNmSection({ [listKey]: list.filter((_, i) => i !== index) });
   };
 
   if (loading) {
@@ -798,6 +872,229 @@ export default function DepartmentForm() {
                   </button>
                 </div>
               ))}
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection
+            title="Newsletter & Magazine Section"
+            icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" /></svg>}
+            isOpen={activeSection === 'newsletter-magazine-section'}
+            onToggle={() => toggleSection('newsletter-magazine-section')}
+          >
+            <div className="space-y-8">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Committee Details</label>
+                <textarea
+                  id="departmentform-textarea-newsletter-magazine-details"
+                  name="departmentform-textarea-newsletter-magazine-details"
+                  aria-label="departmentform textarea field"
+                  value={content.newsletterMagazineSection?.committeeDetails || ''}
+                  onChange={e => updateNmSection({ committeeDetails: e.target.value.slice(0, newsletterMagazineLimits.committeeDetails) })}
+                  maxLength={newsletterMagazineLimits.committeeDetails}
+                  rows={6}
+                  placeholder="Write committee details content..."
+                  className="w-full bg-white ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3.5 text-sm font-medium outline-none transition-all"
+                />
+                <p className="text-[11px] font-semibold text-slate-400 text-right">
+                  {(content.newsletterMagazineSection?.committeeDetails || '').length}/{newsletterMagazineLimits.committeeDetails}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-sm font-bold text-slate-700">Newsletter PDF Buttons</h4>
+                    <button
+                      type="button"
+                      onClick={() => addNmListItem('newsletters', { label: '', pdf: undefined })}
+                      className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-emerald-100 transition-all border border-emerald-100"
+                    >
+                      <PlusIcon /> Add
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {(content.newsletterMagazineSection?.newsletters || []).map((item, i) => (
+                      <div key={`newsletter-${i}`} className="bg-white p-3 rounded-xl border border-slate-200 relative group/row">
+                        <input
+                          id={`departmentform-newsletter-label-${i}`}
+                          name={`departmentform-newsletter-label-${i}`}
+                          aria-label="departmentform field"
+                          type="text"
+                          placeholder="Button Name (e.g. NEWSLETTER 2024-25)"
+                          value={item.label || ''}
+                          onChange={e => updateNmListItem('newsletters', i, { ...item, label: e.target.value.slice(0, newsletterMagazineLimits.pdfButtonLabel) })}
+                          maxLength={newsletterMagazineLimits.pdfButtonLabel}
+                          className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-emerald-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                        />
+                        <div className="mt-2">
+                          <FileUpload
+                            label="PDF File"
+                            id={`departmentform-newsletter-pdf-${i}`}
+                            value={item.pdf || ''}
+                            onChange={f => updateNmListItem('newsletters', i, { ...item, pdf: f })}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeNmListItem('newsletters', i)}
+                          className="absolute -top-2 -right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all shadow-md"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="text-sm font-bold text-slate-700">Magazine PDF Buttons</h4>
+                    <button
+                      type="button"
+                      onClick={() => addNmListItem('magazines', { label: '', pdf: undefined })}
+                      className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-indigo-100 transition-all border border-indigo-100"
+                    >
+                      <PlusIcon /> Add
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {(content.newsletterMagazineSection?.magazines || []).map((item, i) => (
+                      <div key={`magazine-${i}`} className="bg-white p-3 rounded-xl border border-slate-200 relative group/row">
+                        <input
+                          id={`departmentform-magazine-label-${i}`}
+                          name={`departmentform-magazine-label-${i}`}
+                          aria-label="departmentform field"
+                          type="text"
+                          placeholder="Button Name (e.g. MAGAZINE 2024-25)"
+                          value={item.label || ''}
+                          onChange={e => updateNmListItem('magazines', i, { ...item, label: e.target.value.slice(0, newsletterMagazineLimits.pdfButtonLabel) })}
+                          maxLength={newsletterMagazineLimits.pdfButtonLabel}
+                          className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                        />
+                        <div className="mt-2">
+                          <FileUpload
+                            label="PDF File"
+                            id={`departmentform-magazine-pdf-${i}`}
+                            value={item.pdf || ''}
+                            onChange={f => updateNmListItem('magazines', i, { ...item, pdf: f })}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeNmListItem('magazines', i)}
+                          className="absolute -top-2 -right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all shadow-md"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                <h4 className="text-sm font-bold text-slate-700">Staff Incharge</h4>
+                <input
+                  id="departmentform-staff-name"
+                  name="departmentform-staff-name"
+                  aria-label="departmentform field"
+                  type="text"
+                  placeholder="Professor Name"
+                  value={content.newsletterMagazineSection?.staffIncharge?.name || ''}
+                  onChange={e => updateNmStaff({ name: e.target.value.slice(0, newsletterMagazineLimits.staffName) })}
+                  maxLength={newsletterMagazineLimits.staffName}
+                  className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                />
+                <ImageUpload
+                  label="Professor Image"
+                  id="departmentform-staff-image"
+                  value={content.newsletterMagazineSection?.staffIncharge?.image || ''}
+                  onChange={f => updateNmStaff({ image: f })}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input
+                    id="departmentform-staff-email"
+                    name="departmentform-staff-email"
+                    aria-label="departmentform field"
+                    type="email"
+                    placeholder="Email ID"
+                    value={content.newsletterMagazineSection?.staffIncharge?.email || ''}
+                    onChange={e => updateNmStaff({ email: e.target.value.slice(0, newsletterMagazineLimits.email) })}
+                    maxLength={newsletterMagazineLimits.email}
+                    className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-medium outline-none"
+                  />
+                  <input
+                    id="departmentform-staff-phone"
+                    name="departmentform-staff-phone"
+                    aria-label="departmentform field"
+                    type="text"
+                    placeholder="Phone Number"
+                    value={content.newsletterMagazineSection?.staffIncharge?.phone || ''}
+                    onChange={e => updateNmStaff({ phone: e.target.value.slice(0, newsletterMagazineLimits.phone) })}
+                    maxLength={newsletterMagazineLimits.phone}
+                    className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-medium outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                <h4 className="text-sm font-bold text-slate-700">Table Content</h4>
+                <input
+                  id="departmentform-table-title"
+                  name="departmentform-table-title"
+                  aria-label="departmentform field"
+                  type="text"
+                  placeholder="Table Name (e.g. ITECH Editorial Committee)"
+                  value={content.newsletterMagazineSection?.tableTitle || ''}
+                  onChange={e => updateNmSection({ tableTitle: e.target.value.slice(0, newsletterMagazineLimits.tableTitle) })}
+                  maxLength={newsletterMagazineLimits.tableTitle}
+                  className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                />
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => addNmListItem('tableRows', { post: '', name: '' })}
+                    className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-slate-200 transition-all border border-slate-200"
+                  >
+                    <PlusIcon /> Add Row
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {(content.newsletterMagazineSection?.tableRows || []).map((row, i) => (
+                    <div key={`table-row-${i}`} className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-3 rounded-xl border border-slate-200 relative group/row">
+                      <input
+                        id={`departmentform-table-post-${i}`}
+                        name={`departmentform-table-post-${i}`}
+                        aria-label="departmentform field"
+                        type="text"
+                        placeholder="Post"
+                        value={row.post || ''}
+                        onChange={e => updateNmListItem('tableRows', i, { ...row, post: e.target.value.slice(0, newsletterMagazineLimits.tablePost) })}
+                        maxLength={newsletterMagazineLimits.tablePost}
+                        className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-slate-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
+                      />
+                      <input
+                        id={`departmentform-table-name-${i}`}
+                        name={`departmentform-table-name-${i}`}
+                        aria-label="departmentform field"
+                        type="text"
+                        placeholder="Name"
+                        value={row.name || ''}
+                        onChange={e => updateNmListItem('tableRows', i, { ...row, name: e.target.value.slice(0, newsletterMagazineLimits.tableName) })}
+                        maxLength={newsletterMagazineLimits.tableName}
+                        className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-slate-500 rounded-xl px-3 py-2.5 text-xs font-medium outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNmListItem('tableRows', i)}
+                        className="absolute -top-2 -right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all shadow-md"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </AdminFormSection>
 

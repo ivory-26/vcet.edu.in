@@ -446,6 +446,19 @@ export interface Department {
     facultyAchievements: { title: string; description: string; image?: string | File; pdf?: string | File }[];
     studentAchievements: { title: string; description: string; image?: string | File; pdf?: string | File }[];
     activities: { title: string; description: string; image?: string | File; pdf?: string | File }[];
+    newsletterMagazineSection?: {
+      committeeDetails?: string;
+      newsletters?: { label: string; pdf?: string | File }[];
+      magazines?: { label: string; pdf?: string | File }[];
+      staffIncharge?: {
+        name?: string;
+        image?: string | File;
+        email?: string;
+        phone?: string;
+      };
+      tableTitle?: string;
+      tableRows?: { post: string; name: string }[];
+    };
   };
   is_active: boolean;
   created_at: string;
@@ -467,6 +480,19 @@ export interface DepartmentPayload {
     facultyAchievements?: { title: string; description: string; image?: string | File; pdf?: string | File }[];
     studentAchievements?: { title: string; description: string; image?: string | File; pdf?: string | File }[];
     activities?: { title: string; description: string; image?: string | File; pdf?: string | File }[];
+    newsletterMagazineSection?: {
+      committeeDetails?: string;
+      newsletters?: { label: string; pdf?: string | File }[];
+      magazines?: { label: string; pdf?: string | File }[];
+      staffIncharge?: {
+        name?: string;
+        image?: string | File;
+        email?: string;
+        phone?: string;
+      };
+      tableTitle?: string;
+      tableRows?: { post: string; name: string }[];
+    };
   };
   is_active?: boolean;
 }
