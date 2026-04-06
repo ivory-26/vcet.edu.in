@@ -6,42 +6,58 @@ import { resolveUploadedAssetUrl } from "../utils/uploadedAssets";
 // -- Data (all logos from /public/images/Main Page/recruiters/) ---------------------------
 type Recruiter = { name: string; logo: string; url: string };
 
-// Canonical name → local image path mapping (26 logos on disk)
-const IMG = "/images/Main Page/recruiters";
+// Canonical name -> bundled local fallback image URLs.
+const LOGO_ARCON = new URL("../recruiters/arcon-logo.png", import.meta.url).href;
+const LOGO_BRISTLECONE = new URL("../recruiters/bristlecone-logo.png", import.meta.url).href;
+const LOGO_BUILTIO = new URL("../recruiters/builtio-300x72-1.png", import.meta.url).href;
+const LOGO_CAPGEMINI = new URL("../recruiters/Capgemini-300x67-1.png", import.meta.url).href;
+const LOGO_COCA_COLA = new URL("../recruiters/coca-300x99-1.png", import.meta.url).href;
+const LOGO_COGNIZANT = new URL("../recruiters/cognizant-logo.png", import.meta.url).href;
+const LOGO_IBM = new URL("../recruiters/IBM-logo.png", import.meta.url).href;
+const LOGO_INFOSYS = new URL("../recruiters/infosys-300x116-1.png", import.meta.url).href;
+const LOGO_JOHNSON = new URL("../recruiters/Johnson-logo.png", import.meta.url).href;
+const LOGO_LT = new URL("../recruiters/lt-300x81-1.jpg", import.meta.url).href;
+const LOGO_LTI = new URL("../recruiters/lti-logo.png", import.meta.url).href;
+const LOGO_MAHINDRA = new URL("../recruiters/mahindra-300x85-1.png", import.meta.url).href;
+const LOGO_PERSISTENT = new URL("../recruiters/logo-rgb-black-e1751968833241.png", import.meta.url).href;
+const LOGO_SCHNEIDER = new URL("../recruiters/schneider-logo.png", import.meta.url).href;
+const LOGO_TATA_POWER = new URL("../recruiters/Tata-Power.png", import.meta.url).href;
+const LOGO_TECHNIMANT = new URL("../recruiters/Technimant-logo.png", import.meta.url).href;
+const LOGO_VERDANTIS = new URL("../recruiters/verdantis-300x77-1.png", import.meta.url).href;
+const LOGO_VISTAAR = new URL("../recruiters/Vistaar-logo-1.png", import.meta.url).href;
+const LOGO_VODAFONE = new URL("../recruiters/VODAPHONE.jpg", import.meta.url).href;
+const LOGO_WIPRO = new URL("../recruiters/wipro-logo.png", import.meta.url).href;
+const LOGO_ZENSOFT = new URL("../recruiters/Zensoft-logo.jpg", import.meta.url).href;
+const LOGO_ZEUS = new URL("../recruiters/Zeus-Learning-logo.png", import.meta.url).href;
+
 const recruiterLogoMap: Record<string, string> = {
-  "accenture":           `${IMG}/accenture-logo.png`,
-  "arcon":               `${IMG}/arcon-logo.png`,
-  "bristlecone":         `${IMG}/bristlecone-logo.png`,
-  "builtio":             `${IMG}/builtio-300x72-1.png`,
-  "capgemini":           `${IMG}/Capgemini-300x67-1.png`,
-  "coca-cola":           `${IMG}/coca-300x99-1.png`,
-  "cognizant":           `${IMG}/cognizant-logo.png`,
-  "godrej":              `${IMG}/godrej-infotech-logo.png`,
-  "godrej infotech":     `${IMG}/godrej-infotech-logo.png`,
-  "ibm":                 `${IMG}/IBM-logo.png`,
-  "infosys":             `${IMG}/infosys-300x116-1.png`,
-  "interactive brokers": `${IMG}/interactive-brokers-logo.png`,
-  "johnson controls":    `${IMG}/Johnson-logo.png`,
-  "l&t":                 `${IMG}/lt-300x81-1.jpg`,
-  "larsen":              `${IMG}/lt-300x81-1.jpg`,
-  "ltimindtree":         `${IMG}/lti-logo.png`,
-  "lti":                 `${IMG}/lti-logo.png`,
-  "mahindra":            `${IMG}/mahindra-300x85-1.png`,
-  "neebal":              `${IMG}/neebal-technologies-logo.png`,
-  "neebal technologies": `${IMG}/neebal-technologies-logo.png`,
-  "persistent":          `${IMG}/logo-rgb-black-e1751968833241.png`,
-  "persistent systems":  `${IMG}/logo-rgb-black-e1751968833241.png`,
-  "schneider":           `${IMG}/schneider-logo.png`,
-  "schneider electric":  `${IMG}/schneider-logo.png`,
-  "tata power":          `${IMG}/Tata-Power.png`,
-  "technimant":          `${IMG}/Technimant-logo.png`,
-  "verdantis":           `${IMG}/verdantis-300x77-1.png`,
-  "vistaar":             `${IMG}/Vistaar-logo-1.png`,
-  "vodafone":            `${IMG}/VODAPHONE.jpg`,
-  "wipro":               `${IMG}/wipro-logo.png`,
-  "zensoft":             `${IMG}/Zensoft-logo.jpg`,
-  "zeus learning":       `${IMG}/Zeus-Learning-logo.png`,
-  "zeus":                `${IMG}/Zeus-Learning-logo.png`,
+  "arcon":               LOGO_ARCON,
+  "bristlecone":         LOGO_BRISTLECONE,
+  "builtio":             LOGO_BUILTIO,
+  "capgemini":           LOGO_CAPGEMINI,
+  "coca-cola":           LOGO_COCA_COLA,
+  "cognizant":           LOGO_COGNIZANT,
+  "ibm":                 LOGO_IBM,
+  "infosys":             LOGO_INFOSYS,
+  "johnson controls":    LOGO_JOHNSON,
+  "l&t":                 LOGO_LT,
+  "larsen":              LOGO_LT,
+  "ltimindtree":         LOGO_LTI,
+  "lti":                 LOGO_LTI,
+  "mahindra":            LOGO_MAHINDRA,
+  "persistent":          LOGO_PERSISTENT,
+  "persistent systems":  LOGO_PERSISTENT,
+  "schneider":           LOGO_SCHNEIDER,
+  "schneider electric":  LOGO_SCHNEIDER,
+  "tata power":          LOGO_TATA_POWER,
+  "technimant":          LOGO_TECHNIMANT,
+  "verdantis":           LOGO_VERDANTIS,
+  "vistaar":             LOGO_VISTAAR,
+  "vodafone":            LOGO_VODAFONE,
+  "wipro":               LOGO_WIPRO,
+  "zensoft":             LOGO_ZENSOFT,
+  "zeus learning":       LOGO_ZEUS,
+  "zeus":                LOGO_ZEUS,
 };
 
 /** Try to find a local logo for a company name (case-insensitive, partial match) */
@@ -66,9 +82,65 @@ function resolveRecruiterLogo(raw: any, companyName: string): string | null {
     null;
 
   const backendLogo = resolveUploadedAssetUrl(candidate);
-  if (backendLogo) return backendLogo;
+  if (backendLogo) {
+    // Prevent mixed-content blocking when frontend is HTTPS.
+    if (typeof window !== "undefined" && window.location.protocol === "https:" && backendLogo.startsWith("http://")) {
+      return `https://${backendLogo.slice("http://".length)}`;
+    }
+    if (backendLogo.startsWith("//")) {
+      return `https:${backendLogo}`;
+    }
+    return backendLogo;
+  }
 
   return findLocalLogo(companyName);
+}
+
+function getAlternateBackendImageUrl(url: string): string | null {
+  if (!url) return null;
+
+  // Common backend path mismatch on hosted environments.
+  if (url.includes('/uploads/images/')) {
+    return url.replace('/uploads/images/', '/images/');
+  }
+  if (url.includes('/images/')) {
+    return url.replace('/images/', '/uploads/images/');
+  }
+  if (url.includes('/Images/')) {
+    return url.replace('/Images/', '/uploads/images/');
+  }
+
+  return null;
+}
+
+function handleLogoLoadError(
+  event: React.SyntheticEvent<HTMLImageElement>,
+  companyName: string,
+): void {
+  const img = event.currentTarget;
+  const originalSrc = img.dataset.originalSrc || img.src;
+  if (!img.dataset.originalSrc) {
+    img.dataset.originalSrc = originalSrc;
+  }
+
+  // 1) Retry with alternate backend path convention once.
+  if (img.dataset.altTried !== "1") {
+    img.dataset.altTried = "1";
+    const altUrl = getAlternateBackendImageUrl(originalSrc);
+    if (altUrl && altUrl !== img.src) {
+      img.src = altUrl;
+      return;
+    }
+  }
+
+  // 2) Then fallback to local company logo map once.
+  if (img.dataset.fallbackApplied === "1") return;
+
+  const fallback = findLocalLogo(companyName);
+  if (!fallback) return;
+
+  img.dataset.fallbackApplied = "1";
+  img.src = fallback;
 }
 
 // Default hardcoded recruiters (used when API returns no data)
@@ -99,7 +171,7 @@ const defaultRecruiters: Recruiter[] = [
   { name: "Vistaar",             logo: recruiterLogoMap["vistaar"],             url: "https://www.vfrpl.in" },
   { name: "Zensoft",             logo: recruiterLogoMap["zensoft"],             url: "https://www.zensoft.io" },
   { name: "Zeus Learning",       logo: recruiterLogoMap["zeus learning"],       url: "https://www.zeuslearning.com" },
-];
+].filter((item) => Boolean(item.logo));
 
 function splitIntoRows(items: Recruiter[]): [Recruiter[], Recruiter[]] {
   const half = Math.ceil(items.length / 2);
@@ -312,6 +384,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
                 <img
                   src={company.logo}
                   alt={company.name}
+                  onError={(event) => handleLogoLoadError(event, company.name)}
                   className="max-w-full max-h-[60px] sm:max-h-[70px] w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
@@ -336,6 +409,14 @@ const Recruiters: React.FC = () => {
   const [rowTwoData, setRowTwoData] = useState<Recruiter[]>(defaultRowTwo);
 
   useEffect(() => {
+    const applyRows = (items: Recruiter[]) => {
+      if (!items.length) return false;
+      const [r1, r2] = splitIntoRows(items);
+      setRowOneData(r1);
+      setRowTwoData(r2);
+      return true;
+    };
+
     if (useAggregate) {
       const recruitersData: Recruiter[] = (homepage?.data?.placements || [])
         .map((p: any) => {
@@ -351,12 +432,7 @@ const Recruiters: React.FC = () => {
         })
         .filter(Boolean) as Recruiter[];
 
-      if (recruitersData.length > 0) {
-        const half = Math.ceil(recruitersData.length / 2);
-        setRowOneData(recruitersData.slice(0, half));
-        setRowTwoData(recruitersData.slice(half));
-      }
-      return;
+      if (applyRows(recruitersData)) return;
     }
 
     placementsService.list().then((partners) => {
@@ -375,11 +451,7 @@ const Recruiters: React.FC = () => {
           })
           .filter(Boolean) as Recruiter[];
 
-        if (recruitersData.length > 0) {
-          const [r1, r2] = splitIntoRows(recruitersData);
-          setRowOneData(r1);
-          setRowTwoData(r2);
-        }
+        applyRows(recruitersData);
       }
     });
   }, [homepage, useAggregate]);
@@ -417,6 +489,7 @@ const Recruiters: React.FC = () => {
           <img
             src={confirmTarget.logo}
             alt={confirmTarget.name}
+            onError={(event) => handleLogoLoadError(event, confirmTarget.name)}
             className="max-w-full max-h-full object-contain"
           />
         </div>
