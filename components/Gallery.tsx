@@ -103,7 +103,7 @@ const Gallery: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[200px] sm:auto-rows-[260px]">
           {displayGalleries.map((item, idx) => {
             const isFeatured = idx === 0;
-            const hasTileImage = isFeatured || item.title === 'AICTE IDEA Lab' || item.title === 'Texas Instruments Lab';
+            const hasTileImage = isFeatured;
             let linkTo = null;
             if (item.title === 'AICTE IDEA Lab') linkTo = '/aicte-idea-vcet';
             if (item.title === 'Center of Excellence') linkTo = '/coe-siemens';
@@ -150,20 +150,33 @@ const Gallery: React.FC = () => {
                 )}
 
                 {/* Label overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-1 group-hover:translate-y-0 transition-transform duration-300 z-10">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-gold mb-0.5">
-                    {item.subtitle}
-                  </p>
-                  <h3 className="text-white font-display font-bold text-base md:text-lg leading-tight">
-                    {item.title}
-                  </h3>
-                  {!hasTileImage && linkTo ? (
-                    <span className="mt-2 inline-flex items-center rounded-full border border-brand-gold/50 bg-brand-gold/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-gold transition-all duration-300 group-hover:bg-brand-gold/20 group-active:scale-95">
-                      Explore
-                    </span>
-                  ) : null}
-                </div>
+                {hasTileImage ? (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-1 group-hover:translate-y-0 transition-transform duration-300 z-10">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-gold mb-0.5">
+                        {item.subtitle}
+                      </p>
+                      <h3 className="text-white font-display font-bold text-base md:text-lg leading-tight">
+                        {item.title}
+                      </h3>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4 text-center">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-gold mb-1.5">
+                      {item.subtitle}
+                    </p>
+                    <h3 className="text-white font-display font-bold text-base md:text-lg leading-tight">
+                      {item.title}
+                    </h3>
+                    {linkTo ? (
+                      <span className="mt-3 inline-flex items-center rounded-full border border-brand-gold/50 bg-brand-gold/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-gold transition-all duration-300 group-hover:bg-brand-gold/20 group-active:scale-95">
+                        Explore
+                      </span>
+                    ) : null}
+                  </div>
+                )}
 
                 {/* Hover top border sweep */}
                 <div className="absolute top-0 left-0 h-0.5 w-0 bg-brand-gold group-hover:w-full transition-all duration-700 ease-out z-10" />
