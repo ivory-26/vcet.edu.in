@@ -211,10 +211,9 @@ interface MarqueeRowProps {
   items: Recruiter[];
   direction?: "left" | "right";
   speed?: number; // seconds for one full cycle
-  onItemClick?: (item: Recruiter) => void;
 }
 
-const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", speed = 40, onItemClick }) => {
+const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", speed = 40 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const animRef = useRef<number>(0);
@@ -225,8 +224,6 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
   const dragStartXRef = useRef(0);
   const dragStartPosRef = useRef(0);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const wasDragRef = useRef(false);  // true if user dragged more than 5px
-  const clickTargetRef = useRef<Recruiter | null>(null);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -277,8 +274,6 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
 
   const onPointerDown = (e: React.PointerEvent) => {
     draggingRef.current = true;
-    wasDragRef.current = false;
-    // Don't clear clickTargetRef here - it's set by individual cards
     pausedRef.current = true;
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     dragStartXRef.current = e.clientX;
@@ -289,8 +284,6 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
   const onPointerMove = (e: React.PointerEvent) => {
     if (!draggingRef.current) return;
     const delta = dragStartXRef.current - e.clientX;
-    // If user moved more than 5px, it's a drag, not a click
-    if (Math.abs(delta) > 5) wasDragRef.current = true;
     const el = scrollRef.current;
     if (!el) return;
     const oneSetWidth = el.scrollWidth / 3;
@@ -301,32 +294,9 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
     el.style.transform = `translateX(${-posRef.current}px)`;
   };
 
-  const lastTapTimeRef = useRef<number>(0);
-
   const onPointerUp = () => {
-    const wasClick = !wasDragRef.current;
     draggingRef.current = false;
     scheduleResume();
-    
-    // If it was a click (not a drag), fire the click handler
-    if (wasClick && clickTargetRef.current && onItemClick) {
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) {
-        const now = Date.now();
-        if (now - lastTapTimeRef.current < 400) {
-          // Double hit verified
-          onItemClick(clickTargetRef.current);
-          lastTapTimeRef.current = 0;
-        } else {
-          // First hit on mobile - wait for second
-          lastTapTimeRef.current = now;
-        }
-      } else {
-        // Single click always works on desktop
-        onItemClick(clickTargetRef.current);
-      }
-    }
-    clickTargetRef.current = null;
   };
 
   // -- Mouse wheel horizontal scrolling using native listener for passive: false --
@@ -377,9 +347,8 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
           <div
             key={`${company.name}-${i}`}
             className="flex-shrink-0 mx-3 sm:mx-4"
-            onPointerDown={() => { clickTargetRef.current = company; }}
           >
-            <div className="group flex flex-col items-center justify-center gap-3 w-[140px] sm:w-[160px] md:w-[180px] p-5 sm:p-6 border-2 border-gray-100 bg-white rounded-xl shadow-sm hover:border-brand-gold/60 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <div className="group flex flex-col items-center justify-center gap-3 w-[140px] sm:w-[160px] md:w-[180px] p-5 sm:p-6 border-2 border-gray-100 bg-white rounded-xl shadow-sm hover:border-brand-gold/60 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
               <div className="w-full flex items-center justify-center h-[60px] sm:h-[70px]">
                 <img
                   src={company.logo}
@@ -404,7 +373,6 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
 const Recruiters: React.FC = () => {
   const homepage = useHomepageData();
   const useAggregate = Boolean(homepage);
-  const [confirmTarget, setConfirmTarget] = useState<Recruiter | null>(null);
   const [rowOneData, setRowOneData] = useState<Recruiter[]>(defaultRowOne);
   const [rowTwoData, setRowTwoData] = useState<Recruiter[]>(defaultRowTwo);
 
@@ -456,69 +424,8 @@ const Recruiters: React.FC = () => {
     });
   }, [homepage, useAggregate]);
 
-  const handleRecruiterClick = (item: Recruiter) => {
-    setConfirmTarget(item);
-  };
-
-  const handleConfirm = () => {
-    if (confirmTarget) {
-      window.open(confirmTarget.url, '_blank', 'noopener,noreferrer');
-    }
-    setConfirmTarget(null);
-  };
-
-  const handleCancel = () => {
-    setConfirmTarget(null);
-  };
-
   return (
   <>
-  {/* Confirmation Popup */}
-  {confirmTarget && (
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      onClick={handleCancel}
-    >
-      <div
-        className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-[90vw] mx-4 text-center animate-fade-in"
-        onClick={(e) => e.stopPropagation()}
-        style={{ animation: 'fadeInUp 0.25s ease-out' }}
-      >
-        {/* Recruiter logo preview */}
-        <div className="w-20 h-20 mx-auto mb-5 rounded-xl border-2 border-gray-100 bg-gray-50 flex items-center justify-center p-3">
-          <img
-            src={confirmTarget.logo}
-            alt={confirmTarget.name}
-            onError={(event) => handleLogoLoadError(event, confirmTarget.name)}
-            className="max-w-full max-h-full object-contain"
-          />
-        </div>
-        <h3 className="text-lg font-bold text-brand-navy mb-2">
-          Visit {confirmTarget.name}?
-        </h3>
-        <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-          Do you want to visit <span className="font-semibold text-brand-blue">{confirmTarget.name}</span>'s official site?<br />
-          <span className="text-xs text-slate-400 mt-1 block">{confirmTarget.url}</span>
-        </p>
-        <div className="flex items-center justify-center gap-3">
-          <button
-            onClick={handleCancel}
-            className="px-6 py-2.5 rounded-lg border-2 border-gray-200 text-sm font-semibold text-slate-600 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white transition-all duration-200 hover:brightness-110 active:scale-95"
-            style={{ background: 'linear-gradient(135deg, #0B3D91, #1E4DB7)' }}
-          >
-            Yes, Visit Site
-          </button>
-        </div>
-      </div>
-    </div>
-  )}
-
   <section id="recruiters" className="py-14 sm:py-18 md:py-24 relative overflow-hidden">
 
     {/* Background image */}
@@ -677,8 +584,8 @@ const Recruiters: React.FC = () => {
 
           {/* Marquee area */}
           <div className="bg-white px-0 py-8 sm:py-10 space-y-6 overflow-hidden">
-            <MarqueeRow items={rowOneData} direction="left" speed={45} onItemClick={handleRecruiterClick} />
-            <MarqueeRow items={rowTwoData} direction="right" speed={40} onItemClick={handleRecruiterClick} />
+            <MarqueeRow items={rowOneData} direction="left" speed={45} />
+            <MarqueeRow items={rowTwoData} direction="right" speed={40} />
           </div>
         </div>
 
