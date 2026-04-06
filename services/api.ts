@@ -118,6 +118,49 @@ export function invalidatePublicPageCache(paths?: string[]): void {
     }
 }
 
+let cachedBackendVersion: string | null = null;
+let lastCacheClearTime = 0;
+const CACHE_CLEAR_COOLDOWN_MS = 5_000; // Prevent clearing cache more than once per 5 seconds
+
+function getBackendCacheVersion(): string | null {
+    return cachedBackendVersion;
+}
+
+export function clearCacheIfVersionChanged(newVersion: string | null): boolean {
+    if (!newVersion) return false;
+    
+    // Prevent infinite loops: don't clear if we just cleared recently
+    const now = Date.now();
+    if (lastCacheClearTime && (now - lastCacheClearTime) < CACHE_CLEAR_COOLDOWN_MS) {
+        // Update version silently without clearing
+        cachedBackendVersion = newVersion;
+        return false;
+    }
+    
+    const oldVersion = cachedBackendVersion;
+    
+    // First time seeing a version - store it but don't clear
+    if (!oldVersion) {
+        cachedBackendVersion = newVersion;
+        console.log(`[Cache] Initial backend version: ${newVersion}`);
+        return false;
+    }
+    
+    // Version hasn't changed - no action needed
+    if (oldVersion === newVersion) {
+        return false;
+    }
+    
+    // Version changed - clear page cache
+    console.log(`[Cache] Backend version changed: ${oldVersion} -> ${newVersion}. Clearing page cache.`);
+    cachedBackendVersion = newVersion;
+    lastCacheClearTime = now;
+    
+    invalidatePublicPageCache();
+    
+    return true;
+}
+
 async function fetchJson<T>(path: string): Promise<T> {
     const response = await fetch(`${API_BASE}/api${path}`, {
         headers: {
@@ -129,6 +172,12 @@ async function fetchJson<T>(path: string): Promise<T> {
 
     if (!response.ok) {
         throw { status: response.status, data } as ApiError;
+    }
+
+    // Check cache version from response header
+    const cacheVersion = response.headers.get('X-Cache-Version');
+    if (cacheVersion) {
+        clearCacheIfVersionChanged(cacheVersion);
     }
 
     return data as T;
@@ -249,3 +298,5 @@ export function resolveApiUrl(path: any): string | null {
     }
     return `${API_BASE}${resolvedPath.startsWith('/') ? '' : '/'}${resolvedPath}`;
 }
+
+export { getBackendCacheVersion };

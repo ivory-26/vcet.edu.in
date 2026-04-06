@@ -11,10 +11,6 @@ export function usePlacementPartners() {
 		{
 			initialData: [],
 			cacheKey: 'public:placement-partners:list',
-			cacheTtlMs: 10 * 60_000,
-			// Disabled to prevent API flooding
-			revalidateOnFocus: false,
-			revalidateOnVisibility: false,
 		},
 	);
 

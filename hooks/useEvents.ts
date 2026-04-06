@@ -13,11 +13,7 @@ export function useEvents(enabled = true) {
     enabled,
     initialData: [],
     cacheKey: 'public:events:list',
-    cacheTtlMs: 5 * 60_000,
     refreshIntervalMs: REFRESH_INTERVAL_MS,
-    // Disabled to prevent API flooding
-    revalidateOnFocus: false,
-    revalidateOnVisibility: false,
   });
 
   return { events: data, loading, error };

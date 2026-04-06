@@ -13,11 +13,7 @@ export function useNewsTicker(enabled = true) {
     enabled,
     initialData: [],
     cacheKey: 'public:news-ticker:list',
-    cacheTtlMs: 5 * 60_000,
     refreshIntervalMs: REFRESH_INTERVAL_MS,
-    // Disabled to prevent API flooding
-    revalidateOnFocus: false,
-    revalidateOnVisibility: false,
   });
 
   return { items: data, loading, error: error ? new Error(error) : null };

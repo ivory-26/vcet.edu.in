@@ -9,10 +9,6 @@ export const useTestimonials = (enabled = true) => {
     enabled,
     initialData: [],
     cacheKey: 'public:testimonials:list',
-    cacheTtlMs: 5 * 60_000,
-    // Disabled to prevent API flooding
-    revalidateOnFocus: false,
-    revalidateOnVisibility: false,
   });
 
   return { testimonials: data, loading, error: error ? new Error(error) : null };
