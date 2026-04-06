@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
-import NewsletterSection from '../../components/NewsletterSection';
+import DepartmentNewsletterPanel from '../../components/DepartmentNewsletterPanel';
 
 /* â”€â”€ Sidebar navigation links â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const sidebarLinks = [
@@ -20,6 +20,20 @@ const sidebarLinks = [
   { id: 'toppers',      label: 'Toppers',                      icon: 'ph-medal' },
   { id: 'syllabus',     label: 'Syllabus',                     icon: 'ph-book-open' },
   { id: 'newsletter',   label: 'Newsletter',                   icon: 'ph-newspaper' },
+];
+
+const newsletterPdfs = [
+  { label: 'NEWSLETTER 2024-25', href: '/pdfs/Department/ComputerEngineering/Newsletter/NEWSLETTER-2024-25.pdf' },
+  { label: 'NEWSLETTER 2023-24', href: '/pdfs/Department/ComputerEngineering/Newsletter/NEWSLETTER-2023-24.pdf' },
+  { label: 'NEWSLETTER 2022-23', href: '/pdfs/Department/ComputerEngineering/Newsletter/NEWSLETTER-2022-23.pdf' },
+  { label: 'NEWSLETTER 2021-22', href: '/pdfs/Department/ComputerEngineering/Newsletter/NEWSLETTER-2021-22.pdf' },
+];
+
+const magazinePdfs = [
+  { label: 'MAGAZINE 2024-25', href: '/pdfs/Department/ComputerEngineering/Magazine/MAGAZINE-2024-25.pdf' },
+  { label: 'MAGAZINE 2023-24', href: '/pdfs/Department/ComputerEngineering/Magazine/MAGAZINE-2023-24.pdf' },
+  { label: 'MAGAZINE 2022-23', href: '/pdfs/Department/ComputerEngineering/Magazine/MAGAZINE-2022-23.pdf' },
+  { label: 'MAGAZINE 2021-22', href: '/pdfs/Department/ComputerEngineering/Magazine/MAGAZINE-2021-22.pdf' },
 ];
 
 const delayClass = (idx: number) => {
@@ -717,7 +731,11 @@ const DeptComputerEngg: React.FC = () => {
 
           {/* â•â•â•â• NEWSLETTER & MAGAZINE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'newsletter' && (
-            <NewsletterSection departmentName="Computer Engineering" departmentId="2" />
+            <DepartmentNewsletterPanel
+              departmentLabel="Computer Engineering"
+              newsletterItems={newsletterPdfs}
+              magazineItems={magazinePdfs}
+            />
           )}
 
           {/* â•â•â•â• FALLBACK â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}

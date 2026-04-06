@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
-import NewsletterSection from '../../components/NewsletterSection';
+import DepartmentNewsletterPanel from '../../components/DepartmentNewsletterPanel';
 import { departmentApi } from '../../admin/api/departments';
 import type { Department } from '../../admin/types';
 import { resolveApiUrl } from '../../admin/api/client';
@@ -548,61 +548,11 @@ const DeptAIDS: React.FC = () => {
 
           {/* â•â•â•â• MAGAZINE / NEWSLETTER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'newsletter' && (
-            <section className="reveal space-y-8">
-              <article className="bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
-                <div className="mt-0 grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  {/* Newsletter Panel */}
-                  <div className="border border-[#D9E3EE] bg-white shadow-[0_10px_20px_rgba(15,23,42,0.06)]">
-                    <div className="px-5 py-4 bg-gradient-to-r from-[#123E67] to-[#1E578B] border-b border-[#0F355B]">
-                      <h4 className="text-white text-[22px] font-display font-bold tracking-tight">Newsletter</h4>
-                    </div>
-                    <div className="p-4 md:p-5 grid gap-2">
-                      {newsletterPdfs.map((item, idx) => (
-                        <a
-                          key={`newsletter-${item.label}-${idx}`}
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-between gap-3 px-4 py-2.5 border border-[#BCD2E8] bg-white text-[#1A4B7C] font-semibold text-[14px] hover:border-[#56A9D8] hover:bg-[#EDF6FD] transition-colors"
-                          style={{ transitionDelay: `${idx * 0.02}s` }}
-                        >
-                          <span className="inline-flex items-center gap-2">
-                            <span className="inline-flex items-center justify-center h-5 w-5 rounded-sm border border-[#56A9D8]/50 text-[#56A9D8] text-[10px] font-extrabold">PDF</span>
-                            <span>{item.label}</span>
-                          </span>
-                          <i className="ph ph-arrow-up-right text-[#4F6B86]" />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Magazine Panel */}
-                  <div className="border border-[#D9E3EE] bg-white shadow-[0_10px_20px_rgba(15,23,42,0.06)]">
-                    <div className="px-5 py-4 bg-gradient-to-r from-[#123E67] to-[#1E578B] border-b border-[#0F355B]">
-                      <h4 className="text-white text-[22px] font-display font-bold tracking-tight">Magazine</h4>
-                    </div>
-                    <div className="p-4 md:p-5 grid gap-2">
-                      {magazinePdfs.map((item, idx) => (
-                        <a
-                          key={`magazine-${item.label}-${idx}`}
-                          href={item.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-between gap-3 px-4 py-2.5 border border-[#BCD2E8] bg-white text-[#1A4B7C] font-semibold text-[14px] hover:border-[#56A9D8] hover:bg-[#EDF6FD] transition-colors"
-                          style={{ transitionDelay: `${idx * 0.02}s` }}
-                        >
-                          <span className="inline-flex items-center gap-2">
-                            <span className="inline-flex items-center justify-center h-5 w-5 rounded-sm border border-[#56A9D8]/50 text-[#56A9D8] text-[10px] font-extrabold">PDF</span>
-                            <span>{item.label}</span>
-                          </span>
-                          <i className="ph ph-arrow-up-right text-[#4F6B86]" />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </section>
+            <DepartmentNewsletterPanel
+              departmentLabel="AI & Data Science"
+              newsletterItems={newsletterPdfs}
+              magazineItems={magazinePdfs}
+            />
           )}
 
           {/* â•â•â•â• FALLBACK â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
