@@ -8,6 +8,26 @@ import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 import { newsletterApi } from '../../admin/api/newsletterApi';
 import { resolveApiUrl } from '../../admin/api/client';
 
+const resolveDepartmentAssetUrl = (value: unknown): string | null => {
+  if (!value) return null;
+
+  if (typeof value === 'string') {
+    return resolveUploadedAssetUrl(value) ?? resolveApiUrl(value);
+  }
+
+  if (typeof value === 'object') {
+    const candidate =
+      (value as { url?: unknown; path?: unknown; fileUrl?: unknown; pdfUrl?: unknown }).url ??
+      (value as { url?: unknown; path?: unknown; fileUrl?: unknown; pdfUrl?: unknown }).path ??
+      (value as { url?: unknown; path?: unknown; fileUrl?: unknown; pdfUrl?: unknown }).fileUrl ??
+      (value as { url?: unknown; path?: unknown; fileUrl?: unknown; pdfUrl?: unknown }).pdfUrl;
+
+    return resolveDepartmentAssetUrl(candidate);
+  }
+
+  return null;
+};
+
 const sidebarLinks = [
   { id: 'about',      label: 'About',                        icon: 'ph-info' },
   { id: 'vision',     label: 'Vision and Mission',           icon: 'ph-target' },
@@ -587,15 +607,15 @@ const DeptIT: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {dynamicAch.map((item: any, idx: number) => (
                     <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      {item.image && (
+                      {resolveDepartmentAssetUrl(item.image ?? item.image_url ?? item.photo ?? item.url) && (
                         <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
-                          <img src={resolveUploadedAssetUrl(item.image)||"#"} alt={item.title||""} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={resolveDepartmentAssetUrl(item.image ?? item.image_url ?? item.photo ?? item.url) || ""} alt={item.title||""} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
                       )}
                       <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
                       <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
-                      {item.pdf && (
-                        <a href={resolveUploadedAssetUrl(item.pdf)||"#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                      {resolveDepartmentAssetUrl(item.pdf ?? item.pdf_url ?? item.document_url ?? item.fileUrl) && (
+                        <a href={resolveDepartmentAssetUrl(item.pdf ?? item.pdf_url ?? item.document_url ?? item.fileUrl) || "#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
                           <i className="ph ph-file-pdf text-lg" />
                           View Document
                         </a>
@@ -624,15 +644,15 @@ const DeptIT: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {dynamicAch.map((item: any, idx: number) => (
                     <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      {item.image && (
+                      {resolveDepartmentAssetUrl(item.image ?? item.image_url ?? item.photo ?? item.url) && (
                         <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
-                          <img src={resolveUploadedAssetUrl(item.image)||"#"} alt={item.title||""} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={resolveDepartmentAssetUrl(item.image ?? item.image_url ?? item.photo ?? item.url) || ""} alt={item.title||""} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
                       )}
                       <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
                       <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
-                      {item.pdf && (
-                        <a href={resolveUploadedAssetUrl(item.pdf)||"#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                      {resolveDepartmentAssetUrl(item.pdf ?? item.pdf_url ?? item.document_url ?? item.fileUrl) && (
+                        <a href={resolveDepartmentAssetUrl(item.pdf ?? item.pdf_url ?? item.document_url ?? item.fileUrl) || "#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
                           <i className="ph ph-file-pdf text-lg" />
                           View Document
                         </a>
