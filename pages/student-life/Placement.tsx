@@ -12,13 +12,13 @@ const sidebarLinks = [
 ];
 
 const placementReports = [
-  { label: 'Placement 2024-25', href: 'https://vcet.edu.in/wp-content/uploads/2025/06/Placement-Summary-24-25-for-Website.pdf' },
-  { label: 'Placement 2023-24', href: 'https://vcet.edu.in/wp-content/uploads/2025/03/Website-Data_merged-1.pdf' },
-  { label: 'Placement 2022-23', href: 'https://vcet.edu.in/wp-content/uploads/2024/04/Placement-2022-23.pdf' },
-  { label: 'Placement 2021-22', href: 'https://vcet.edu.in/wp-content/uploads/2024/04/2021-22_Website.pdf' },
-  { label: 'Placement 2020-21', href: 'https://vcet.edu.in/wp-content/uploads/2024/04/2020-21_Website.pdf' },
-  { label: 'Placement 2019-20', href: 'https://vcet.edu.in/wp-content/uploads/2024/04/2019-20_Website.pdf' },
-  { label: 'Placement 2018-19', href: 'https://vcet.edu.in/wp-content/uploads/2024/04/2018-19_Website.pdf' },
+  { label: 'Placement 2024-25', href: '/pdfs/Training&Placements/Placement/PlacementStatistics/Placement-Summary-24-25-for-Website.pdf' },
+  { label: 'Placement 2023-24', href: '/pdfs/Training&Placements/Placement/PlacementStatistics/Website-Data_merged-1(Placement2021-2022).pdf' },
+  { label: 'Placement 2022-23', href: '/pdfs/Training&Placements/Placement/PlacementStatistics/Placement-2022-23.pdf' },
+  { label: 'Placement 2021-22', href: '/pdfs/Training&Placements/Placement/PlacementStatistics/2021-22_Website(Placement).pdf' },
+  { label: 'Placement 2020-21', href: '/pdfs/Training&Placements/Placement/PlacementStatistics/2020-21_Website(Placement).pdf' },
+  { label: 'Placement 2019-20', href: '/pdfs/Training&Placements/Placement/PlacementStatistics/2019-20_Website(Placement).pdf' },
+  { label: 'Placement 2018-19', href: '/pdfs/Training&Placements/Placement/PlacementStatistics/2018-19_Website(Placement).pdf' },
 ];
 
 const StyledPointList: React.FC<{ items: string[] }> = ({ items }) => (
@@ -188,7 +188,7 @@ const Placement: React.FC = () => {
                   <h4 className="text-[#64b5f6] text-2xl font-bold mb-4">Training &amp; Placement</h4>
                   <div className="flex items-center justify-center md:justify-start">
                     <a 
-                      href="https://vcet.edu.in/wp-content/uploads/2024/04/Training-and-Placement-Committee_1-2.pdf" 
+                      href="/pdfs/Training&Placements/Placement/PlacementCell/Training-and-Placement-Committee_1-2.pdf" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-slate-700 hover:text-[#1a4b7c] transition-colors group"
