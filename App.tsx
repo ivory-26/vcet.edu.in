@@ -239,6 +239,8 @@ const PlacementForm = lazy(() => import('./admin/pages/placements/PlacementForm'
 const PlacementStats = lazy(() => import('./admin/pages/placements/PlacementStats'));
 const HeroSlidesList = lazy(() => import('./admin/pages/hero-slides/HeroSlidesList'));
 const HeroSlideForm = lazy(() => import('./admin/pages/hero-slides/HeroSlideForm'));
+const HomepageBannersList = lazy(() => import('./admin/pages/homepage-banners/HomepageBannersList'));
+const HomepageBannerForm = lazy(() => import('./admin/pages/homepage-banners/HomepageBannerForm'));
 const GalleryList = lazy(() => import('./admin/pages/gallery/GalleryList'));
 const GalleryForm = lazy(() => import('./admin/pages/gallery/GalleryForm'));
 const NewsTickerList = lazy(() => import('./admin/pages/news-ticker/NewsTickerList'));
@@ -569,6 +571,9 @@ element={<MMSStudentsLifeCustomEvent />} />
             <Route path="notices" element={<NoticesList />} />
             <Route path="notices/new" element={<NoticeForm />} />
             <Route path="notices/:id/edit" element={<NoticeForm />} />
+            <Route path="homepage-banners" element={<HomepageBannersList />} />
+            <Route path="homepage-banners/new" element={<HomepageBannerForm />} />
+            <Route path="homepage-banners/:id/edit" element={<HomepageBannerForm />} />
             <Route path="events" element={<EventsList />} />
             <Route path="events/new" element={<EventForm />} />
             <Route path="events/:id/edit" element={<EventForm />} />

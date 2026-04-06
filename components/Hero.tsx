@@ -14,6 +14,7 @@ import { post } from "../services/api";
 import { useEvents } from "../hooks/useEvents";
 import { useNotices } from "../hooks/useNotices";
 import { useHeroSlides } from "../hooks/useHeroSlides";
+import { useHomepageBanners } from "../hooks/useHomepageBanners";
 import ImagePreviewModal from "./ImagePreviewModal";
 
 const departments = [
@@ -314,7 +315,7 @@ const AdmissionForm: React.FC = () => {
   );
 };
 
-const packageImages = [
+const fallbackPackageImages = [
   {
     src: "/images/Main Page/Packages/HIGEST_Package_banner.jpg",
     label: "Highest Package",
@@ -345,6 +346,16 @@ const Hero: React.FC = () => {
   const { notices, loading: noticesLoading } = useNotices();
   const { events, loading: eventsLoading } = useEvents();
   const { slides: apiSlides, loading: slidesLoading } = useHeroSlides();
+  const { banners: apiHomepageBanners } = useHomepageBanners();
+
+  const packageImages = apiHomepageBanners.length
+    ? apiHomepageBanners
+        .filter((banner) => Boolean(banner.image_url))
+        .map((banner) => ({
+          src: banner.image_url as string,
+          label: banner.description || banner.title || 'Homepage Banner',
+        }))
+    : fallbackPackageImages;
 
   // Format the API slides
   const apiFormattedSlides = apiSlides
@@ -361,6 +372,11 @@ const Hero: React.FC = () => {
     }, 10000);
     return () => clearInterval(timer);
   }, [displaySlides.length]);
+
+  useEffect(() => {
+    if (!packageImages.length) return;
+    setPackageIndex((prev) => (prev >= packageImages.length ? 0 : prev));
+  }, [packageImages.length]);
   return (
     <>
       <section

@@ -6,6 +6,7 @@
 import type {
   Notice, Event, Placement, HeroSlide, NewsTicker,
   Achievement, Testimonial, GalleryImage, PlacementPartner, Enquiry, Faculty, Department,
+  HomepageBanner,
   AdmissionData, AdmissionDocument,
   AcademicsData, AcademicsPayload,
   ExamData, ExamPayload,
@@ -413,6 +414,31 @@ export const MOCK_HERO_SLIDES: HeroSlide[] = [
     button_text: 'Learn More', button_link: '/naac-score',
     sort_order: 3, is_active: true,
     created_at: '2026-01-01T10:00:00Z', updated_at: '2026-01-01T10:00:00Z',
+  },
+];
+
+export const MOCK_HOMEPAGE_BANNERS: HomepageBanner[] = [
+  {
+    id: 1,
+    title: 'Highest Package',
+    description: 'Highest package achieved by VCET students.',
+    image_url: '/images/Main Page/Packages/HIGEST_Package_banner.jpg',
+    sort_order: 1,
+    is_active: true,
+    is_fixed: true,
+    created_at: '2026-01-01T10:00:00Z',
+    updated_at: '2026-01-01T10:00:00Z',
+  },
+  {
+    id: 2,
+    title: 'AICTE Pamphlet',
+    description: 'AICTE highlights and key updates for students.',
+    image_url: '/images/Main Page/Packages/AICTE-Pamphlet_page-0001.jpg',
+    sort_order: 2,
+    is_active: true,
+    is_fixed: true,
+    created_at: '2026-01-01T10:00:00Z',
+    updated_at: '2026-01-01T10:00:00Z',
   },
 ];
 

@@ -176,6 +176,29 @@ export interface HeroSlidePayload {
   image?: File;
 }
 
+// ── Homepage Banners (Packages Modal) ───────────────────────────────────────
+
+export interface HomepageBanner {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string | null;
+  sort_order: number;
+  is_active: boolean;
+  is_fixed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HomepageBannerPayload {
+  title?: string;
+  description?: string;
+  sort_order?: number;
+  is_active?: boolean;
+  is_fixed?: boolean;
+  image?: File;
+}
+
 // ── Gallery ───────────────────────────────────────────────────────────────
 
 export interface Gallery {

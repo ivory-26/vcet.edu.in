@@ -141,6 +141,7 @@ const navSections: NavSection[] = [
   {
     label: 'Content Management',
     items: [
+      { label: 'Homepage Banners', path: '/admin/homepage-banners', icon: <ImageIcon /> },
       { label: 'Notices', path: '/admin/notices', icon: <Bell /> },
       { label: 'Events', path: '/admin/events', icon: <CalendarIcon /> },
       { label: 'Hero Slides', path: '/admin/hero-slides', icon: <MonitorIcon /> },
