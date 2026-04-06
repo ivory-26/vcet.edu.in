@@ -5,6 +5,7 @@ import { PageTitleUpdater } from './components/PageTitleUpdater';
 import { AuthProvider } from './admin/context/AuthContext';
 import ProtectedRoute from './admin/components/ProtectedRoute';
 import AdminLayout from './admin/components/AdminLayout';
+import { LazySection } from './hooks/useLazyFetch';
 
 /* ── Homepage Components ── */
 import Header from './components/Header';
@@ -20,7 +21,7 @@ import Gallery from './components/Gallery';
 import Testimonials from './components/Testimonials';
 import Footer from './components/Footer';
 import SplashScreen from './components/SplashScreen';
-import { warmPublicPageCache } from './services/pagePrefetch';
+// warmPublicPageCache is intentionally NOT called - data is fetched lazily
 
 
 /* ── Lazy-loaded Pages ── */
@@ -296,6 +297,13 @@ const ExternalRedirect: React.FC<{ to: string }> = ({ to }) => {
   return <PageLoader />;
 };
 
+// Simple section loading placeholder
+const SectionPlaceholder: React.FC<{ height?: string }> = ({ height = '300px' }) => (
+  <div className="w-full bg-gray-50 animate-pulse flex items-center justify-center" style={{ minHeight: height }}>
+    <div className="text-gray-400 text-sm">Loading...</div>
+  </div>
+);
+
 const HomePage: React.FC = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -320,15 +328,38 @@ const HomePage: React.FC = () => {
         <Header />
       </div>
       <main>
+        {/* Above-the-fold: Load immediately */}
         <Hero />
         <About />
-        <Placements />
-        <Recruiters />
-        <Departments />
-        <Achievements />
-        <ExploreUs />
-        <Gallery />
-        <Testimonials />
+        
+        {/* Below-the-fold: Load lazily when user scrolls near */}
+        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+          <Placements />
+        </LazySection>
+        
+        <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
+          <Recruiters />
+        </LazySection>
+        
+        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+          <Departments />
+        </LazySection>
+        
+        <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
+          <Achievements />
+        </LazySection>
+        
+        <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
+          <ExploreUs />
+        </LazySection>
+        
+        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+          <Gallery />
+        </LazySection>
+        
+        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+          <Testimonials />
+        </LazySection>
       </main>
       <Footer />
     </div>
@@ -337,9 +368,9 @@ const HomePage: React.FC = () => {
 
 /* ── App with Router ── */
 function App() {
-  useEffect(() => {
-    warmPublicPageCache();
-  }, []);
+  // NOTE: warmPublicPageCache() is intentionally NOT called here
+  // Data is now fetched lazily only when sections become visible
+  // This prevents 80+ unnecessary API calls on every homepage load
 
   return (
     <AuthProvider>

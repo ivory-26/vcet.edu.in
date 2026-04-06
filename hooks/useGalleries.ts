@@ -10,8 +10,9 @@ export function useGalleries() {
     initialData: [],
     cacheKey: 'public:galleries:list',
     cacheTtlMs: 5 * 60_000,
-    revalidateOnFocus: true,
-    revalidateOnVisibility: true,
+    // Disabled to prevent API flooding
+    revalidateOnFocus: false,
+    revalidateOnVisibility: false,
   });
 
   return { galleries: data, loading, error };

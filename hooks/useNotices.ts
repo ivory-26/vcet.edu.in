@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { noticesService, type NoticeRecord } from '../services/notices';
 import { useFetch } from './useFetch';
 
-const REFRESH_INTERVAL_MS = 60_000;
+// Reduced from 60s to 5 minutes
+const REFRESH_INTERVAL_MS = 5 * 60_000;
 
 export function useNotices() {
   const fetchNotices = useCallback(() => noticesService.list(), []);
@@ -10,10 +11,11 @@ export function useNotices() {
   const { data, loading, error } = useFetch<NoticeRecord[]>(fetchNotices, {
     initialData: [],
     cacheKey: 'public:notices:list',
-    cacheTtlMs: 60_000,
+    cacheTtlMs: 5 * 60_000,
     refreshIntervalMs: REFRESH_INTERVAL_MS,
-    revalidateOnFocus: true,
-    revalidateOnVisibility: true,
+    // Disabled to prevent API flooding
+    revalidateOnFocus: false,
+    revalidateOnVisibility: false,
   });
 
   return { notices: data, loading, error };

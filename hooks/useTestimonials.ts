@@ -9,8 +9,9 @@ export const useTestimonials = () => {
     initialData: [],
     cacheKey: 'public:testimonials:list',
     cacheTtlMs: 5 * 60_000,
-    revalidateOnFocus: true,
-    revalidateOnVisibility: true,
+    // Disabled to prevent API flooding
+    revalidateOnFocus: false,
+    revalidateOnVisibility: false,
   });
 
   return { testimonials: data, loading, error: error ? new Error(error) : null };

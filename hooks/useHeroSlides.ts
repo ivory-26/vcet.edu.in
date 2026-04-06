@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import { heroSlidesService, type HeroSlideRecord } from '../services/heroSlides';
 import { useFetch } from './useFetch';
 
-const REFRESH_INTERVAL_MS = 60_000;
+// Changed from 60s to 5 minutes to reduce API load
+const REFRESH_INTERVAL_MS = 5 * 60_000;
 
 export function useHeroSlides() {
   const fetchHeroSlides = useCallback(() => heroSlidesService.list(), []);
@@ -10,10 +11,11 @@ export function useHeroSlides() {
   const { data, loading, error } = useFetch<HeroSlideRecord[]>(fetchHeroSlides, {
     initialData: [],
     cacheKey: 'public:hero-slides:list',
-    cacheTtlMs: 60_000,
+    cacheTtlMs: 5 * 60_000,
     refreshIntervalMs: REFRESH_INTERVAL_MS,
-    revalidateOnFocus: true,
-    revalidateOnVisibility: true,
+    // Disabled to prevent API flooding on focus/visibility changes
+    revalidateOnFocus: false,
+    revalidateOnVisibility: false,
   });
 
   return { slides: data, loading, error };
