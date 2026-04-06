@@ -100,8 +100,9 @@ const DeptIT: React.FC = () => {
   }, []);
 
   const sectionData = (department?.content as any)?.newsletterMagazineSection || null;
-  const committeeDetails = String(sectionData?.committeeDetails || '')
-    .split(/\n{2,}/)
+  
+  const rawCommitteeDetails = String(sectionData?.committeeDetails || '');
+  const committeeDetails = (rawCommitteeDetails ? rawCommitteeDetails.split(/\n{2,}/) : itechIntroParagraphs)
     .map((line: string) => line.trim())
     .filter((line: string) => line.length > 0);
 
@@ -111,22 +112,38 @@ const DeptIT: React.FC = () => {
   const magazines = Array.isArray(sectionData?.magazines)
     ? sectionData.magazines.filter((item: any) => String(item?.label || '').trim() && item?.pdf)
     : [];
+
+  const staticNewsletters = newsletterPdfs.map((item) => ({
+    label: item.label,
+    pdf: item.href,
+  }));
+  const staticMagazines = magazinePdfs.map((item) => ({
+    label: item.label,
+    pdf: item.href,
+  }));
+
+  const newsletterItems = newsletters.length > 0 ? newsletters : staticNewsletters;
+  const magazineItems = magazines.length > 0 ? magazines : staticMagazines;
+
   const publicationPanels = [
-    { title: 'Newsletter', items: newsletters },
-    { title: 'Magazine', items: magazines },
+    { title: 'Newsletter', items: newsletterItems },
+    { title: 'Magazine', items: magazineItems },
   ].filter((panel) => panel.items.length > 0);
 
   const staff = sectionData?.staffIncharge || {};
-  const staffName = String(staff?.name || '').trim();
-  const staffEmail = String(staff?.email || '').trim();
-  const staffPhone = String(staff?.phone || '').trim();
+  const staffName = String(staff?.name || '').trim() || 'Prof. Bharati Gondhalekar';
+  const staffEmail = String(staff?.email || '').trim() || 'bharati.gondhalekar@vcet.edu.in';
+  const staffPhone = String(staff?.phone || '').trim() || '9423365470';
   const staffImage = resolveApiUrl(staff?.image || null);
-  const hasStaffSection = !!(staffName || staffEmail || staffPhone || staffImage);
+  
+  // Show the staff section if there's any data, or if we fallback to empty placeholders
+  const hasStaffSection = true;
 
-  const tableTitle = String(sectionData?.tableTitle || '').trim();
-  const tableRows = Array.isArray(sectionData?.tableRows)
-    ? sectionData.tableRows.filter((row: any) => String(row?.post || '').trim() || String(row?.name || '').trim())
-    : [];
+  const tableTitle = String(sectionData?.tableTitle || '').trim() || 'ITECH Editorial Committee';
+  const tableRows = Array.isArray(sectionData?.tableRows) && sectionData.tableRows.length > 0 
+    && sectionData.tableRows.some((row: any) => String(row?.post || '').trim() || String(row?.name || '').trim())
+      ? sectionData.tableRows.filter((row: any) => String(row?.post || '').trim() || String(row?.name || '').trim())
+      : editorialRows.flatMap(row => row.names.map(name => ({ post: row.post, name })));
 
   const hasNewsletterMagazineSection =
     committeeDetails.length > 0 || publicationPanels.length > 0 || hasStaffSection || tableRows.length > 0;
@@ -895,7 +912,7 @@ const DeptIT: React.FC = () => {
               {hasStaffSection && (
                 <article className="border border-[#D9E3EE] bg-white shadow-[0_10px_20px_rgba(15,23,42,0.06)]">
                   <div className="px-5 py-4 bg-gradient-to-r from-[#123E67] to-[#1E578B] border-b border-[#0F355B]">
-                    <h4 className="text-white text-[20px] md:text-[22px] font-display font-bold tracking-tight">Staff Incharge</h4>
+                    <h4 className="text-white text-[20px] md:text-[22px] font-display font-bold tracking-tight">Committee Details / Staff Incharge</h4>
                   </div>
                   <div className="p-6 md:p-8">
                     <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
