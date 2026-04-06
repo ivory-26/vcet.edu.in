@@ -28,6 +28,20 @@ const delayClass = (idx: number) => {
   return 'delay-300';
 };
 
+const newsletterPdfs = [
+  { label: 'NEWSLETTER 2024-25', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Newsletter/NEWSLETTER-2024-25.pdf' },
+  { label: 'NEWSLETTER 2023-24', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Newsletter/NEWSLETTER-2023-24.pdf' },
+  { label: 'NEWSLETTER 2022-23', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Newsletter/NEWSLETTER-2022-23.pdf' },
+  { label: 'NEWSLETTER 2021-22', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Newsletter/NEWSLETTER-2021-22.pdf' },
+];
+
+const magazinePdfs = [
+  { label: 'MAGAZINE 2024-25', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Magazine/MAGAZINE-2024-25.pdf' },
+  { label: 'MAGAZINE 2023-24', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Magazine/MAGAZINE-2023-24.pdf' },
+  { label: 'MAGAZINE 2022-23', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Magazine/MAGAZINE-2022-23.pdf' },
+  { label: 'MAGAZINE 2021-22', href: '/pdfs/Department/ArtificialIntelligenceandDataScience/Magazine/MAGAZINE-2021-22.pdf' },
+];
+
 const DeptAIDS: React.FC = () => {
   const [activeId, setActiveId] = useState('about');
   const activeLink = sidebarLinks.find(l => l.id === activeId);
@@ -534,7 +548,61 @@ const DeptAIDS: React.FC = () => {
 
           {/* â•â•â•â• MAGAZINE / NEWSLETTER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'newsletter' && (
-            <NewsletterSection departmentName="Artificial Intelligence and Data Science" departmentId="4" />
+            <section className="reveal space-y-8">
+              <article className="bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
+                <div className="mt-0 grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  {/* Newsletter Panel */}
+                  <div className="border border-[#D9E3EE] bg-white shadow-[0_10px_20px_rgba(15,23,42,0.06)]">
+                    <div className="px-5 py-4 bg-gradient-to-r from-[#123E67] to-[#1E578B] border-b border-[#0F355B]">
+                      <h4 className="text-white text-[22px] font-display font-bold tracking-tight">Newsletter</h4>
+                    </div>
+                    <div className="p-4 md:p-5 grid gap-2">
+                      {newsletterPdfs.map((item, idx) => (
+                        <a
+                          key={`newsletter-${item.label}-${idx}`}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-between gap-3 px-4 py-2.5 border border-[#BCD2E8] bg-white text-[#1A4B7C] font-semibold text-[14px] hover:border-[#56A9D8] hover:bg-[#EDF6FD] transition-colors"
+                          style={{ transitionDelay: `${idx * 0.02}s` }}
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <span className="inline-flex items-center justify-center h-5 w-5 rounded-sm border border-[#56A9D8]/50 text-[#56A9D8] text-[10px] font-extrabold">PDF</span>
+                            <span>{item.label}</span>
+                          </span>
+                          <i className="ph ph-arrow-up-right text-[#4F6B86]" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Magazine Panel */}
+                  <div className="border border-[#D9E3EE] bg-white shadow-[0_10px_20px_rgba(15,23,42,0.06)]">
+                    <div className="px-5 py-4 bg-gradient-to-r from-[#123E67] to-[#1E578B] border-b border-[#0F355B]">
+                      <h4 className="text-white text-[22px] font-display font-bold tracking-tight">Magazine</h4>
+                    </div>
+                    <div className="p-4 md:p-5 grid gap-2">
+                      {magazinePdfs.map((item, idx) => (
+                        <a
+                          key={`magazine-${item.label}-${idx}`}
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-between gap-3 px-4 py-2.5 border border-[#BCD2E8] bg-white text-[#1A4B7C] font-semibold text-[14px] hover:border-[#56A9D8] hover:bg-[#EDF6FD] transition-colors"
+                          style={{ transitionDelay: `${idx * 0.02}s` }}
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <span className="inline-flex items-center justify-center h-5 w-5 rounded-sm border border-[#56A9D8]/50 text-[#56A9D8] text-[10px] font-extrabold">PDF</span>
+                            <span>{item.label}</span>
+                          </span>
+                          <i className="ph ph-arrow-up-right text-[#4F6B86]" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </section>
           )}
 
           {/* â•â•â•â• FALLBACK â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
