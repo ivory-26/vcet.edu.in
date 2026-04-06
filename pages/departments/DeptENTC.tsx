@@ -28,6 +28,7 @@ const sidebarLinks = [
   { id: 'toppers',    label: 'Toppers',                      icon: 'ph-medal' },
   { id: 'syllabus',   label: 'Syllabus',                     icon: 'ph-book-open' },
   { id: 'newsletter', label: 'Newsletter',                   icon: 'ph-newspaper' },
+  { id: 'faculty-achievements', label: 'Faculty Achievements', icon: 'ph-trophy' },
 ];
 
 const delayClass = (idx: number) => {
@@ -122,7 +123,13 @@ const DeptENTC: React.FC = () => {
         <aside className="w-full lg:w-72 xl:w-80 flex-shrink-0">
           <div className="lg:sticky lg:top-24 bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <nav className="flex flex-col py-2">
-              {sidebarLinks.map((link) => {
+              {sidebarLinks.filter((link) => {
+  const fa = department?.content?.facultyAchievements?.length > 0;
+  const sa = department?.content?.studentAchievements?.length > 0;
+  if (link.id === 'faculty-achievements' && !fa) return false;
+  if (link.id === 'student-achievements' && !sa) return false;
+  return true;
+}).map((link) => {
                 const isActive = activeId === link.id;
                 return (
                   <button key={link.id} onClick={() => setActiveId(link.id)}
@@ -754,6 +761,80 @@ const DeptENTC: React.FC = () => {
               <p className="text-slate-500">The content will be published soon!</p>
             </section>
           )}
+
+        ﻿          {/* ════ FACULTY ACHIEVEMENTS ════════════════════════════════ */}
+          {activeId === 'faculty-achievements' && (() => {
+            const hasStaticFa = false;
+            const dynamicAch = department?.content?.facultyAchievements || [];
+            if (!dynamicAch.length && !hasStaticFa) return null;
+            return (
+              <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="w-8 h-px bg-brand-gold" />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Excellence &amp; Recognition</span>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-display font-bold text-brand-navy leading-tight mb-8">Faculty Achievements</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {dynamicAch.map((item, idx) => (
+                    <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                      {item.image && (
+                        <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
+                          <img src={resolveUploadedAssetUrl(item.image)} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                      )}
+                      <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
+                      <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
+                      {item.pdf && (
+                        <a href={resolveUploadedAssetUrl(item.pdf)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                          <i className="ph ph-file-pdf text-lg" />
+                          View Document
+                          <i className="ph ph-arrow-right" />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
+
+          {/* ════ STUDENT ACHIEVEMENTS ════════════════════════════════ */}
+          {activeId === 'student-achievements' && (() => {
+            const hasStaticSa = false;
+            const dynamicAch = department?.content?.studentAchievements || [];
+            if (!dynamicAch.length && !hasStaticSa) return null;
+            return (
+              <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="w-8 h-px bg-brand-gold" />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Student Laurels</span>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-display font-bold text-brand-navy leading-tight mb-8">Students Achievements</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {dynamicAch.map((item, idx) => (
+                    <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                      {item.image && (
+                        <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
+                          <img src={resolveUploadedAssetUrl(item.image)} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                      )}
+                      <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
+                      <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
+                      {item.pdf && (
+                        <a href={resolveUploadedAssetUrl(item.pdf)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                          <i className="ph ph-file-pdf text-lg" />
+                          View Document
+                          <i className="ph ph-arrow-right" />
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
 
         </main>
       </div>
