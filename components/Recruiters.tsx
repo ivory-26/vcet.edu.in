@@ -5,6 +5,7 @@ import { resolveUploadedAssetUrl } from "../utils/uploadedAssets";
 
 // -- Data (all logos from /public/images/Main Page/recruiters/) ---------------------------
 type Recruiter = { name: string; logo: string; url: string };
+const RECRUITERS_BACKEND_DIR = "/images/Main Page/recruiters/";
 
 // Canonical name -> bundled local fallback image URLs.
 const LOGO_ARCON = "/images/Main Page/recruiters/arcon-logo.png";
@@ -71,8 +72,49 @@ function findLocalLogo(name: string): string | null {
   return null;
 }
 
+function extractFileName(pathValue: string): string | null {
+  const cleanPath = pathValue.split('?')[0].split('#')[0];
+  const segments = cleanPath.split('/').filter(Boolean);
+  return segments.length ? segments[segments.length - 1] : null;
+}
+
+function normalizeRecruiterLogoCandidate(candidate: unknown): string | null {
+  if (typeof candidate !== 'string') return null;
+
+  const trimmed = candidate.trim();
+  if (!trimmed) return trimmed;
+
+  // Bare filename from API should point to recruiters folder on backend.
+  if (!trimmed.includes('/')) {
+    return `${RECRUITERS_BACKEND_DIR}${trimmed}`;
+  }
+
+  // Upload-style values should map to the canonical recruiters folder.
+  const lower = trimmed.toLowerCase();
+  if (lower.startsWith('/uploads/') || lower.startsWith('uploads/')) {
+    const fileName = extractFileName(trimmed);
+    if (fileName) return `${RECRUITERS_BACKEND_DIR}${fileName}`;
+  }
+
+  // Absolute URLs like https://.../uploads/<file>
+  try {
+    const parsed = new URL(trimmed);
+    const lowerPath = parsed.pathname.toLowerCase();
+    if (lowerPath.startsWith('/uploads/')) {
+      const fileName = extractFileName(parsed.pathname);
+      if (fileName) {
+        return `${parsed.origin}${encodeURI(`${RECRUITERS_BACKEND_DIR}${fileName}`)}`;
+      }
+    }
+  } catch {
+    // Non-absolute path: keep original behavior.
+  }
+
+  return trimmed;
+}
+
 function resolveRecruiterLogo(raw: any): string | null {
-  const candidate =
+  const rawCandidate =
     raw?.logo ??
     raw?.logo_url ??
     raw?.logoUrl ??
@@ -80,6 +122,8 @@ function resolveRecruiterLogo(raw: any): string | null {
     raw?.image_url ??
     raw?.imageUrl ??
     null;
+
+  const candidate = normalizeRecruiterLogoCandidate(rawCandidate);
 
   const backendLogo = resolveUploadedAssetUrl(candidate);
   if (backendLogo) {
@@ -105,6 +149,20 @@ function getBackendImageRetryCandidates(url: string): string[] {
   };
 
   const candidates = new Set<string>();
+
+  const recruitersPathRetry = (() => {
+    try {
+      const parsed = new URL(url);
+      const fileName = extractFileName(parsed.pathname);
+      if (!fileName) return null;
+      return `${parsed.origin}${encodeURI(`${RECRUITERS_BACKEND_DIR}${fileName}`)}`;
+    } catch {
+      const fileName = extractFileName(url);
+      if (!fileName) return null;
+      return encodeURI(`${RECRUITERS_BACKEND_DIR}${fileName}`);
+    }
+  })();
+  add(candidates, recruitersPathRetry);
 
   // Common backend path mismatches in hosted deployments.
   if (url.includes('/uploads/images/')) {
