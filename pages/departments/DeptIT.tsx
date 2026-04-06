@@ -570,52 +570,74 @@ const DeptIT: React.FC = () => {
             );
           })()}
 
-          {/* â•â•â•â• FACULTY ACHIEVEMENTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+                    {/* ===================== FACULTY ACHIEVEMENTS ===================== */} 
           {activeId === 'faculty-achievements' && (() => {
-            const links = [
-              { label: 'Faculty Patents and Copyright (2024-25)', url: 'https://vcet.edu.in/wp-content/uploads/2025/03/2024-25-Patent-1.pdf' },
-              { label: 'Faculty Awards', url: 'https://vcet.edu.in/wp-content/uploads/2024/07/Staff_achievements.pdf' },
-              { label: 'Faculty Publications', url: 'https://vcet.edu.in/wp-content/uploads/2024/07/Staff_Publications_Stats.pdf' },
-              { label: 'Research Grants Received', url: 'https://vcet.edu.in/wp-content/uploads/2024/07/Research-Grants-of-IT-Dept-1-1.pdf' },
-            ];
+            const dynamicAch = department?.content?.facultyAchievements || [];
+            const hasStaticFa = false;
+            
+            if (!dynamicAch.length && !hasStaticFa) return null;
             return (
               <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-6">
                   <span className="w-8 h-px bg-brand-gold" />
                   <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Information Technology</span>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Faculty Achievements<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-                <div className="space-y-3">
-                  {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
-                      <span>{item.label}</span>
-                      <i className="ph ph-arrow-up-right text-brand-gold" />
-                    </a>
+                <h3 className="text-3xl md:text-4xl font-display font-bold text-brand-navy leading-tight mb-8">Faculty Achievements</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {dynamicAch.map((item: any, idx: number) => (
+                    <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                      {item.image && (
+                        <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
+                          <img src={resolveUploadedAssetUrl(item.image)||"#"} alt={item.title||""} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                      )}
+                      <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
+                      <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
+                      {item.pdf && (
+                        <a href={resolveUploadedAssetUrl(item.pdf)||"#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                          <i className="ph ph-file-pdf text-lg" />
+                          View Document
+                        </a>
+                      )}
+                    </div>
                   ))}
                 </div>
               </section>
             );
           })()}
 
-          {/* â•â•â•â• STUDENT ACHIEVEMENTS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+                    {/* ===================== STUDENT ACHIEVEMENTS ===================== */} 
           {activeId === 'student-achievements' && (() => {
-            const links = [
-              { label: 'Student Achievements (Hackathon Achievers)', url: 'pdfs/Department/InformationTechnology/StudentsAchievements/Hackathon-Achivers.pdf' },
-              { label: 'Sports/Cultural Activities at National/International Level', url: 'pdfs/Department/InformationTechnology/StudentsAchievements/Student-Cultural-Sports.pdf' },
-            ];
+            const dynamicAch = department?.content?.studentAchievements || [];
+            const hasStaticFa = false;
+            
+            if (!dynamicAch.length && !hasStaticFa) return null;
             return (
               <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-6">
                   <span className="w-8 h-px bg-brand-gold" />
                   <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Information Technology</span>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Students Achievements<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-                <div className="space-y-3">
-                  {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
-                      <span>{item.label}</span>
-                      <i className="ph ph-arrow-up-right text-brand-gold" />
-                    </a>
+                <h3 className="text-3xl md:text-4xl font-display font-bold text-brand-navy leading-tight mb-8">Students Achievements</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {dynamicAch.map((item: any, idx: number) => (
+                    <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                      {item.image && (
+                        <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
+                          <img src={resolveUploadedAssetUrl(item.image)||"#"} alt={item.title||""} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                      )}
+                      <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
+                      <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
+                      {item.pdf && (
+                        <a href={resolveUploadedAssetUrl(item.pdf)||"#"} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                          <i className="ph ph-file-pdf text-lg" />
+                          View Document
+                        </a>
+                      )}
+                    </div>
                   ))}
                 </div>
               </section>
