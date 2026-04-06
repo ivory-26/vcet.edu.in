@@ -96,21 +96,43 @@ function resolveRecruiterLogo(raw: any): string | null {
   return null;
 }
 
-function getAlternateBackendImageUrl(url: string): string | null {
-  if (!url) return null;
+function getBackendImageRetryCandidates(url: string): string[] {
+  if (!url) return [];
 
-  // Common backend path mismatch on hosted environments.
+  const add = (set: Set<string>, next: string | null | undefined) => {
+    if (!next || next === url) return;
+    set.add(next);
+  };
+
+  const candidates = new Set<string>();
+
+  // Common backend path mismatches in hosted deployments.
   if (url.includes('/uploads/images/')) {
-    return url.replace('/uploads/images/', '/images/');
-  }
-  if (url.includes('/images/')) {
-    return url.replace('/images/', '/uploads/images/');
-  }
-  if (url.includes('/Images/')) {
-    return url.replace('/Images/', '/uploads/images/');
+    add(candidates, url.replace('/uploads/images/', '/images/'));
+    add(candidates, url.replace('/uploads/images/', '/Images/'));
+    add(candidates, url.replace('/uploads/images/', '/uploads/'));
   }
 
-  return null;
+  if (url.includes('/images/')) {
+    add(candidates, url.replace('/images/', '/uploads/images/'));
+    add(candidates, url.replace('/images/', '/Images/'));
+    add(candidates, url.replace('/images/', '/uploads/'));
+  }
+
+  if (url.includes('/Images/')) {
+    add(candidates, url.replace('/Images/', '/uploads/images/'));
+    add(candidates, url.replace('/Images/', '/images/'));
+    add(candidates, url.replace('/Images/', '/uploads/'));
+  }
+
+  // If backend returned /uploads/<file>, also try image-folder conventions.
+  if (url.includes('/uploads/') && !url.includes('/uploads/images/')) {
+    add(candidates, url.replace('/uploads/', '/uploads/images/'));
+    add(candidates, url.replace('/uploads/', '/images/'));
+    add(candidates, url.replace('/uploads/', '/Images/'));
+  }
+
+  return Array.from(candidates);
 }
 
 function handleLogoLoadError(
@@ -122,19 +144,20 @@ function handleLogoLoadError(
     img.dataset.originalSrc = originalSrc;
   }
 
-  // 1) Retry with alternate backend path convention once.
-  if (img.dataset.altTried !== "1") {
-    img.dataset.altTried = "1";
-    const altUrl = getAlternateBackendImageUrl(originalSrc);
-    if (altUrl && altUrl !== img.src) {
-      img.src = altUrl;
-      return;
-    }
+  // Retry backend-only path variants before giving up.
+  const retries = getBackendImageRetryCandidates(originalSrc);
+  const retryIndex = Number(img.dataset.retryIndex || '0');
+
+  if (retryIndex < retries.length) {
+    img.dataset.retryIndex = String(retryIndex + 1);
+    img.dataset.altTried = '1';
+    img.src = retries[retryIndex];
+    return;
   }
 
-  // No frontend-local fallback: keep recruiter logos strictly backend-sourced.
-  img.dataset.fallbackApplied = "1";
-  img.style.visibility = "hidden";
+  // Keep a visible placeholder state (no local logo fallback).
+  img.dataset.fallbackApplied = '1';
+  img.style.opacity = '0.2';
 }
 
 // Default hardcoded recruiters (used when API returns no data)
