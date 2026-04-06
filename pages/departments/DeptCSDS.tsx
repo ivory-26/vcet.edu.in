@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
-import NewsletterSection from '../../components/NewsletterSection';
+import DepartmentNewsletterPanel from '../../components/DepartmentNewsletterPanel';
 
 const sidebarLinks = [
   { id: 'about',      label: 'About',                        icon: 'ph-info' },
@@ -15,6 +15,20 @@ const sidebarLinks = [
   { id: 'toppers',    label: 'Toppers: 21-22',               icon: 'ph-medal' },
   { id: 'syllabus',   label: 'Syllabus',                     icon: 'ph-book-open' },
   { id: 'newsletter', label: 'Newsletter',                   icon: 'ph-newspaper' },
+];
+
+const newsletterPdfs = [
+  { label: 'NEWSLETTER 2024-25', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Newsletter/NEWSLETTER-2024-25.pdf' },
+  { label: 'NEWSLETTER 2023-24', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Newsletter/NEWSLETTER-2023-24.pdf' },
+  { label: 'NEWSLETTER 2022-23', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Newsletter/NEWSLETTER-2022-23.pdf' },
+  { label: 'NEWSLETTER 2021-22', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Newsletter/NEWSLETTER-2021-22.pdf' },
+];
+
+const magazinePdfs = [
+  { label: 'MAGAZINE 2024-25', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Magazine/MAGAZINE-2024-25.pdf' },
+  { label: 'MAGAZINE 2023-24', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Magazine/MAGAZINE-2023-24.pdf' },
+  { label: 'MAGAZINE 2022-23', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Magazine/MAGAZINE-2022-23.pdf' },
+  { label: 'MAGAZINE 2021-22', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Magazine/MAGAZINE-2021-22.pdf' },
 ];
 
 const DeptCSDS: React.FC = () => {
@@ -575,7 +589,11 @@ const DeptCSDS: React.FC = () => {
 
           {/* â”€â”€ NEWSLETTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           {activeId === 'newsletter' && (
-            <NewsletterSection departmentName="Computer Science and Engineering (Data Science)" departmentId="5" />
+            <DepartmentNewsletterPanel
+              departmentLabel="CS & Engineering · Data Science"
+              newsletterItems={newsletterPdfs}
+              magazineItems={magazinePdfs}
+            />
           )}
 
           {/* â”€â”€ OTHER SECTIONS (placeholder) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
