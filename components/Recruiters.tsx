@@ -71,7 +71,7 @@ function findLocalLogo(name: string): string | null {
   return null;
 }
 
-function resolveRecruiterLogo(raw: any, companyName: string): string | null {
+function resolveRecruiterLogo(raw: any): string | null {
   const candidate =
     raw?.logo ??
     raw?.logo_url ??
@@ -93,7 +93,7 @@ function resolveRecruiterLogo(raw: any, companyName: string): string | null {
     return backendLogo;
   }
 
-  return findLocalLogo(companyName);
+  return null;
 }
 
 function getAlternateBackendImageUrl(url: string): string | null {
@@ -115,7 +115,6 @@ function getAlternateBackendImageUrl(url: string): string | null {
 
 function handleLogoLoadError(
   event: React.SyntheticEvent<HTMLImageElement>,
-  companyName: string,
 ): void {
   const img = event.currentTarget;
   const originalSrc = img.dataset.originalSrc || img.src;
@@ -133,45 +132,13 @@ function handleLogoLoadError(
     }
   }
 
-  // 2) Then fallback to local company logo map once.
-  if (img.dataset.fallbackApplied === "1") return;
-
-  const fallback = findLocalLogo(companyName);
-  if (!fallback) return;
-
+  // No frontend-local fallback: keep recruiter logos strictly backend-sourced.
   img.dataset.fallbackApplied = "1";
-  img.src = fallback;
+  img.style.visibility = "hidden";
 }
 
 // Default hardcoded recruiters (used when API returns no data)
-const defaultRecruiters: Recruiter[] = [
-  { name: "Accenture",           logo: recruiterLogoMap["accenture"],           url: "https://www.accenture.com" },
-  { name: "Capgemini",           logo: recruiterLogoMap["capgemini"],           url: "https://www.capgemini.com" },
-  { name: "Coca-Cola",           logo: recruiterLogoMap["coca-cola"],           url: "https://www.coca-colacompany.com" },
-  { name: "Cognizant",           logo: recruiterLogoMap["cognizant"],           url: "https://www.cognizant.com" },
-  { name: "Godrej Infotech",     logo: recruiterLogoMap["godrej infotech"],     url: "https://www.godrejinfotech.com" },
-  { name: "IBM",                 logo: recruiterLogoMap["ibm"],                 url: "https://www.ibm.com" },
-  { name: "Infosys",             logo: recruiterLogoMap["infosys"],             url: "https://www.infosys.com" },
-  { name: "Interactive Brokers", logo: recruiterLogoMap["interactive brokers"], url: "https://www.interactivebrokers.com" },
-  { name: "L&T",                 logo: recruiterLogoMap["l&t"],                 url: "https://www.larsentoubro.com" },
-  { name: "LTIMindtree",         logo: recruiterLogoMap["ltimindtree"],         url: "https://www.ltimindtree.com" },
-  { name: "Mahindra",            logo: recruiterLogoMap["mahindra"],            url: "https://www.mahindra.com" },
-  { name: "Neebal Technologies", logo: recruiterLogoMap["neebal technologies"], url: "https://www.neebal.com" },
-  { name: "Persistent Systems",  logo: recruiterLogoMap["persistent systems"],  url: "https://www.persistent.com" },
-  { name: "Schneider Electric",  logo: recruiterLogoMap["schneider electric"],  url: "https://www.se.com" },
-  { name: "Tata Power",          logo: recruiterLogoMap["tata power"],          url: "https://www.tatapower.com" },
-  { name: "Vodafone",            logo: recruiterLogoMap["vodafone"],            url: "https://www.vodafone.com" },
-  { name: "Wipro",               logo: recruiterLogoMap["wipro"],               url: "https://www.wipro.com" },
-  { name: "Arcon",               logo: recruiterLogoMap["arcon"],               url: "https://www.arconnet.com" },
-  { name: "Bristlecone",         logo: recruiterLogoMap["bristlecone"],         url: "https://www.bristlecone.com" },
-  { name: "BuiltIO",             logo: recruiterLogoMap["builtio"],             url: "https://www.softwareag.com" },
-  { name: "Johnson Controls",    logo: recruiterLogoMap["johnson controls"],    url: "https://www.johnsoncontrols.com" },
-  { name: "Technimant",          logo: recruiterLogoMap["technimant"],          url: "https://www.technimant.com" },
-  { name: "Verdantis",           logo: recruiterLogoMap["verdantis"],           url: "https://www.verdantis.com" },
-  { name: "Vistaar",             logo: recruiterLogoMap["vistaar"],             url: "https://www.vfrpl.in" },
-  { name: "Zensoft",             logo: recruiterLogoMap["zensoft"],             url: "https://www.zensoft.io" },
-  { name: "Zeus Learning",       logo: recruiterLogoMap["zeus learning"],       url: "https://www.zeuslearning.com" },
-].filter((item) => Boolean(item.logo));
+const defaultRecruiters: Recruiter[] = [];
 
 function splitIntoRows(items: Recruiter[]): [Recruiter[], Recruiter[]] {
   const half = Math.ceil(items.length / 2);
@@ -353,7 +320,7 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
                 <img
                   src={company.logo}
                   alt={company.name}
-                  onError={(event) => handleLogoLoadError(event, company.name)}
+                  onError={(event) => handleLogoLoadError(event)}
                   className="max-w-full max-h-[60px] sm:max-h-[70px] w-auto object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
@@ -389,7 +356,7 @@ const Recruiters: React.FC = () => {
       const recruitersData: Recruiter[] = (homepage?.data?.placements || [])
         .map((p: any) => {
           const name = p.company || p.name || '';
-          const logo = resolveRecruiterLogo(p, name);
+          const logo = resolveRecruiterLogo(p);
           if (!name || !logo) return null;
 
           return {
@@ -409,7 +376,7 @@ const Recruiters: React.FC = () => {
         const recruitersData: Recruiter[] = partners
           .map((p: any) => {
             const name = p.company || p.name || '';
-            const logo = resolveRecruiterLogo(p, name);
+            const logo = resolveRecruiterLogo(p);
             if (!logo) return null; // Skip companies with no usable logo
             return {
               name,
