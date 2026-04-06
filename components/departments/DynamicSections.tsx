@@ -106,6 +106,24 @@ export const DynamicLinksList = ({ items, deptName, title, labelKey, urlKey }: {
 };
 
 export const DynamicFacultyAchievements = ({ achievements, deptName }: { achievements: any[], deptName: string }) => {
+  const validAchievements = (achievements || []).filter((ach: any) =>
+    [
+      ach?.title,
+      ach?.description,
+      ach?.image,
+      ach?.image_url,
+      ach?.photo,
+      ach?.url,
+      ach?.pdf,
+      ach?.pdf_url,
+      ach?.document_url,
+      ach?.fileUrl,
+    ].some((value) => {
+      if (typeof value === 'string') return value.trim().length > 0;
+      return Boolean(value);
+    }),
+  );
+
   return (
     <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100 space-y-8">
       <div className="flex items-center gap-3 mb-4">
@@ -114,11 +132,11 @@ export const DynamicFacultyAchievements = ({ achievements, deptName }: { achieve
       </div>
       <h3 className="text-2xl font-bold text-brand-navy relative inline-block">Faculty Achievements<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
       
-      {(!achievements || achievements.length === 0) ? (
+      {validAchievements.length === 0 ? (
         <p className="text-slate-500 italic">Faculty achievements will be updated soon.</p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {achievements.map((ach, idx) => (
+          {validAchievements.map((ach, idx) => (
             <div key={idx} className="flex flex-col bg-slate-50 rounded-2xl p-5 border border-slate-100 hover:shadow-md transition-shadow">
               {resolveDepartmentAssetUrl(ach.image ?? ach.image_url ?? ach.photo ?? ach.url) && (
                 <div className="h-40 mb-4 rounded-xl overflow-hidden bg-slate-200">
