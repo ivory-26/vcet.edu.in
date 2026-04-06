@@ -19,7 +19,6 @@ interface Achievement {
 
 const RENDER_ORIGIN = 'https://vcet-3vjm.onrender.com';
 const ACHIEVEMENTS_DIR = '/images/Main Page/Remarkable Acheivements/';
-const ACHIEVEMENT_PLACEHOLDER = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="600" height="400"%3E%3Crect fill="%231B3A5C" width="600" height="400"/%3E%3Ctext fill="%23D4A843" font-family="Inter" font-size="16" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EAchievement%3C/text%3E%3C/svg%3E';
 
 function withRenderOrigin(pathname: string): string {
   const normalized = pathname.startsWith('/') ? pathname : `/${pathname}`;
@@ -78,7 +77,17 @@ function handleAchievementImageError(event: React.SyntheticEvent<HTMLImageElemen
     }
   }
 
-  img.src = ACHIEVEMENT_PLACEHOLDER;
+  // Keep backend URL intact in src; just mark failed visuals.
+  img.dataset.loadFailed = '1';
+  img.style.opacity = '0.25';
+  img.style.filter = 'grayscale(100%)';
+}
+
+function handleAchievementImageLoad(event: React.SyntheticEvent<HTMLImageElement>): void {
+  const img = event.currentTarget;
+  img.dataset.loadFailed = '0';
+  img.style.opacity = '';
+  img.style.filter = '';
 }
 
 const achievements: Achievement[] = [
@@ -160,6 +169,7 @@ function ParallaxRow({ items, baseVelocity, onImageClick }: ParallaxRowProps) {
               src={a.image}
               alt={a.title}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              onLoad={handleAchievementImageLoad}
               onError={handleAchievementImageError}
             />
 
@@ -255,6 +265,7 @@ function MobileParallaxRow({ items, speed, direction, onImageClick }: { items: A
               src={a.image}
               alt={a.title}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              onLoad={handleAchievementImageLoad}
               onError={handleAchievementImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-brand-dark/20 to-transparent" />
@@ -362,6 +373,7 @@ const Achievements: React.FC = () => {
               src={selectedAchievement.image}
               alt={selectedAchievement.title}
               className="w-full h-auto max-h-[70vh] object-contain bg-gray-50"
+              onLoad={handleAchievementImageLoad}
               onError={handleAchievementImageError}
               style={{ transform: `scale(${lightboxZoom})`, transition: 'transform 0.2s ease' }}
             />
