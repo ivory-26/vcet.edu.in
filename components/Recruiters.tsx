@@ -119,7 +119,7 @@ function normalizeRecruiterLogoCandidate(candidate: unknown): string | null {
 
   // Upload-style values should map to the canonical recruiters folder.
   const lower = trimmed.toLowerCase();
-  if (lower.startsWith('/uploads/') || lower.startsWith('uploads/')) {
+  if (lower.startsWith('/uploads/') || lower.startsWith('uploads/') || lower.includes('/uploads/')) {
     const fileName = extractFileName(trimmed);
     if (fileName) return `${RECRUITERS_BACKEND_DIR}${fileName}`;
   }
@@ -128,7 +128,7 @@ function normalizeRecruiterLogoCandidate(candidate: unknown): string | null {
   try {
     const parsed = new URL(trimmed);
     const lowerPath = parsed.pathname.toLowerCase();
-    if (lowerPath.startsWith('/uploads/')) {
+    if (lowerPath.startsWith('/uploads/') || lowerPath.includes('/uploads/')) {
       const fileName = extractFileName(parsed.pathname);
       if (fileName) {
         return `${parsed.origin}${encodeURI(`${RECRUITERS_BACKEND_DIR}${fileName}`)}`;
