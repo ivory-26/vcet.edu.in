@@ -68,7 +68,7 @@ const TopBanner: React.FC = () => {
                 }}
               />
               <img
-                src="/images/Main Page/LOGO/NBA logo.webp"
+                src="/images/Main Page/LOGO/NBA logo.jpg"
                 alt="NBA Accredited"
                 className="h-10 sm:h-14 lg:h-20 w-auto object-contain drop-shadow-sm"
                 onError={(e) => {
