@@ -53,12 +53,18 @@ const resolveMediaUrl = (value: any): string | null => {
 };
 
 /* ── List Manager (Dynamic Strings) ────────────────────────────────────────── */
+const years = Array.from({ length: 15 }, (_, i) => {
+  const start = new Date().getFullYear() - 5 + i;
+  return `${start}-${start + 1}`;
+});
+
 const ListManager: React.FC<{
   title: string;
   items: string[];
   onChange: (items: string[]) => void;
   maxItems?: number;
-}> = ({ title, items = [], onChange, maxItems = 10 }) => {
+  charLimit?: number[];
+}> = ({ title, items = [], onChange, maxItems = 10, charLimit }) => {
   const addItem = () => {
     if (items.length < maxItems) onChange([...items, '']);
   };
@@ -441,6 +447,11 @@ const CommitteesForm: React.FC<CommitteesFormProps> = ({ slug, onBack }) => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveChanges();
   };
 
   if (loading) return <div className="p-20 text-center font-black text-slate-300 animate-pulse tracking-widest uppercase">Initializing...</div>;

@@ -30,8 +30,12 @@ export default function GoverningCouncil() {
         if (mounted) setApiLoaded(true);
       });
     
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
-if (!apiLoaded) {
+  if (!apiLoaded) {
     return (
       <PageLayout>
         <PageBanner title="The Governing Council" breadcrumbs={[{ label: 'Governing Council' }]} />
@@ -42,15 +46,10 @@ if (!apiLoaded) {
     );
   }
 
-return () => {
-      mounted = false;
-    };
-  }, []);
-
-    const chairman = data?.chairman ?? {
+  const chairman = data?.chairman || {
     role: 'Chairman',
-    name: 'Sri. Vikas Vartak',
-    description: 'Chairman Vidyavardhini',
+    name: 'Sri. Rajendraji Bhat',
+    description: 'Industrialist'
   };
 
   const members = useMemo(() => {
