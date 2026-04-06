@@ -1207,6 +1207,7 @@ export interface Newsletter {
   title: string;
   description: string;
   departmentId: string | number;
+  type: 'newsletter' | 'magazine';
   image: string | null;
   pdf: string | null;
   createdAt: string;
@@ -1217,6 +1218,7 @@ export interface NewsletterPayload {
   title: string;
   description: string;
   departmentId: string | number;
+  type: 'newsletter' | 'magazine';
   image?: File | null;
   pdf?: File | null;
 }
