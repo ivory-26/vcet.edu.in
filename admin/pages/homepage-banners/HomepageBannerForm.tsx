@@ -26,6 +26,20 @@ const HomepageBannerForm: React.FC = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (isEdit) return;
+
+    homepageBannersApi
+      .list()
+      .then((response) => {
+        const maxSortOrder = (response.data ?? []).reduce((max, item) => Math.max(max, Number(item.sort_order ?? 0)), 0);
+        setForm((prev) => ({ ...prev, sort_order: maxSortOrder + 1 }));
+      })
+      .catch(() => {
+        // Keep fallback default if prefill fails.
+      });
+  }, [isEdit]);
+
+  useEffect(() => {
     if (!isEdit) return;
     homepageBannersApi
       .get(Number(id))
@@ -96,11 +110,13 @@ const HomepageBannerForm: React.FC = () => {
 
     const fallbackTitle = description.slice(0, MAX_TITLE_LENGTH);
 
+    const normalizedSortOrder = Math.max(1, Number.isFinite(Number(form.sort_order)) ? Math.floor(Number(form.sort_order)) : 1);
+
     const payload: HomepageBannerPayload = {
       ...form,
       title: (form.title ?? '').trim() || fallbackTitle,
       description,
-      sort_order: Number(form.sort_order ?? 1),
+      sort_order: normalizedSortOrder,
       is_active: form.is_active !== false,
       ...(imageFile ? { image: imageFile } : {}),
     };
@@ -163,6 +179,7 @@ const HomepageBannerForm: React.FC = () => {
                 <input id="homepagebannerform-1" aria-label="homepagebannerform field"
                   type="number"
                   min={1}
+                  step={1}
                   name="sort_order"
                   value={form.sort_order ?? 1}
                   onChange={(e) => setForm((prev) => ({ ...prev, sort_order: Number(e.target.value) }))}

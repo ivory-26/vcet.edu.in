@@ -10,10 +10,7 @@ export function useHomepageBanners(enabled = true) {
       enabled,
       initialData: [],
       cacheKey: 'public:homepage-banners:list',
-      cacheTtlMs: 30_000,
       refreshIntervalMs: REFRESH_INTERVAL_MS,
-      revalidateOnFocus: true,
-      revalidateOnVisibility: true,
     },
   );
 

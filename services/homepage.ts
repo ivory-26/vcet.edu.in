@@ -131,6 +131,12 @@ function normalizeEvent(event: Event): Event {
 }
 
 function normalizeHeroSlide(slide: Partial<HeroSlideRecord> & { is_fixed?: boolean | null }): HeroSlideRecord {
+  const legacyApiImageUrl = typeof slide.image_url === 'string' ? slide.image_url : null;
+  const shouldUseImageNamePath = Boolean(slide.image_name) && /^\/?api\/hero-slides\/\d+\/image$/i.test(legacyApiImageUrl ?? '');
+  const resolvedImageUrl = shouldUseImageNamePath
+    ? resolveUploadedAssetUrl(`/images/${slide.image_name}`)
+    : resolveUploadedAssetUrl(slide.image_url ?? null);
+
   return {
     id: Number(slide.id ?? 0),
     title: slide.title ?? null,
@@ -142,7 +148,7 @@ function normalizeHeroSlide(slide: Partial<HeroSlideRecord> & { is_fixed?: boole
     button_link: slide.button_link ?? null,
     sort_order: Number(slide.sort_order ?? 0),
     is_active: Boolean(slide.is_active),
-    image_url: resolveUploadedAssetUrl(slide.image_url ?? null),
+    image_url: resolvedImageUrl,
     created_at: slide.created_at ?? '',
     updated_at: slide.updated_at ?? '',
   };

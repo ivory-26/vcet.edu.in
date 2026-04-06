@@ -2,18 +2,11 @@ import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObjec
 
 type Fetcher<T> = () => Promise<T>;
 
-interface CacheEntry<T> {
-  data: T;
-  ts: number;
-}
-
 interface UseLazyFetchOptions<T> {
   /** Initial data before fetch completes */
   initialData: T;
-  /** Cache key for localStorage persistence */
+  /** Cache key for in-memory request deduplication */
   cacheKey?: string;
-  /** Cache TTL in milliseconds. Default: 5 minutes */
-  cacheTtlMs?: number;
   /** IntersectionObserver root margin. Default: "200px" (load when 200px from viewport) */
   rootMargin?: string;
   /** Threshold for intersection. Default: 0 (any visibility triggers) */
@@ -37,41 +30,8 @@ interface UseLazyFetchResult<T> {
   containerRef: RefObject<HTMLDivElement | null>;
 }
 
-const DEFAULT_CACHE_TTL_MS = 5 * 60_000;
-const CACHE_PREFIX = 'vcet:lazy-cache:';
-const memoryCache = new Map<string, CacheEntry<unknown>>();
-
-function readCache<T>(key: string, ttlMs: number): T | null {
-  const inMemory = memoryCache.get(key) as CacheEntry<T> | undefined;
-  if (inMemory && Date.now() - inMemory.ts <= ttlMs) {
-    return inMemory.data;
-  }
-
-  if (typeof window === 'undefined') return null;
-
-  try {
-    const raw = window.localStorage.getItem(`${CACHE_PREFIX}${key}`);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as CacheEntry<T>;
-    if (!parsed || Date.now() - parsed.ts > ttlMs) return null;
-    memoryCache.set(key, parsed as CacheEntry<unknown>);
-    return parsed.data;
-  } catch {
-    return null;
-  }
-}
-
-function writeCache<T>(key: string, data: T): void {
-  const payload: CacheEntry<T> = { data, ts: Date.now() };
-  memoryCache.set(key, payload as CacheEntry<unknown>);
-
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(`${CACHE_PREFIX}${key}`, JSON.stringify(payload));
-  } catch {
-    // Ignore quota/security storage errors
-  }
-}
+// In-memory request deduplication
+const inflightRequests = new Map<string, Promise<unknown>>();
 
 /**
  * Lazy fetch hook that only loads data when the component becomes visible.
@@ -85,19 +45,15 @@ export function useLazyFetch<T>(
   const {
     initialData,
     cacheKey,
-    cacheTtlMs = DEFAULT_CACHE_TTL_MS,
     rootMargin = '200px',
     threshold = 0,
     immediate = false,
   } = options;
 
-  const shouldUseCache = !!cacheKey;
-  const cachedInitial = shouldUseCache ? readCache<T>(cacheKey!, cacheTtlMs) : null;
-
-  const [data, setData] = useState<T>(() => cachedInitial ?? initialData);
+  const [data, setData] = useState<T>(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasLoaded, setHasLoaded] = useState(!!cachedInitial);
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(immediate);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -118,12 +74,29 @@ export function useLazyFetch<T>(
     abortControllerRef.current = new AbortController();
 
     try {
-      const result = await fetcher();
+      let result: T;
+
+      // Dedupe concurrent requests for the same cacheKey
+      if (cacheKey && inflightRequests.has(cacheKey)) {
+        result = (await inflightRequests.get(cacheKey)) as T;
+      } else {
+        const promise = fetcher();
+        if (cacheKey) {
+          inflightRequests.set(cacheKey, promise);
+        }
+        try {
+          result = await promise;
+        } finally {
+          if (cacheKey) {
+            inflightRequests.delete(cacheKey);
+          }
+        }
+      }
+
       if (!mountedRef.current) return;
 
       setData(result);
       setHasLoaded(true);
-      if (shouldUseCache) writeCache(cacheKey!, result);
     } catch (err) {
       if (!mountedRef.current) return;
       if (err instanceof Error && err.name === 'AbortError') return;
@@ -132,7 +105,7 @@ export function useLazyFetch<T>(
       fetchingRef.current = false;
       if (mountedRef.current) setLoading(false);
     }
-  }, [fetcher, shouldUseCache, cacheKey]);
+  }, [fetcher, cacheKey]);
 
   // IntersectionObserver for visibility detection
   useEffect(() => {

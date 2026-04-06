@@ -151,27 +151,12 @@ export function clearCacheIfVersionChanged(newVersion: string | null): boolean {
         return false;
     }
     
-    // Version changed - clear all caches
-    console.log(`[Cache] Backend version changed: ${oldVersion} -> ${newVersion}. Clearing all caches.`);
+    // Version changed - clear page cache
+    console.log(`[Cache] Backend version changed: ${oldVersion} -> ${newVersion}. Clearing page cache.`);
     cachedBackendVersion = newVersion;
     lastCacheClearTime = now;
     
     invalidatePublicPageCache();
-    
-    // Clear useFetch caches
-    if (typeof window !== 'undefined') {
-        try {
-            const CACHE_PREFIX = 'vcet:hook-cache:';
-            for (let i = window.localStorage.length - 1; i >= 0; i -= 1) {
-                const key = window.localStorage.key(i);
-                if (key && key.startsWith(CACHE_PREFIX)) {
-                    window.localStorage.removeItem(key);
-                }
-            }
-        } catch {
-            // Ignore storage errors
-        }
-    }
     
     return true;
 }
