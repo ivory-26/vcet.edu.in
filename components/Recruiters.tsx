@@ -61,6 +61,34 @@ const recruiterLogoMap: Record<string, string> = {
   "zeus":                LOGO_ZEUS,
 };
 
+const forcedRecruiterFileByName: Record<string, string> = {
+  "accenture": "accenture.jpeg",
+  "godrej infoware": "Godrej-Infoware.jpeg",
+  "godrej infowere": "Godrej-Infoware.jpeg",
+  "hexaware": "hexaware.jpeg",
+  "hexawere": "hexaware.jpeg",
+  "interactive brokers": "interactive-brokers.jpeg",
+  "neebal technologies": "neebal-technologoes.jpeg",
+  "neebal technologoes": "neebal-technologoes.jpeg",
+};
+
+function toKey(value: unknown): string {
+  return typeof value === "string" ? value.toLowerCase().replace(/\s+/g, " ").trim() : "";
+}
+
+function getForcedRecruiterLogoByName(nameValue: unknown): string | null {
+  const key = toKey(nameValue);
+  if (!key) return null;
+
+  for (const [partnerName, fileName] of Object.entries(forcedRecruiterFileByName)) {
+    if (key.includes(partnerName)) {
+      return `${RECRUITERS_BACKEND_DIR}${fileName}`;
+    }
+  }
+
+  return null;
+}
+
 /** Try to find a local logo for a company name (case-insensitive, partial match) */
 function findLocalLogo(name: string): string | null {
   const key = name.toLowerCase().trim();
@@ -114,6 +142,11 @@ function normalizeRecruiterLogoCandidate(candidate: unknown): string | null {
 }
 
 function resolveRecruiterLogo(raw: any): string | null {
+  const forcedByName = getForcedRecruiterLogoByName(raw?.company ?? raw?.name);
+  if (forcedByName) {
+    return resolveUploadedAssetUrl(forcedByName) ?? forcedByName;
+  }
+
   const rawCandidate =
     raw?.logo ??
     raw?.logo_url ??
