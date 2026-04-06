@@ -7,28 +7,28 @@ import { resolveUploadedAssetUrl } from "../utils/uploadedAssets";
 type Recruiter = { name: string; logo: string; url: string };
 
 // Canonical name -> bundled local fallback image URLs.
-const LOGO_ARCON = new URL("../recruiters/arcon-logo.png", import.meta.url).href;
-const LOGO_BRISTLECONE = new URL("../recruiters/bristlecone-logo.png", import.meta.url).href;
-const LOGO_BUILTIO = new URL("../recruiters/builtio-300x72-1.png", import.meta.url).href;
-const LOGO_CAPGEMINI = new URL("../recruiters/Capgemini-300x67-1.png", import.meta.url).href;
-const LOGO_COCA_COLA = new URL("../recruiters/coca-300x99-1.png", import.meta.url).href;
-const LOGO_COGNIZANT = new URL("../recruiters/cognizant-logo.png", import.meta.url).href;
-const LOGO_IBM = new URL("../recruiters/IBM-logo.png", import.meta.url).href;
-const LOGO_INFOSYS = new URL("../recruiters/infosys-300x116-1.png", import.meta.url).href;
-const LOGO_JOHNSON = new URL("../recruiters/Johnson-logo.png", import.meta.url).href;
-const LOGO_LT = new URL("../recruiters/lt-300x81-1.jpg", import.meta.url).href;
-const LOGO_LTI = new URL("../recruiters/lti-logo.png", import.meta.url).href;
-const LOGO_MAHINDRA = new URL("../recruiters/mahindra-300x85-1.png", import.meta.url).href;
-const LOGO_PERSISTENT = new URL("../recruiters/logo-rgb-black-e1751968833241.png", import.meta.url).href;
-const LOGO_SCHNEIDER = new URL("../recruiters/schneider-logo.png", import.meta.url).href;
-const LOGO_TATA_POWER = new URL("../recruiters/Tata-Power.png", import.meta.url).href;
-const LOGO_TECHNIMANT = new URL("../recruiters/Technimant-logo.png", import.meta.url).href;
-const LOGO_VERDANTIS = new URL("../recruiters/verdantis-300x77-1.png", import.meta.url).href;
-const LOGO_VISTAAR = new URL("../recruiters/Vistaar-logo-1.png", import.meta.url).href;
-const LOGO_VODAFONE = new URL("../recruiters/VODAPHONE.jpg", import.meta.url).href;
-const LOGO_WIPRO = new URL("../recruiters/wipro-logo.png", import.meta.url).href;
-const LOGO_ZENSOFT = new URL("../recruiters/Zensoft-logo.jpg", import.meta.url).href;
-const LOGO_ZEUS = new URL("../recruiters/Zeus-Learning-logo.png", import.meta.url).href;
+const LOGO_ARCON = "/images/Main Page/recruiters/arcon-logo.png";
+const LOGO_BRISTLECONE = "/images/Main Page/recruiters/bristlecone-logo.png";
+const LOGO_BUILTIO = "/images/Main Page/recruiters/builtio-300x72-1.png";
+const LOGO_CAPGEMINI = "/images/Main Page/recruiters/Capgemini-300x67-1.png";
+const LOGO_COCA_COLA = "/images/Main Page/recruiters/coca-300x99-1.png";
+const LOGO_COGNIZANT = "/images/Main Page/recruiters/cognizant-logo.png";
+const LOGO_IBM = "/images/Main Page/recruiters/IBM-logo.png";
+const LOGO_INFOSYS = "/images/Main Page/recruiters/infosys-300x116-1.png";
+const LOGO_JOHNSON = "/images/Main Page/recruiters/Johnson-logo.png";
+const LOGO_LT = "/images/Main Page/recruiters/lt-300x81-1.jpg";
+const LOGO_LTI = "/images/Main Page/recruiters/lti-logo.png";
+const LOGO_MAHINDRA = "/images/Main Page/recruiters/mahindra-300x85-1.png";
+const LOGO_PERSISTENT = "/images/Main Page/recruiters/logo-rgb-black-e1751968833241.png";
+const LOGO_SCHNEIDER = "/images/Main Page/recruiters/schneider-logo.png";
+const LOGO_TATA_POWER = "/images/Main Page/recruiters/Tata-Power.png";
+const LOGO_TECHNIMANT = "/images/Main Page/recruiters/Technimant-logo.png";
+const LOGO_VERDANTIS = "/images/Main Page/recruiters/verdantis-300x77-1.png";
+const LOGO_VISTAAR = "/images/Main Page/recruiters/Vistaar-logo-1.png";
+const LOGO_VODAFONE = "/images/Main Page/recruiters/VODAPHONE.jpg";
+const LOGO_WIPRO = "/images/Main Page/recruiters/wipro-logo.png";
+const LOGO_ZENSOFT = "/images/Main Page/recruiters/Zensoft-logo.jpg";
+const LOGO_ZEUS = "/images/Main Page/recruiters/Zeus-Learning-logo.png";
 
 const recruiterLogoMap: Record<string, string> = {
   "arcon":               LOGO_ARCON,
