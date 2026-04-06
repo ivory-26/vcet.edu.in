@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { LampContainer } from '../ui/lamp';
 import { placementStatsApi, type PlacementStat } from '../admin/api/placementStats';
+import { useHomepageData } from '../context/HomepageDataContext';
 
 interface ChartEntry {
   year: string;
@@ -22,6 +23,8 @@ function toChartEntries(stats: PlacementStat[]): ChartEntry[] {
 const CHART_H = 260; // px — usable bar area height
 
 const Placements: React.FC = () => {
+  const homepage = useHomepageData();
+  const useAggregate = Boolean(homepage);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +84,13 @@ const Placements: React.FC = () => {
 
   // Fetch placement year stats from the backend
   useEffect(() => {
+    if (useAggregate) {
+      const entries = toChartEntries(homepage!.data.placementYearStats);
+      setPlacementData(entries);
+      setAnimatedCounts(entries.map(() => 0));
+      return;
+    }
+
     placementStatsApi.list()
       .then((stats) => {
         if (!Array.isArray(stats)) {
@@ -95,7 +105,7 @@ const Placements: React.FC = () => {
         console.error('Failed to load placement stats:', err);
         // On fetch error keep empty — chart just shows nothing gracefully
       });
-  }, []);
+  }, [homepage, useAggregate]);
 
   useEffect(() => {
     setAnimatedCounts(placementData.map(() => 0));

@@ -120,12 +120,8 @@ export function invalidatePublicPageCache(paths?: string[]): void {
 
 async function fetchJson<T>(path: string): Promise<T> {
     const response = await fetch(`${API_BASE}/api${path}`, {
-        cache: 'no-store',
         headers: {
             Accept: 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            Pragma: 'no-cache',
-            Expires: '0',
         },
     });
 

@@ -6,10 +6,11 @@ import { useFetch } from './useFetch';
 // Reduced from 60s to 5 minutes to minimize API load
 const REFRESH_INTERVAL_MS = 5 * 60_000;
 
-export function useNewsTicker() {
+export function useNewsTicker(enabled = true) {
   const fetchNewsTicker = useCallback(() => newsTickerService.list(), []);
 
   const { data, loading, error } = useFetch<NewsTicker[]>(fetchNewsTicker, {
+    enabled,
     initialData: [],
     cacheKey: 'public:news-ticker:list',
     cacheTtlMs: 5 * 60_000,

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useHomepageData } from "../context/HomepageDataContext";
 import { placementsService } from "../services/placements";
 
 // -- Data (all logos from /public/images/Main Page/recruiters/) ---------------------------
@@ -289,11 +290,27 @@ const MarqueeRow: React.FC<MarqueeRowProps> = ({ items, direction = "left", spee
 
 // -- Main ----------------------------------------------------------------------
 const Recruiters: React.FC = () => {
+  const homepage = useHomepageData();
+  const useAggregate = Boolean(homepage);
   const [confirmTarget, setConfirmTarget] = useState<Recruiter | null>(null);
   const [rowOneData, setRowOneData] = useState<Recruiter[]>(rowOne);
   const [rowTwoData, setRowTwoData] = useState<Recruiter[]>(rowTwo);
 
   useEffect(() => {
+    if (useAggregate) {
+      const recruitersData: Recruiter[] = homepage!.data.placements.map((p: any) => ({
+        name: p.company || p.name,
+        logo: p.logo,
+        url: p.website || '#',
+      }));
+      if (recruitersData.length > 0) {
+        const half = Math.ceil(recruitersData.length / 2);
+        setRowOneData(recruitersData.slice(0, half));
+        setRowTwoData(recruitersData.slice(half));
+      }
+      return;
+    }
+
     placementsService.list().then((partners) => {
       if (partners && partners.length > 0) {
         const recruitersData: Recruiter[] = partners.map((p: any) => ({
@@ -306,7 +323,7 @@ const Recruiters: React.FC = () => {
         setRowTwoData(recruitersData.slice(half));
       }
     });
-  }, []);
+  }, [homepage, useAggregate]);
 
   const handleRecruiterClick = (item: Recruiter) => {
     setConfirmTarget(item);

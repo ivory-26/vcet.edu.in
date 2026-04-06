@@ -5,6 +5,7 @@ import { PageTitleUpdater } from './components/PageTitleUpdater';
 import { AuthProvider } from './admin/context/AuthContext';
 import ProtectedRoute from './admin/components/ProtectedRoute';
 import AdminLayout from './admin/components/AdminLayout';
+import { HomepageDataProvider } from './context/HomepageDataContext';
 import { LazySection } from './hooks/useLazyFetch';
 
 /* ── Homepage Components ── */
@@ -321,48 +322,50 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="home-page min-h-screen font-sans bg-white text-slate-800">
-      <SplashScreen />
-      <div className="relative z-[100]">
-        <TopBanner />
-        <Header />
+    <HomepageDataProvider>
+      <div className="home-page min-h-screen font-sans bg-white text-slate-800">
+        <SplashScreen />
+        <div className="relative z-[100]">
+          <TopBanner />
+          <Header />
+        </div>
+        <main>
+          {/* Above-the-fold: Load immediately */}
+          <Hero />
+          <About />
+          
+          {/* Below-the-fold: Load lazily when user scrolls near */}
+          <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+            <Placements />
+          </LazySection>
+          
+          <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
+            <Recruiters />
+          </LazySection>
+          
+          <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+            <Departments />
+          </LazySection>
+          
+          <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
+            <Achievements />
+          </LazySection>
+          
+          <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
+            <ExploreUs />
+          </LazySection>
+          
+          <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+            <Gallery />
+          </LazySection>
+          
+          <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
+            <Testimonials />
+          </LazySection>
+        </main>
+        <Footer />
       </div>
-      <main>
-        {/* Above-the-fold: Load immediately */}
-        <Hero />
-        <About />
-        
-        {/* Below-the-fold: Load lazily when user scrolls near */}
-        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
-          <Placements />
-        </LazySection>
-        
-        <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
-          <Recruiters />
-        </LazySection>
-        
-        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
-          <Departments />
-        </LazySection>
-        
-        <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
-          <Achievements />
-        </LazySection>
-        
-        <LazySection fallback={<SectionPlaceholder height="300px" />} rootMargin="300px" minHeight="300px">
-          <ExploreUs />
-        </LazySection>
-        
-        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
-          <Gallery />
-        </LazySection>
-        
-        <LazySection fallback={<SectionPlaceholder height="400px" />} rootMargin="300px" minHeight="400px">
-          <Testimonials />
-        </LazySection>
-      </main>
-      <Footer />
-    </div>
+    </HomepageDataProvider>
   );
 };
 
