@@ -20,6 +20,11 @@ function getDeanImageUrl(imageUrl?: string | null): string {
     return preferred;
   }
 
+  // Replace backend legacy dean API endpoint path with the exact requested image
+  if (/\/api\/pages\/academics\/dean\/image\//i.test(trimmed)) {
+    return preferred;
+  }
+
   return resolveUploadedAssetUrl(trimmed) ?? preferred;
 }
 
