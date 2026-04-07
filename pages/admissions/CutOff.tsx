@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 type CutOffItem = {
   id: number;
@@ -23,7 +24,7 @@ const CUT_OFF_DATA: CutOffItem[] = [
   {
     id: 1,
     title: 'F.E. (First Year Engineering) 2025-26',
-    url: 'https://vcet.edu.in/wp-content/uploads/2026/02/F.E-CUT-OFF-25-26-New.pdf',
+    url: '/pdfs/Admission/Cut-off(25-26)/F.E-CUT-OFF-25-26-New.pdf',
     badge: 'New',
     year: '2025-26',
     category: 'Engineering',
@@ -31,7 +32,7 @@ const CUT_OFF_DATA: CutOffItem[] = [
   {
     id: 2,
     title: 'M.E. (Masters of Engineering) 2025-26',
-    url: 'https://vcet.edu.in/wp-content/uploads/2026/02/ME-CUT-OFF-25-26-New.pdf',
+    url: '/pdfs/Admission/Cut-off(25-26)/ME-CUT-OFF-25-26-New.pdf',
     badge: 'New',
     year: '2025-26',
     category: 'Engineering',
@@ -39,7 +40,7 @@ const CUT_OFF_DATA: CutOffItem[] = [
   {
     id: 3,
     title: 'DSE (Direct Second Year) 2025-26',
-    url: 'https://vcet.edu.in/wp-content/uploads/2026/02/DSE-CUT-OFF-25-26-New.pdf',
+    url: '/pdfs/Admission/Cut-off(25-26)/DSE-CUT-OFF-25-26-New.pdf',
     badge: 'New',
     year: '2025-26',
     category: 'Engineering',
@@ -47,7 +48,7 @@ const CUT_OFF_DATA: CutOffItem[] = [
   {
     id: 4,
     title: 'MMS (Master of Management Studies) 2025-26',
-    url: 'https://vcet.edu.in/wp-content/uploads/2026/02/MMS-CUT-OFF-25-26-New.pdf',
+    url: '/pdfs/Admission/Cut-off(25-26)/MMS-CUT-OFF-25-26-New.pdf',
     badge: 'New',
     year: '2025-26',
     category: 'Management',
@@ -71,7 +72,7 @@ const TimelineItem: React.FC<TimelineItemProps> = ({ item }) => (
     </div>
 
     <a
-      href={item.url}
+      href={resolveBackendHref(item.url)}
       target="_blank"
       rel="noopener noreferrer"
       className="-mt-1 flex-grow rounded-3xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-300 hover:border-blue-100 hover:shadow-xl hover:shadow-blue-900/5 group-hover:-translate-y-1 md:p-6"

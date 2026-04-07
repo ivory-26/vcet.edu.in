@@ -2,54 +2,55 @@ import React from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { FileText, Download, Calendar, ShieldCheck } from 'lucide-react';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 const feesData = [
   {
     title: 'FE Fee Structure',
     description: 'First Year Engineering fee details for 2025-26.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/Marthi-English-F.E-2025-26-1.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/Marthi-English-F.E-2025-26-1.pdf',
     year: '2025-26'
   },
   {
     title: 'FE Admission Fee Structure & Documents Required',
     description: 'CAP documents and fee structure for First Year Engineering admission.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/09/FIRST-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/FIRST-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
     year: '2025-26'
   },
   {
     title: 'Direct SE Fee Structure',
     description: 'Direct Second Year Engineering fee structure and CAP documents.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/DIRECT-SECOND-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/DIRECT-SECOND-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
     year: '2025-26'
   },
   {
     title: 'DSE Admission Fee Structure & Documents Required',
     description: 'Direct Second Year Engineering admission fee structure and required documents.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/09/DIRECT-SECOND-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE-1.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/DIRECT-SECOND-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
     year: '2025-26'
   },
   {
     title: 'M.E. Fee Structure',
     description: 'Masters of Engineering program fee details.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/Marthi-English-M.E-2025-26.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/Marthi-English-M.E-2025-26.pdf',
     year: '2025-26'
   },
   {
     title: 'M.E. Admission Fee Structure & Documents Required',
     description: 'Masters of Engineering program CAP documents and fee structure.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/FIRST-YEAR-M.-E.-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/FIRST-YEAR-M.-E.-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
     year: '2025-26'
   },
   {
     title: 'Master of management studies MMS',
     description: 'Master of Management Studies program fee details.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/Marthi-English-MMS-2025-26.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/Marthi-English-MMS-2025-26.pdf',
     year: '2025-26'
   },
   {
     title: 'MMS Admission Fee Structure & Documents Required',
     description: 'Master of Management Studies program CAP documents and fee structure.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/FIRST-YEAR-M.M.S-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/Feesstructure25-26/FIRST-YEAR-M.M.S-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
     year: '2025-26'
   },
 ];
@@ -142,7 +143,7 @@ const FeesStructure: React.FC = () => {
                         </td>
                         <td className="px-8 py-6 text-center">
                           <a 
-                            href={item.link}
+                            href={resolveBackendHref(item.link)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center text-[#1a4b7c] hover:text-[#fdb813] transition-all duration-300"

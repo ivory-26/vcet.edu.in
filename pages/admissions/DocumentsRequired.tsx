@@ -4,30 +4,31 @@ import PageBanner from '../../components/PageBanner';
 import { FileText, Download } from 'lucide-react';
 import { useAdmissionSection } from '../../hooks/useAdmissionSection';
 import { getSectionContentValue } from './admissionSectionUtils';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 const fallbackDocuments = [
   {
     title: 'FE Admission Documents Required',
     description: 'List of documents and fee structure for First Year Engineering admission under CAP.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/FIRST-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/DocumentsRequired/FIRST-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE(1).pdf',
     tag: 'UG - First Year',
   },
   {
     title: 'DSE Admission Documents Required',
     description: 'Required documents and fee structure for Direct Second Year Engineering admission.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/DIRECT-SECOND-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/DocumentsRequired/DIRECT-SECOND-YEAR-ENGINEERING-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE(1).pdf',
     tag: 'UG - Direct SE',
   },
   {
     title: 'M.E. Admission Documents Required',
     description: 'Documents and fee structure for First Year M.E. admission under CAP.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/FIRST-YEAR-M.-E.-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/DocumentsRequired/FIRST-YEAR-M.-E.-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE(1).pdf',
     tag: 'PG - M.E.',
   },
   {
     title: 'MMS Admission Documents Required',
     description: 'Documents and fee structure for First Year M.M.S admission under CAP.',
-    link: 'https://vcet.edu.in/wp-content/uploads/2025/08/FIRST-YEAR-M.M.S-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE.pdf',
+    link: '/pdfs/Admission/DocumentsRequired/FIRST-YEAR-M.M.S-ADMISSION-2025-2026-CAP-DOCUMENTS-FEE-STRUCTURE(1).pdf',
     tag: 'Management - MMS',
   },
 ];
@@ -37,7 +38,7 @@ const DocumentsRequired: React.FC = () => {
   const documents = section?.items?.map((item) => ({
     title: item.title,
     description: item.description || '',
-    link: item.document_url || item.external_url || '#',
+    link: resolveBackendHref(item.document_url || item.external_url || '#'),
     tag: item.tag || item.category || '',
   })) ?? fallbackDocuments;
 
@@ -132,7 +133,7 @@ const DocumentsRequired: React.FC = () => {
                         </td>
                         <td className="px-8 py-6 text-center">
                           <a 
-                            href={item.link}
+                            href={resolveBackendHref(item.link)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center justify-center text-[#1a4b7c] hover:text-[#fdb813] transition-all duration-300"
