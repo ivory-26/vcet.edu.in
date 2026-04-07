@@ -103,6 +103,7 @@ const initialContent = {
   about: '',
   vision: '',
   mission: '',
+  hodImage: undefined as string | File | undefined,
   peos: [] as string[],
   psos: [] as string[],
   dabMembers: [{ name: '', designation: '', organization: '' }],
@@ -355,6 +356,12 @@ export default function DepartmentForm() {
               onToggle={() => toggleSection('overview')}
             >
               <div className="space-y-6">
+                <ImageUpload
+                  label="HOD Image"
+                  id="departmentform-hod-image"
+                  value={content.hodImage || ''}
+                  onChange={f => setContent({ ...content, hodImage: f })}
+                />
                 <div>
                   <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">About Us</label>
                   <textarea

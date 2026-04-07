@@ -461,6 +461,7 @@ export interface Department {
       about?: string;
       vision?: string;
       mission?: string;
+      hodImage?: string | File;
       peos?: string[];
       psos?: string[];
     dabMembers: { name: string; designation: string; organization: string }[];
@@ -500,6 +501,7 @@ export interface DepartmentPayload {
       about?: string;
       vision?: string;
       mission?: string;
+      hodImage?: string | File;
       peos?: string[];
       psos?: string[];
     dabMembers?: { name: string; designation: string; organization: string }[];

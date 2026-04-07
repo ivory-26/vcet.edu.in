@@ -84,8 +84,9 @@ export function resolveUploadedAssetUrl(path: string | null | undefined): string
   // Uploaded/static assets should be served from backend origin in split-host setups.
   if (isBackendAssetPath(pathname)) {
     // If it's a departments path, it's served from Laravel's public storage disk
-    if (pathname.startsWith('departments/')) {
-        return withApiOrigin(`storage/${pathname}`);
+    if (pathname.startsWith('/departments/') || pathname.startsWith('departments/')) {
+        const normalizedPath = pathname.replace(/^\/+/, '');
+        return withApiOrigin(`storage/${normalizedPath}`);
     }
     return withApiOrigin(pathname);
   }

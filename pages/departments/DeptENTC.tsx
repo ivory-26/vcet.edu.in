@@ -7,6 +7,7 @@ import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
+import DepartmentHodImage from '../../components/DepartmentHodImage';
 import { departmentApi } from '../../admin/api/departments';
 import type { Department } from '../../admin/types';
 import { newsletterApi } from '../../admin/api/newsletterApi';
@@ -67,6 +68,8 @@ const DeptENTC: React.FC = () => {
       })
       .catch(() => setDepartment(null));
   }, []);
+
+  const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
 
   const newsletters = dynamicApiItems
     .filter(item => item.type === 'newsletter' && item.pdf)
@@ -154,11 +157,7 @@ const DeptENTC: React.FC = () => {
           {activeId === 'about' && (
             <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
               <div className="mb-8 flex flex-col items-center text-center">
-                <div className="w-full max-w-[340px] rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-12">
-                  <i className="ph ph-image text-4xl text-slate-400" />
-                  <p className="mt-3 text-sm font-semibold text-slate-500">HOD Image Placeholder</p>
-                  <p className="mt-1 text-xs text-slate-400">Add image later in this area</p>
-                </div>
+                <DepartmentHodImage imageSrc={hodImageUrl} />
                 <p className="mt-4 text-2xl font-bold text-brand-navy">Dr. Amrita Ruperee</p>
                 <p className="mt-1 text-sm font-semibold text-brand-gold">Professor &amp; Head of Department</p>
               </div>

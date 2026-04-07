@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
+import DepartmentHodImage from '../../components/DepartmentHodImage';
 import { departmentApi } from '../../admin/api/departments';
 import type { Department } from '../../admin/types';
 import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
@@ -53,6 +54,8 @@ const DeptCSDS: React.FC = () => {
       })
       .catch(() => setDepartment(null));
   }, []);
+
+  const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
 
   const newsletters = dynamicApiItems
     .filter(item => item.type === 'newsletter' && item.pdf)
@@ -150,6 +153,7 @@ const DeptCSDS: React.FC = () => {
           {activeId === 'about' && (
             <section className="reveal bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-slate-100">
               <div className="space-y-6 text-slate-600 leading-relaxed text-justify">
+                <DepartmentHodImage imageSrc={hodImageUrl} />
                 <p>
                   The Computer Science &amp; Engineering ( Data Science)Department is established in the year 2019.
                   Having started with a four-year undergraduate program, B. E. (CSE -DS), the department is willing

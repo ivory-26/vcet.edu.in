@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { departmentApi } from '../../admin/api/departments';
 import type { Department } from '../../admin/types';
 import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
+import DepartmentHodImage from '../../components/DepartmentHodImage';
 
 
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
-import { departmentApi } from '../../admin/api/departments';
-import type { Department } from '../../admin/types';
 import { newsletterApi } from '../../admin/api/newsletterApi';
 import DepartmentNewsletterPanel from '../../components/DepartmentNewsletterPanel';
 
@@ -68,6 +67,8 @@ const DeptMech: React.FC = () => {
       })
       .catch(() => setDepartment(null));
   }, []);
+
+  const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
 
   const newsletters = dynamicApiItems
     .filter(item => item.type === 'newsletter' && item.pdf)
@@ -154,13 +155,7 @@ const DeptMech: React.FC = () => {
             <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
               <div className="space-y-6 text-slate-600 leading-8 text-left">
                 <div className="mx-auto max-w-md text-center space-y-4">
-                  <div className="rounded-3xl border-2 border-dashed border-blue-200 bg-blue-50/40 px-6 py-12">
-                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm">
-                      <i className="ph ph-image text-2xl" />
-                    </div>
-                    <p className="text-base font-semibold text-slate-600">HOD Image Placeholder</p>
-                    <p className="text-sm text-slate-400">Add image later in this area</p>
-                  </div>
+                  <DepartmentHodImage imageSrc={hodImageUrl} />
                   <div>
                     <p className="mt-4 text-2xl font-bold text-brand-navy">Dr. Uday Aswalekar</p>
                     <p className="mt-1 text-sm font-semibold text-brand-gold">Head Of Department</p>

@@ -7,6 +7,7 @@ import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
+import DepartmentHodImage from '../../components/DepartmentHodImage';
 import { departmentApi } from '../../admin/api/departments';
 import type { Department } from '../../admin/types';
 import { newsletterApi } from '../../admin/api/newsletterApi';
@@ -62,6 +63,8 @@ const DeptFE: React.FC = () => {
       })
       .catch(() => setDepartment(null));
   }, []);
+
+  const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
 
   const newsletters = dynamicApiItems
     .filter(item => item.type === 'newsletter' && item.pdf)
@@ -259,28 +262,27 @@ const DeptFE: React.FC = () => {
           {activeId === 'patent' && (
             <section className="reveal bg-white rounded-3xl p-12 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center min-h-[300px]">
               <div className="w-16 h-16 rounded-2xl bg-brand-navylight flex items-center justify-center mb-4">
-                <i className="ph ph-certificate text-3xl text-brand-navy" />
+                <i className="ph ph-certificate text-3xl text-brand-gold" />
               </div>
-              <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Patents &amp; Copyrights<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-                <div className="space-y-4">
-                  {department?.content?.patents?.length ? department.content.patents.map((p, idx) => (
-                    <div key={idx} className="group rounded-2xl border border-slate-200 bg-white p-5 hover:border-brand-gold hover:bg-brand-navylight transition-colors shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div>
-                        <h4 className="text-base font-bold text-brand-navy">{p.title || `Patent ${idx + 1}`}</h4>
-                        {p.description && <p className="text-sm text-slate-600 mt-1.5">{p.description}</p>}
-                      </div>
-                      {p.pdf && (
-                        <a href={resolveUploadedAssetUrl(p.pdf as string) || '#'} target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold hover:bg-brand-gold hover:text-white transition-colors" title="View Document">
-                          <i className="ph ph-arrow-up-right text-lg" />
-                        </a>
-                      )}
+              <h3 className="text-2xl font-bold text-brand-navy mb-6">Patents &amp; Copyrights</h3>
+              <div className="space-y-4 w-full">
+                {department?.content?.patents?.length ? department.content.patents.map((p, idx) => (
+                  <div key={idx} className="group rounded-2xl border border-slate-200 bg-white p-5 hover:border-brand-gold hover:bg-brand-navylight transition-colors shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
+                    <div>
+                      <h4 className="text-base font-bold text-brand-navy">{p.title || `Patent ${idx + 1}`}</h4>
+                      {p.description && <p className="text-sm text-slate-600 mt-1.5">{p.description}</p>}
                     </div>
-                  )) : (
-                    <div className="text-sm text-slate-500 italic px-4 py-3">No Patents or Copyrights available at this time.</div>
-                  )}
-                </div>
-              
-              </section>
+                    {p.pdf && (
+                      <a href={resolveUploadedAssetUrl(p.pdf as string) || '#'} target="_blank" rel="noopener noreferrer" className="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-brand-gold/10 text-brand-gold hover:bg-brand-gold hover:text-white transition-colors" title="View Document">
+                        <i className="ph ph-arrow-up-right text-lg" />
+                      </a>
+                    )}
+                  </div>
+                )) : (
+                  <div className="text-sm text-slate-500 italic px-4 py-3">No Patents or Copyrights available at this time.</div>
+                )}
+              </div>
+            </section>
           )}
 
           {/* â•â•â•â• FACULTY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}

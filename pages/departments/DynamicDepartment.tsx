@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
+import DepartmentHodImage from '../../components/DepartmentHodImage';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
 import NewsletterSection from '../../components/NewsletterSection';
 import { departmentApi } from '../../admin/api/departments';
@@ -91,6 +92,7 @@ const DynamicDepartment: React.FC<{ slugProp?: string }> = ({ slugProp }) => {
 
   const content = department.content || {};
   const name = department.name;
+  const hodImageUrl = resolveUploadedAssetUrl(content.hodImage as string | null);
 
   const fallbackText = "This section is currently under construction for " + name + ". Content will be updated soon from the backend.";
 
@@ -373,6 +375,16 @@ const DynamicDepartment: React.FC<{ slugProp?: string }> = ({ slugProp }) => {
               ) : (
                 <p className="text-slate-500 italic">No activities have been recorded yet.</p>
               )}
+            </section>
+          )}
+
+          {/* ABOUT */}
+          {activeId === 'about' && (
+            <section className="reveal bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-slate-100">
+              <div className="space-y-6 text-slate-600 leading-relaxed text-justify">
+                <DepartmentHodImage imageSrc={hodImageUrl} />
+                <p>{fallbackText}</p>
+              </div>
             </section>
           )}
 
