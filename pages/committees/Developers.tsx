@@ -2,6 +2,7 @@ import React from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { Github, Linkedin, Globe, Code2, Users } from 'lucide-react';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 interface DevProfile {
   name: string;
@@ -58,14 +59,14 @@ const coreTeam: DevProfile[] = [
 
 const fellowship: DevProfile[] = [
   { name: 'Sawant Shreya', githubUser: 'sawantshreya008', githubUrl: 'https://github.com/sawantshreya008', linkedinUrl: 'https://www.linkedin.com/in/shreya-sawant-82b285382/', portfolioUrl: 'https://shreya-sawant.vercel.app', role: 'Student Fellowship' },
-  { name: 'Sumrita Sawant', githubUser: 'sumritasawant101-droid', githubUrl: 'https://github.com/sumritasawant101-droid', linkedinUrl: '#', portfolioUrl: '#', role: 'Student Fellowship' },
+  { name: 'Sumrita Sawant', githubUser: 'sumritasawant101-droid', githubUrl: 'https://github.com/sumritasawant101-droid', linkedinUrl: 'www.linkedin.com/in/sumrita-sawant-3651a2400', portfolioUrl: 'https://sumrita-sawant.vercel.app', role: 'Student Fellowship' },
   { name: 'Dakshata Salgaonkar', githubUser: 'dakshata2405956201-svg', githubUrl: 'https://github.com/dakshata2405956201-svg', linkedinUrl: 'https://www.linkedin.com/in/dakshata-salgaonkar-043a41398', portfolioUrl: 'https://dakshata-salgaonkar.vercel.app', role: 'Student Fellowship' },
   { name: 'Shweta Patil', githubUser: 'shweta1909patil-maker', githubUrl: 'https://github.com/shweta1909patil-maker', linkedinUrl: 'https://www.linkedin.com/in/shweta-patil-abab72392', portfolioUrl: 'https://shweta-patil.vercel.app/', role: 'Student Fellowship' },
-  { name: 'Sumit Vishwakarma', githubUser: 'Sumitc0de', githubUrl: 'https://github.com/Sumitc0de', linkedinUrl: '#', portfolioUrl: '#', role: 'Student Fellowship' },
+  { name: 'Sumit Vishwakarma', githubUser: 'Sumitc0de', githubUrl: 'https://github.com/Sumitc0de', linkedinUrl: 'https://www.linkedin.com/in/sumit-vishwakarma-b818b7268?utm_source=share_via&utm_content=profile&utm_medium=member_android', portfolioUrl: 'https://sumit-x-dev.vercel.app/', role: 'Student Fellowship' },
   { name: 'Antariksh Singh', githubUser: 'antarikshsingh', githubUrl: 'https://github.com/antarikshsingh', linkedinUrl: '#', portfolioUrl: '#', role: 'Student Fellowship' },
-  { name: 'Pratik Ravale', githubUser: 'PratikRavale24', githubUrl: 'https://github.com/PratikRavale24', linkedinUrl: '#', portfolioUrl: '#', role: 'Student Fellowship' },
+  { name: 'Pratik Ravale', githubUser: 'PratikRavale24', githubUrl: 'https://github.com/PratikRavale24', linkedinUrl: 'https://www.linkedin.com/in/pratik-ravale-04b081238/', portfolioUrl: 'https://pratik-ravale.vercel.app/', role: 'Student Fellowship' },
   { name: 'Pranish Shetty', githubUser: 'pranishshetty', githubUrl: 'https://share.google/b5ZkgP5lON5wfUw4y', linkedinUrl: '#', portfolioUrl: '#', role: 'Student Fellowship' },
-  { name: 'Rehan Pinjari', githubUser: 'rehanw1', githubUrl: 'https://github.com/rehanw1', linkedinUrl: '#', portfolioUrl: '#', role: 'Student Fellowship' },
+  { name: 'Rehan Pinjari', githubUser: 'rehanw1', githubUrl: 'https://github.com/rehanw1', linkedinUrl: 'https://www.linkedin.com/in/rehan-pinjari-bbb2193a9', portfolioUrl: 'rehan-pinjari.vercel.app', role: 'Student Fellowship'},
   { name: 'Priti Yadav', githubUser: 'Pritiyadav6', githubUrl: 'https://github.com/Pritiyadav6', linkedinUrl: '#', portfolioUrl: '#', role: 'Student Fellowship' },
 ];
 
@@ -92,7 +93,7 @@ const DevCard: React.FC<{ profile: DevProfile }> = ({ profile }) => (
     <div className="relative w-24 h-24 mb-4">
       <div className="absolute inset-0 bg-[#2563EB]/10 rounded-full blur group-hover:bg-[#2563EB]/20 transition-all" />
       <img
-        src={`https://github.com/${profile.githubUser}.png?size=150`}
+        src={resolveUploadedAssetUrl(`https://github.com/${profile.githubUser}.png?size=150`) ?? `https://github.com/${profile.githubUser}.png?size=150`}
         alt={profile.name}
         className="relative w-full h-full object-cover rounded-full border-2 border-white shadow-md relative z-10 bg-white"
         loading="lazy"
@@ -124,7 +125,7 @@ const MentorCard: React.FC<{ profile: typeof mentors[0] }> = ({ profile }) => (
     <div className="relative w-24 h-24 mb-4">
       <div className="absolute inset-0 bg-[#2563EB]/10 rounded-full blur group-hover:bg-[#2563EB]/20 transition-all" />
       <img
-        src={profile.imageUrl}
+        src={resolveUploadedAssetUrl(profile.imageUrl) ?? profile.imageUrl}
         alt={profile.name}
         className="relative w-full h-full object-cover rounded-full border-2 border-white shadow-md relative z-10 bg-white"
         loading="lazy"
