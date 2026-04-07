@@ -12,6 +12,7 @@ import {
 } from './studentLifeShared';
 import { getStudentCareerSection } from '../../services/studentCareer';
 import { resolveApiUrl } from '../../services/api';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 const events = [
   {
@@ -89,31 +90,31 @@ const teamRows = [
 const magazineLinks = [
   {
     title: 'VISTA 2024',
-    href: 'https://vcet.edu.in/wp-content/uploads/2025/02/VISTA24-PratibimbLow-Quality.pdf',
+    href: resolveBackendHref('/pdfs/Studentlife@vcet/Extra-curricularActivities/StudentCouncil/Literati/VISTA24-PratibimbLow-Quality.pdf'),
     description: 'Official magazine link published on the Literati page.',
     icon: 'file' as const,
   },
   {
     title: 'VISTA 2023',
-    href: "http://vcet.edu.in/VISTA/Vista'23_Ekam(final).pdf",
+    href: resolveBackendHref('/pdfs/Studentlife@vcet/Extra-curricularActivities/StudentCouncil/Literati/Vista_23_Ekam(final).pdf'),
     description: 'Official magazine link published on the Literati page.',
     icon: 'file' as const,
   },
   {
     title: 'VISTA 2022',
-    href: "https://vcet.edu.in/VISTA/VISTA'22_Atraaf.pdf",
+    href: resolveBackendHref('/pdfs/Studentlife@vcet/Extra-curricularActivities/StudentCouncil/Literati/VISTA_22_Atraaf.pdf'),
     description: 'Official magazine link published on the Literati page.',
     icon: 'file' as const,
   },
   {
     title: 'VISTA 2021',
-    href: 'https://vcet.edu.in/wp-content/uploads/2022/02/Vista21-Allagi.pdf',
+    href: resolveBackendHref('/pdfs/Studentlife@vcet/Extra-curricularActivities/StudentCouncil/Literati/Vista21-Allagi.pdf'),
     description: 'Official magazine link published on the Literati page.',
     icon: 'file' as const,
   },
   {
     title: 'VISTA 2020',
-    href: 'https://vcet.edu.in/wp-content/uploads/2022/02/VISTA-2020.pdf',
+    href: resolveBackendHref('/pdfs/Studentlife@vcet/Extra-curricularActivities/StudentCouncil/Literati/VISTA-2020.pdf'),
     description: 'Official magazine link published on the Literati page.',
     icon: 'file' as const,
   },
@@ -187,7 +188,7 @@ const Literati: React.FC = () => {
       .map((item: Record<string, unknown>, index: number) => {
         const title = String(item.title ?? '').trim() || `VISTA ${index + 1}`;
         const rawPdf = String(item.pdf ?? item.link ?? '');
-        const href = resolveApiUrl(rawPdf) || rawPdf;
+        const href = resolveBackendHref(rawPdf) || resolveApiUrl(rawPdf) || rawPdf;
         if (!href) return null;
         return {
           title,

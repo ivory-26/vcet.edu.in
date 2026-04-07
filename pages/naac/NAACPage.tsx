@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PageLayout from "../../components/PageLayout";
 import PageBanner from "../../components/PageBanner";
 import CycleTabs from "../../components/CycleTabs";
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 import "../../styles/naac.css";
 
 type CycleKey = "cycle1" | "cycle2";
@@ -58,7 +59,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                 To download SSR Report click here:{" "}
                 <a
                   className="naac-ssr__link"
-                  href="https://vcet.edu.in/wp-content/uploads/2021/11/MHCOGN102291.pdf"
+                  href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle1/NAACSSR.pdf')}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -1172,7 +1173,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                         </td>
                         <td className="naac-extended-cell naac-extended-cell--center">
                           <a
-                            href="https://vcet.edu.in/NAAC/1/DVV/1.1_DVV_Clarification.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-EXTENDEDPROFILE/1.1_DVV_Clarification.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1198,7 +1199,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                         </td>
                         <td className="naac-extended-cell naac-extended-cell--center">
                           <a
-                            href="https://vcet.edu.in/NAAC/2/DVV/2.1_DVV_Clarification.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-EXTENDEDPROFILE/2.1_DVV_Clarification.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1206,7 +1207,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                           </a>
                           <br />
                           <a
-                            href="https://vcet.edu.in/NAAC/2/DVV/2.2_DVV_Clarification_signed.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-EXTENDEDPROFILE/2.2_DVV_Clarification_signed.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1228,7 +1229,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                         </td>
                         <td className="naac-extended-cell naac-extended-cell--center">
                           <a
-                            href="https://vcet.edu.in/NAAC/3/DVV/3.1_DVV_Clarification_signed.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-EXTENDEDPROFILE/3.1_DVV_Clarification_signed.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1265,7 +1266,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                         </td>
                         <td className="naac-qif-cell naac-qif-cell--center">
                           <a
-                            href="https://vcet.edu.in/NAAC/1/DVV/1.2.1_DVV_Clarification_signed.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-METRIC/1.2.1_DVV_Clarification_signed.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1282,7 +1283,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                         </td>
                         <td className="naac-qif-cell naac-qif-cell--center">
                           <a
-                            href="https://vcet.edu.in/NAAC/1/DVV/1.2.2_DVV_Clarification_signed.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-METRIC/1.2.2_DVV_Clarification_signed.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1298,7 +1299,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                         </td>
                         <td className="naac-qif-cell naac-qif-cell--center">
                           <a
-                            href="https://vcet.edu.in/NAAC/1/DVV/1.3.2_DVV_Clarification_signed.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-METRIC/1.3.2_DVV_Clarification_signed.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -1316,7 +1317,7 @@ const NaacPage: React.FC<NaacPageProps> = ({ initialCycle = "cycle1" }) => {
                         </td>
                         <td className="naac-qif-cell naac-qif-cell--center">
                           <a
-                            href="https://vcet.edu.in/NAAC/1/DVV/1.4.1_DVV_Clarification_signed.pdf"
+                            href={resolveBackendHref('/pdfs/NAAC/SSS_Cycle1&SSS_Cycle2/Cycle2/SelfStudyReport/DVVCLARIFICATIONS/HEIRESPONSETODVVFINDINGS-METRIC/1.4.1_DVV_Clarification_signed.pdf')}
                             target="_blank"
                             rel="noopener noreferrer"
                           >

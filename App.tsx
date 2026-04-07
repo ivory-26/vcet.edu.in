@@ -221,16 +221,16 @@ const MMSFacilitiesClassroom = lazy(() => import('./pages/mms/facilities/MMSFaci
 const MMSFacilitiesGymkhana = lazy(() => import('./pages/mms/facilities/MMSFacilitiesGymkhana'));
 const MMSFAQs = lazy(() => import('./pages/mms/faqs/MMSFAQs'));
 
-// pages/academics/exam
-const ExamDashboard = lazy(() => import('./pages/academics/exam/ExamDashboard'));
-const ExamAbout = lazy(() => import('./pages/academics/exam/ExamAbout'));
-const ExamSyllabus = lazy(() => import('./pages/academics/exam/ExamSyllabus'));
-const ExamTimetable = lazy(() => import('./pages/academics/exam/ExamTimetable'));
-const ExamQuestionPaper = lazy(() => import('./pages/academics/exam/ExamQuestionPaper'));
-const ExamSamplePapers = lazy(() => import('./pages/academics/exam/ExamSamplePapers'));
-const ExamResults = lazy(() => import('./pages/academics/exam/ExamResults'));
-const ExamVerification = lazy(() => import('./pages/academics/exam/ExamVerification'));
-const ExamNotices = lazy(() => import('./pages/academics/exam/ExamNotices'));
+// pages/exam
+const ExamDashboard = lazy(() => import('./pages/exam/ExamDashboard'));
+const ExamAbout = lazy(() => import('./pages/exam/ExamAbout'));
+const ExamSyllabus = lazy(() => import('./pages/exam/ExamSyllabus'));
+const ExamTimetable = lazy(() => import('./pages/exam/ExamTimetable'));
+const ExamQuestionPaper = lazy(() => import('./pages/exam/ExamQuestionPaper'));
+const ExamSamplePapers = lazy(() => import('./pages/exam/ExamSamplePapers'));
+const ExamResults = lazy(() => import('./pages/exam/ExamResults'));
+const ExamVerification = lazy(() => import('./pages/exam/ExamVerification'));
+const ExamNotices = lazy(() => import('./pages/exam/ExamNotices'));
 
 /* ── Admin Panel Pages (lazy) ── */
 const AdminLogin = lazy(() => import('./admin/pages/Login'));

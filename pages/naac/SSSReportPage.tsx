@@ -2,27 +2,28 @@ import React, { useEffect, useState } from "react";
 import PageLayout from "../../components/PageLayout";
 import PageBanner from "../../components/PageBanner";
 import { sssReportsService, type DynamicSssReport } from "../../services/sssReports";
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 const sssReports = [
   {
     label: "SSS Report 2018-19",
-    href: "https://vcet.edu.in/wp-content/uploads/2024/03/SSS-2018-19_Report.pdf",
+    href: "/pdfs/NAAC/SSSReport/SSS-2018-19_Report.pdf",
   },
   {
     label: "SSS Report 2019-20",
-    href: "https://vcet.edu.in/wp-content/uploads/2024/03/SSS-2019-20_Report.pdf",
+    href: "/pdfs/NAAC/SSSReport/SSS-2019-20_Report.pdf",
   },
   {
     label: "SSS Report 2020-21",
-    href: "https://vcet.edu.in/wp-content/uploads/2024/03/SSS-2020-21_Report.pdf",
+    href: "/pdfs/NAAC/SSSReport/SSS-2020-21_Report.pdf",
   },
   {
     label: "SSS Report 2021-22",
-    href: "https://vcet.edu.in/wp-content/uploads/2024/03/SSS-2021-22_Report.pdf",
+    href: "/pdfs/NAAC/SSSReport/SSS-2021-22_Report.pdf",
   },
   {
     label: "SSS Report 2022-23",
-    href: "https://vcet.edu.in/wp-content/uploads/2024/03/SSS-2022-23_Report.pdf",
+    href: "/pdfs/NAAC/SSSReport/SSS-2022-23_Report.pdf",
   },
 ];
 
@@ -77,7 +78,7 @@ const SSSReport: React.FC = () => {
                 <a
                   key={item.href}
                   className="flex items-center gap-4 bg-[#1a4b7c] text-[#fdb813] uppercase font-bold tracking-widest px-6 py-5 rounded-lg shadow-lg hover:scale-[1.02] hover:brightness-110 transition"
-                  href={item.href}
+                  href={resolveBackendHref(item.href)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -91,7 +92,7 @@ const SSSReport: React.FC = () => {
                 <a
                   key={item.href}
                   className="flex items-center gap-4 bg-[#1a4b7c] text-[#fdb813] uppercase font-bold tracking-widest px-6 py-5 rounded-lg shadow-lg hover:scale-[1.02] hover:brightness-110 transition"
-                  href={item.href}
+                  href={resolveBackendHref(item.href)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

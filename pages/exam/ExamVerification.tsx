@@ -1,6 +1,6 @@
 import React from 'react';
-import PageLayout from '../../../components/PageLayout';
-import PageBanner from '../../../components/PageBanner';
+import PageLayout from '../../components/PageLayout';
+import PageBanner from '../../components/PageBanner';
 import { ArrowLeft, ArrowRight, ShieldCheck, Mail, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 

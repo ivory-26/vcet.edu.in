@@ -1,8 +1,9 @@
 import React from 'react';
-import PageLayout from '../../../components/PageLayout';
-import PageBanner from '../../../components/PageBanner';
+import PageLayout from '../../components/PageLayout';
+import PageBanner from '../../components/PageBanner';
 import { ArrowLeft, FileText, Download, File } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 export interface PDFItem {
   name: string;
@@ -105,22 +106,27 @@ const ExamPDFPage: React.FC<ExamPDFPageProps> = ({ title, subtitle, breadcrumbLa
                                   </div>
                                 </td>
                                 <td className="px-8 py-5 text-right">
+                                  {(() => {
+                                    const resolvedUrl = pdf.url ? resolveBackendHref(pdf.url) : '#';
+                                    return (
                                   <a 
-                                    href={pdf.url || '#'} 
+                                    href={resolvedUrl} 
                                     onClick={(e) => {
-                                      if (!pdf.url) {
+                                      if (!pdf.url || resolvedUrl === '#') {
                                         e.preventDefault();
                                         alert('No PDF available');
                                       }
                                     }}
-                                    target={pdf.url ? "_blank" : undefined} 
-                                    rel={pdf.url ? "noopener noreferrer" : undefined}
+                                    target={pdf.url && resolvedUrl !== '#' ? "_blank" : undefined} 
+                                    rel={pdf.url && resolvedUrl !== '#' ? "noopener noreferrer" : undefined}
                                     className="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg hover:-translate-y-1 transition-all duration-300 group"
                                   >
                                     <File className="w-4 h-4" />
                                     <span className="font-bold text-xs uppercase tracking-wider">View PDF</span>
                                     <Download className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                                   </a>
+                                    );
+                                  })()}
                                 </td>
                               </tr>
                             ))}
