@@ -85,7 +85,12 @@ const mock = {
 // ── Real API ──────────────────────────────────────────────────────────────────
 const real = {
   list: (): Promise<PlacementStat[]> =>
-    client.request<PlacementStat[]>('/placement-year-stats'),
+    client.request<any>('/placement-year-stats').then((res) => {
+      if (Array.isArray(res)) return res;
+      if (res && Array.isArray(res.data)) return res.data;
+      if (res && Array.isArray(res.stats)) return res.stats;
+      return [];
+    }),
 
   add: (entry: PlacementStatPayload): Promise<PlacementStat> =>
     client.request<{ stat: PlacementStat }>('/placement-year-stats', {
