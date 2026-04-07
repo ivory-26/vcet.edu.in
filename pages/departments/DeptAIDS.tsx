@@ -494,7 +494,7 @@ const DeptAIDS: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Syllabus<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item, idx) => (
-                    <a key={idx} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={idx} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label || `Syllabus ${idx + 1}`}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -582,7 +582,7 @@ const DeptAIDS: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Innovations in Teaching Learning<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -607,7 +607,7 @@ const DeptAIDS: React.FC = () => {
                     <i className="ph ph-arrow-up-right text-brand-gold" />
                   </a>
                 )) : (
-                  <a href="/pdfs/Department/ArtificialIntelligenceandDataScience/MoU/AIDS-MoU-2024-25.pdf" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                  <a href="#" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                     <span>MoU 2024-25</span>
                     <i className="ph ph-arrow-up-right text-brand-gold" />
                   </a>

@@ -3,6 +3,7 @@ import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { ArrowUpRight, ExternalLink, FileText, Link2 } from 'lucide-react';
 import { getResearchSection } from '../../services/research';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 type LinkItem = {
   label: string;
@@ -12,11 +13,11 @@ type LinkItem = {
 const defaultDocButtons = [
   {
     label: 'Form for research recommendation',
-    href: '/pdfs/Research/ResearchDownloads/Form for research recommendation.pdf',
+    href: resolveUploadedAssetUrl('/pdfs/Research/ResearchDownloads/Form for research recommendation.pdf') || '/pdfs/Research/ResearchDownloads/Form for research recommendation.pdf',
   },
   {
     label: 'Form for Institute Research Funding Proposal',
-    href: '/pdfs/Research/ResearchDownloads/Form for Institute Research Funding Proposal.pdf',
+    href: resolveUploadedAssetUrl('/pdfs/Research/ResearchDownloads/Form for Institute Research Funding Proposal.pdf') || '/pdfs/Research/ResearchDownloads/Form for Institute Research Funding Proposal.pdf',
   },
 ];
 

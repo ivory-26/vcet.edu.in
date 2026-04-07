@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 import { Link } from 'react-router-dom';
 import PageLayout from '../../components/PageLayout';
 import DepartmentFacultySection from '../../components/DepartmentFacultySection';
@@ -692,7 +693,7 @@ const DeptComputerEngg: React.FC = () => {
                 <p className="text-slate-600 mb-5">NEP-2020 MU syllabus link is currently not available in the provided document.</p>
                 <div className="grid md:grid-cols-2 gap-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveBackendHref(item.url)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -724,7 +725,7 @@ const DeptComputerEngg: React.FC = () => {
                   <div className="space-y-6">
                     <div className="space-y-3">
                       {links.map((item) => (
-                        <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                        <a key={item.label} href={resolveBackendHref(item.url)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                           <span>{item.label}</span>
                           <i className="ph ph-arrow-up-right text-brand-gold" />
                         </a>
@@ -770,7 +771,7 @@ const DeptComputerEngg: React.FC = () => {
                       <div key={idx} className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col group">
                         {a.image ? (
                           <div className="h-48 overflow-hidden bg-slate-100">
-                            <img src={resolveUploadedAssetUrl(a.image as string)} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <img src={(resolveUploadedAssetUrl(a.image as string) || "")} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                           </div>
                         ) : (
                           <div className="h-24 bg-gradient-to-r from-brand-navy to-slate-800 flex items-center justify-center text-white/20">
@@ -809,7 +810,7 @@ const DeptComputerEngg: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Innovation &amp; Technique<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveBackendHref(item.url)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -870,7 +871,7 @@ const DeptComputerEngg: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Time Table<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
+                    <a key={item.label} href={resolveBackendHref(item.url)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
                   ))}
                 </div>
               </section>
@@ -980,4 +981,5 @@ const DeptComputerEngg: React.FC = () => {
 };
 
 export default DeptComputerEngg;
+
 

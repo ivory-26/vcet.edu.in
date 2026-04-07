@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExternalLink, FileText } from 'lucide-react';
+import { resolveUploadedAssetUrl } from '../../../utils/uploadedAssets';
 
 interface GermanPdfRowProps {
   title: string;
@@ -22,7 +23,7 @@ const GermanPdfRow: React.FC<GermanPdfRowProps> = ({ title, description, href })
         </div>
 
         <a
-          href={href}
+          href={resolveUploadedAssetUrl(href) || href}
           target="_blank"
           rel="noopener noreferrer"
           className="group inline-flex items-center justify-center gap-2 bg-brand-blue px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-white shadow-sm transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-brand-gold hover:text-brand-dark hover:shadow-md"

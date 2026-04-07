@@ -74,7 +74,7 @@ const toArray = (obj: any): any[] => {
 
   const documentsList = toArray(data?.documents);
   const docsSection = documentsList.some((d:any)=> d.url || d.pdfFile)
-    ? { id: 'pdf-docs', title: 'Documents', items: documentsList.filter((d:any)=> d.url || d.pdfFile).map((d:any, idx:number) => ({ id: String(idx), label: d.label || d.pdfFile?.name || 'Document', url: resolveApiUrl(d.pdfFile) || d.url })) }
+    ? { id: 'pdf-docs', title: 'Documents', items: documentsList.filter((d:any)=> d.url || d.pdfFile).map((d:any, idx:number) => ({ id: String(idx), label: d.label || d.pdfFile?.name || 'Document', url: resolveUploadedAssetUrl(d.pdfFile) || d.url })) }
     : getFallback('pdf-docs');
 
   const noticesList = toArray(data?.notices);

@@ -108,7 +108,11 @@ return () => {
         url: String(resolveUploadedAssetUrl(String(row.fileUrl ?? row.pdfUrl ?? '').trim()) || String(row.fileUrl ?? row.pdfUrl ?? '').trim()),
       }))
       .filter((row: PdfReport) => row.year && row.url);
-    return mapped.length > 0 ? mapped : fallbackAqarReports;
+    const selected = mapped.length > 0 ? mapped : fallbackAqarReports;
+    return selected.map((row) => ({
+      ...row,
+      url: resolveUploadedAssetUrl(row.url) || row.url,
+    }));
   }, [apiData]);
 
   const momReports = useMemo<PdfReport[]>(() => {
@@ -119,7 +123,11 @@ return () => {
         url: String(resolveUploadedAssetUrl(String(row.fileUrl ?? row.pdfUrl ?? '').trim()) || String(row.fileUrl ?? row.pdfUrl ?? '').trim()),
       }))
       .filter((row: PdfReport) => row.year && row.url);
-    return mapped.length > 0 ? mapped : fallbackMomReports;
+    const selected = mapped.length > 0 ? mapped : fallbackMomReports;
+    return selected.map((row) => ({
+      ...row,
+      url: resolveUploadedAssetUrl(row.url) || row.url,
+    }));
   }, [apiData]);
 
   const momReportParts = chunkReports(momReports, 3);
