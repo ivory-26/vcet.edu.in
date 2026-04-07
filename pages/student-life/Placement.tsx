@@ -248,7 +248,7 @@ const Placement: React.FC = () => {
                   <h4 className="text-[#64b5f6] text-2xl font-bold mb-4">Training &amp; Placement</h4>
                   <div className="flex items-center justify-center md:justify-start">
                     <a 
-                      href={apiData?.placementCell?.committeePdf || '#'} 
+                      href={resolveUploadedAssetUrl(apiData?.placementCell?.committeePdf) || '#'} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-2 text-slate-700 hover:text-[#1a4b7c] transition-colors group"
@@ -296,7 +296,7 @@ const Placement: React.FC = () => {
                   {placementReports.map((report) => (
                     <a
                       key={report.label}
-                      href={report.href || report.fileUrl || '#'}
+                      href={resolveUploadedAssetUrl(report.href || report.fileUrl) || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-4 border border-[#E5E7EB] bg-white px-4 py-4 group hover:bg-[#F7F9FC] transition-colors duration-200"
