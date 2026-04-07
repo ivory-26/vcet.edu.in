@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 const NAACScore: React.FC = () => {
   useEffect(() => {
-    window.location.replace('https://vcet.edu.in/wp-content/uploads/2025/03/Naac-Certificate.pdf');
+    window.location.replace(resolveBackendHref('/pdfs/NAAC/NAACAccreditationScore/Naac-Certificate.pdf'));
   }, []);
 
   return null;

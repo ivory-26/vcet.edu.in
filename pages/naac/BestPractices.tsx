@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { bestPracticeReportsService, type DynamicBestPracticeReport } from '../../services/bestPracticeReports';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 const bestPracticeCards = [
   {
     title: 'BEST PRACTICE - 1',
-    href: 'https://vcet.edu.in/NAAC/7/7.2.1_Best_Practices_1_and_Supporting_Document.pdf',
+    href: '/pdfs/NAAC/BestPracticesAndInstitutionalDistinctiveness/7.2.1_Best_Practices_1_and_Supporting_Document.pdf',
   },
   {
     title: 'BEST PRACTICE - 2',
-    href: 'https://vcet.edu.in/NAAC/7/7.2.1_Best_Practices_2_and_Supporting_Document_signed.pdf',
+    href: '/pdfs/NAAC/BestPracticesAndInstitutionalDistinctiveness/7.2.1_Best_Practices_2_and_Supporting_Document_signed.pdf',
   },
   {
     title: 'INSTITUTIONAL DISTINCTIVENESS',
-    href: 'https://vcet.edu.in/NAAC/7/7.3.1_Institutional_Distintiveness_r1_signed.pdf',
+    href: '/pdfs/NAAC/BestPracticesAndInstitutionalDistinctiveness/7.3.1_Institutional_Distintiveness_r1_signed.pdf',
   },
 ];
 
@@ -65,7 +66,7 @@ const BestPractices: React.FC = () => {
               {combinedCards.map((card, idx) => (
                 <a
                   key={`${card.title}-${idx}`}
-                  href={card.href}
+                  href={resolveBackendHref(card.href)}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={card.title}

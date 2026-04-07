@@ -58,7 +58,9 @@ const DeptFE = lazy(() => import('./pages/departments/DeptFE'));
 const DeanAcademics = lazy(() => import('./pages/academics/DeanAcademics'));
 const AcademicCalendar = lazy(() => import('./pages/academics/AcademicCalendar'));
 const TeachingLearning = lazy(() => import('./pages/academics/TeachingLearning'));
+const SwayamNPTEL = lazy(() => import('./pages/academics/SwayamNPTEL'));
 const HonoursMinor = lazy(() => import('./pages/academics/HonoursMinor'));
+const Downloads = lazy(() => import('./pages/academics/Downloads'));
 
 
 // pages/research
@@ -219,16 +221,16 @@ const MMSFacilitiesClassroom = lazy(() => import('./pages/mms/facilities/MMSFaci
 const MMSFacilitiesGymkhana = lazy(() => import('./pages/mms/facilities/MMSFacilitiesGymkhana'));
 const MMSFAQs = lazy(() => import('./pages/mms/faqs/MMSFAQs'));
 
-// pages/academics/exam
-const ExamDashboard = lazy(() => import('./pages/academics/exam/ExamDashboard'));
-const ExamAbout = lazy(() => import('./pages/academics/exam/ExamAbout'));
-const ExamSyllabus = lazy(() => import('./pages/academics/exam/ExamSyllabus'));
-const ExamTimetable = lazy(() => import('./pages/academics/exam/ExamTimetable'));
-const ExamQuestionPaper = lazy(() => import('./pages/academics/exam/ExamQuestionPaper'));
-const ExamSamplePapers = lazy(() => import('./pages/academics/exam/ExamSamplePapers'));
-const ExamResults = lazy(() => import('./pages/academics/exam/ExamResults'));
-const ExamVerification = lazy(() => import('./pages/academics/exam/ExamVerification'));
-const ExamNotices = lazy(() => import('./pages/academics/exam/ExamNotices'));
+// pages/exam
+const ExamDashboard = lazy(() => import('./pages/exam/ExamDashboard'));
+const ExamAbout = lazy(() => import('./pages/exam/ExamAbout'));
+const ExamSyllabus = lazy(() => import('./pages/exam/ExamSyllabus'));
+const ExamTimetable = lazy(() => import('./pages/exam/ExamTimetable'));
+const ExamQuestionPaper = lazy(() => import('./pages/exam/ExamQuestionPaper'));
+const ExamSamplePapers = lazy(() => import('./pages/exam/ExamSamplePapers'));
+const ExamResults = lazy(() => import('./pages/exam/ExamResults'));
+const ExamVerification = lazy(() => import('./pages/exam/ExamVerification'));
+const ExamNotices = lazy(() => import('./pages/exam/ExamNotices'));
 
 /* ── Admin Panel Pages (lazy) ── */
 const AdminLogin = lazy(() => import('./admin/pages/Login'));
@@ -425,7 +427,9 @@ function App() {
             <Route path="/dean-academics" element={<DeanAcademics />} />
             <Route path="/academic-calendar" element={<AcademicCalendar />} />
             <Route path="/teaching-learning" element={<TeachingLearning />} />
+            <Route path="/swayam-nptel" element={<SwayamNPTEL />} />
             <Route path="/honours-minor" element={<HonoursMinor />} />
+            <Route path="/downloads" element={<Downloads />} />
 
             {/* Research */}
             <Route path="/research" element={<ResearchIntro />} />
@@ -440,7 +444,6 @@ function App() {
             <Route path="/iic" element={<ResearchIIC />} />
             <Route path="/nirf" element={<NIRF />} />
             <Route path="/research-downloads" element={<ResearchDownloads />} />
-            <Route path="/downloads" element={<ResearchDownloads />} />
 
             {/* Facilities */}
             <Route path="/central-computing" element={<CentralComputing />} />

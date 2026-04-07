@@ -54,14 +54,27 @@ const DeptFE: React.FC = () => {
   const [dynamicApiItems, setDynamicApiItems] = useState<any[]>([]);
 
   useEffect(() => {
-    departmentApi.getBySlug('first-year-engineering')
-      .then((res) => {
-        if (res.success) {
-          setDepartment(res.data);
-          newsletterApi.list(res.data.id).then(n => setDynamicApiItems(n.data)).catch(console.error);
+    const candidateSlugs = [
+      'first-year-engineering',
+    ];
+
+    const loadDepartment = async () => {
+      for (const candidateSlug of candidateSlugs) {
+        try {
+          const res = await departmentApi.getBySlug(candidateSlug);
+          if (res.success) {
+            setDepartment(res.data);
+            newsletterApi.list(res.data.id).then(n => setDynamicApiItems(n.data)).catch(console.error);
+            return;
+          }
+        } catch {
+          // Try next compatible slug.
         }
-      })
-      .catch(() => setDepartment(null));
+      }
+      setDepartment(null);
+    };
+
+    loadDepartment();
   }, []);
 
   const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
@@ -422,7 +435,7 @@ const DeptFE: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Syllabus<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
                   ))}
@@ -433,6 +446,10 @@ const DeptFE: React.FC = () => {
 
           {/* â•â•â•â• TIME TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'time-table' && (() => {
+            const dynamicLinks = (department?.content?.timetable || []).map((t, idx) => ({
+              label: (t.class || '').trim() || `Time Table ${idx + 1}`,
+              url: resolveUploadedAssetUrl(t.pdf as string) || '#',
+            }));
             const sem2Links = [
               { label: 'Sem II - FE A (Comp 1)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM2/DivAComps1_Sem2_TT.pdf' },
               { label: 'Sem II - FE B (Comp 2)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM2/DivBComps2_Sem2_TT-.pdf' },
@@ -461,6 +478,23 @@ const DeptFE: React.FC = () => {
               { label: 'Sem I - FE K (VLSI)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM1/Div-K-VLSI-engg.-_-TT.pdf' },
               { label: 'Sem I - FE L (CSE-DS 3)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM1/L-Div-_-CSE-DS-3_-TT.pdf' },
             ];
+
+            if (dynamicLinks.length > 0) {
+              return (
+                <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100 space-y-6">
+                  <div className="flex items-center gap-3"><span className="w-8 h-px bg-brand-gold" /><span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">First Year Engineering</span></div>
+                  <h3 className="text-2xl font-bold text-brand-navy relative inline-block">Time Table<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
+                  <div className="space-y-3">
+                    {dynamicLinks.map((item) => (
+                      <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                        <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              );
+            }
+
             return (
               <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100 space-y-8">
                 <div className="flex items-center gap-3"><span className="w-8 h-px bg-brand-gold" /><span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">First Year Engineering</span></div>
@@ -469,7 +503,7 @@ const DeptFE: React.FC = () => {
                   <h4 className="text-lg font-bold text-brand-navy mb-3">Time Table Sem II</h4>
                   <div className="space-y-3">
                     {sem2Links.map((item) => (
-                      <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                      <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                         <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                       </a>
                     ))}
@@ -479,7 +513,7 @@ const DeptFE: React.FC = () => {
                   <h4 className="text-lg font-bold text-brand-navy mb-3">Time Table Sem I</h4>
                   <div className="space-y-3">
                     {sem1Links.map((item) => (
-                      <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                      <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                         <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                       </a>
                     ))}
@@ -537,7 +571,7 @@ const DeptFE: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Innovations in Teaching Learning<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
                   ))}
@@ -565,7 +599,7 @@ const DeptFE: React.FC = () => {
                 </p>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
                   ))}
@@ -582,19 +616,25 @@ const DeptFE: React.FC = () => {
                 <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
                   <div className="flex items-center gap-3 mb-4"><span className="w-8 h-px bg-brand-gold" /><span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">First Year Engineering</span></div>
                   <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Toppers<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dynamicToppers.map((t, idx) => (
-                      <div key={idx} className="bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col items-center text-center hover:bg-slate-100/80 transition-colors">
-                        <div className="w-16 h-16 bg-brand-navy/5 text-brand-gold rounded-full flex items-center justify-center mb-3">
-                          <i className="ph-fill ph-medal text-3xl" />
-                        </div>
-                        <h4 className="font-bold text-brand-navy text-lg mb-1">{t.name}</h4>
-                        <p className="text-slate-500 text-sm font-medium mb-3">{t.year}</p>
-                        <div className="bg-emerald-50 text-emerald-600 px-4 py-1.5 rounded-full text-sm font-bold border border-emerald-100">
-                          CGPA: {t.cgpa}
-                        </div>
-                      </div>
-                    ))}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-brand-navy text-white">
+                          <th className="px-4 py-3 text-left">Name</th>
+                          <th className="px-4 py-3 text-left">Year</th>
+                          <th className="px-4 py-3 text-left">CGPA</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dynamicToppers.map((t, idx) => (
+                          <tr key={idx} className="border-t border-slate-100">
+                            <td className="px-4 py-3 text-slate-700">{t.name || '-'}</td>
+                            <td className="px-4 py-3 text-slate-700">{t.year || '-'}</td>
+                            <td className="px-4 py-3 text-slate-700">{t.cgpa || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </section>
               );
@@ -652,7 +692,7 @@ const DeptFE: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Annual Reports<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
                   ))}
@@ -670,7 +710,7 @@ const DeptFE: React.FC = () => {
             />
           )}
 
-          {activeId !== 'about' && activeId !== 'vision' && activeId !== 'dab' && activeId !== 'mou' && activeId !== 'patent' && activeId !== 'peo' && activeId !== 'faculty' && activeId !== 'infrastructure' && activeId !== 'time-table' && activeId !== 'teaching-learning' && activeId !== 'induction' && activeId !== 'annual-reports' && activeId !== 'toppers' && activeId !== 'syllabus' && activeId !== 'newsletter' && (
+          {activeId !== 'about' && activeId !== 'vision' && activeId !== 'dab' && activeId !== 'mou' && activeId !== 'patent' && activeId !== 'peo' && activeId !== 'faculty' && activeId !== 'faculty-achievements' && activeId !== 'student-achievements' && activeId !== 'infrastructure' && activeId !== 'time-table' && activeId !== 'teaching-learning' && activeId !== 'induction' && activeId !== 'annual-reports' && activeId !== 'toppers' && activeId !== 'syllabus' && activeId !== 'newsletter' && (
             <section className="reveal bg-white rounded-3xl p-12 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center min-h-[300px]">
               <div className="w-16 h-16 rounded-2xl bg-brand-navylight flex items-center justify-center mb-4">
                 <i className={`ph ${activeLink?.icon ?? 'ph-folder'} text-3xl text-brand-navy`} />
