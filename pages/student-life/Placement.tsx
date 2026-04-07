@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { FileText, ExternalLink, Check } from 'lucide-react';
-import { getPlacementPage, PlacementPageData } from '../../services/placementPage';
+import { getPlacementPage, PlacementPageData, PlacementReport } from '../../services/placementPage';
 import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 const sidebarLinks = [
@@ -11,6 +11,46 @@ const sidebarLinks = [
   { id: 'gallery',    label: 'Gallery', icon: 'ph-image' },
   { id: 'placement-statistics',label: 'Placement Statistics', icon: 'ph-chart-bar' },
   { id: 'our-recruiters',   label: 'Our Recruiters', icon: 'ph-buildings' },
+];
+
+const PLACEMENT_STATISTICS_PDF_BASE = '/pdfs/Training%26Placements/Placement/PlacementStatistics';
+
+const DEFAULT_PLACEMENT_REPORTS: PlacementReport[] = [
+  {
+    label: 'Placement Statistics 2018-19',
+    href: `${PLACEMENT_STATISTICS_PDF_BASE}/${encodeURIComponent('2018-19_Website(Placement).pdf')}`,
+    year: '2018-19',
+  },
+  {
+    label: 'Placement Statistics 2019-20',
+    href: `${PLACEMENT_STATISTICS_PDF_BASE}/${encodeURIComponent('2019-20_Website(Placement).pdf')}`,
+    year: '2019-20',
+  },
+  {
+    label: 'Placement Statistics 2020-21',
+    href: `${PLACEMENT_STATISTICS_PDF_BASE}/${encodeURIComponent('2020-21_Website(Placement).pdf')}`,
+    year: '2020-21',
+  },
+  {
+    label: 'Placement Statistics 2021-22',
+    href: `${PLACEMENT_STATISTICS_PDF_BASE}/${encodeURIComponent('2021-22_Website(Placement).pdf')}`,
+    year: '2021-22',
+  },
+  {
+    label: 'Placement Statistics 2022-23',
+    href: `${PLACEMENT_STATISTICS_PDF_BASE}/${encodeURIComponent('Placement-2022-23.pdf')}`,
+    year: '2022-23',
+  },
+  {
+    label: 'Placement Statistics 2024-25',
+    href: `${PLACEMENT_STATISTICS_PDF_BASE}/${encodeURIComponent('Placement-Summary-24-25-for-Website.pdf')}`,
+    year: '2024-25',
+  },
+  {
+    label: 'Placement Statistics (Merged)',
+    href: `${PLACEMENT_STATISTICS_PDF_BASE}/${encodeURIComponent('Website-Data_merged-1(Placement2021-2022).pdf')}`,
+    year: '2021-22',
+  },
 ];
 
 const StyledPointList: React.FC<{ items: string[] }> = ({ items }) => (
@@ -65,7 +105,12 @@ const Placement: React.FC = () => {
   }, []);
 
   const placementReports = useMemo(() => {
-    return apiData?.reports || [];
+    const reports = (apiData?.reports || []).map((report) => ({
+      ...report,
+      href: report.href || report.fileUrl || '#',
+    }));
+
+    return reports.length > 0 ? reports : DEFAULT_PLACEMENT_REPORTS;
   }, [apiData]);
   const objectives = useMemo(() => (apiData?.objectives || []), [apiData]);
   const placementCellMembers = useMemo(() => (apiData?.placementCell?.members || []), [apiData]);
