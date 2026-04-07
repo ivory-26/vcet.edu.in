@@ -58,7 +58,9 @@ const DeptFE = lazy(() => import('./pages/departments/DeptFE'));
 const DeanAcademics = lazy(() => import('./pages/academics/DeanAcademics'));
 const AcademicCalendar = lazy(() => import('./pages/academics/AcademicCalendar'));
 const TeachingLearning = lazy(() => import('./pages/academics/TeachingLearning'));
+const SwayamNPTEL = lazy(() => import('./pages/academics/SwayamNPTEL'));
 const HonoursMinor = lazy(() => import('./pages/academics/HonoursMinor'));
+const Downloads = lazy(() => import('./pages/academics/Downloads'));
 
 
 // pages/research
@@ -84,6 +86,7 @@ const HealthFacilities = lazy(() => import('./pages/facilities/HealthFacilities'
 const DifferentlyAbled = lazy(() => import('./pages/facilities/DifferentlyAbled'));
 
 // pages/student-life
+const CareerAtVCET = lazy(() => import('./pages/student-life/CareerAtVCET'));
 const CulturalCommittee = lazy(() => import('./pages/student-life/CulturalCommittee'));
 const SportsCommittee = lazy(() => import('./pages/student-life/SportsCommittee'));
 const Literati = lazy(() => import('./pages/student-life/Literati'));
@@ -424,7 +427,9 @@ function App() {
             <Route path="/dean-academics" element={<DeanAcademics />} />
             <Route path="/academic-calendar" element={<AcademicCalendar />} />
             <Route path="/teaching-learning" element={<TeachingLearning />} />
+            <Route path="/swayam-nptel" element={<SwayamNPTEL />} />
             <Route path="/honours-minor" element={<HonoursMinor />} />
+            <Route path="/downloads" element={<Downloads />} />
 
             {/* Research */}
             <Route path="/research" element={<ResearchIntro />} />
@@ -439,7 +444,6 @@ function App() {
             <Route path="/iic" element={<ResearchIIC />} />
             <Route path="/nirf" element={<NIRF />} />
             <Route path="/research-downloads" element={<ResearchDownloads />} />
-            <Route path="/downloads" element={<ResearchDownloads />} />
 
             {/* Facilities */}
             <Route path="/central-computing" element={<CentralComputing />} />
@@ -451,6 +455,7 @@ function App() {
             <Route path="/differently-abled" element={<DifferentlyAbled />} />
 
             {/* Student Life */}
+            <Route path="/career-at-vcet" element={<CareerAtVCET />} />
             <Route path="/students-council" element={<Navigate to="/" replace />} />
             <Route path="/cultural-committee" element={<CulturalCommittee />} />
             <Route path="/sports-committee" element={<SportsCommittee />} />

@@ -5,9 +5,9 @@ import { resolveUploadedAssetUrl } from "../utils/uploadedAssets";
 
 // -- Data (all logos from /public/images/Main Page/recruiters/) ---------------------------
 type Recruiter = { name: string; logo: string; url: string };
-const RECRUITERS_BACKEND_DIR = "/images/Main Page/recruiters/";
+const RECRUITERS_BACKEND_PATH = "/images/Main Page/recruiters/";
 
-// Canonical name -> bundled local fallback image URLs.
+// Canonical name -> bundled local fallback image path.
 const LOGO_ARCON = "/images/Main Page/recruiters/arcon-logo.png";
 const LOGO_BRISTLECONE = "/images/Main Page/recruiters/bristlecone-logo.png";
 const LOGO_BUILTIO = "/images/Main Page/recruiters/builtio-300x72-1.png";
@@ -30,6 +30,13 @@ const LOGO_VODAFONE = "/images/Main Page/recruiters/VODAPHONE.jpg";
 const LOGO_WIPRO = "/images/Main Page/recruiters/wipro-logo.png";
 const LOGO_ZENSOFT = "/images/Main Page/recruiters/Zensoft-logo.jpg";
 const LOGO_ZEUS = "/images/Main Page/recruiters/Zeus-Learning-logo.png";
+
+// Additional fallbacks matching backend public/images/Main Page/recruiters/
+const LOGO_ACCENTURE = "/images/Main Page/recruiters/accenture-logo.png";
+const LOGO_GODREJ = "/images/Main Page/recruiters/godrej-infotech-logo.png";
+const LOGO_HEXAWARE = "/images/Main Page/recruiters/hexaware-logo.jpeg";
+const LOGO_INTERACTIVE_BROKERS = "/images/Main Page/recruiters/interactive-brokers-logo.png";
+const LOGO_NEEBAL = "/images/Main Page/recruiters/neebal-technologies-logo.png";
 
 const recruiterLogoMap: Record<string, string> = {
   "arcon":               LOGO_ARCON,
@@ -59,17 +66,21 @@ const recruiterLogoMap: Record<string, string> = {
   "zensoft":             LOGO_ZENSOFT,
   "zeus learning":       LOGO_ZEUS,
   "zeus":                LOGO_ZEUS,
+  "godrej":              LOGO_GODREJ,
+  "accenture":           LOGO_ACCENTURE,
+  "hexaware":            LOGO_HEXAWARE,
+  "interactive brokers": LOGO_INTERACTIVE_BROKERS,
+  "neebal":              LOGO_NEEBAL,
 };
 
+const CLEAN_RECRUITERS_PATH = "/images/recruiters_clean/";
+
 const forcedRecruiterFileByName: Record<string, string> = {
-  "accenture": "accenture.jpeg",
-  "godrej infoware": "Godrej-Infoware.jpeg",
-  "godrej infowere": "Godrej-Infoware.jpeg",
-  "hexaware": "hexaware.jpeg",
-  "hexawere": "hexaware.jpeg",
+  "accenture":           "Accenture-Logo-PNG-Vector-EPS-Free-Download.jpeg",
+  "godrej":              "godrej-infotech.jpeg",
+  "hexaware":            "hexaware-logo.jpeg",
   "interactive brokers": "interactive-brokers.jpeg",
-  "neebal technologies": "neebal-technologoes.jpeg",
-  "neebal technologoes": "neebal-technologoes.jpeg",
+  "neebal":              "neebal-technologoes.jpeg",
 };
 
 function toKey(value: unknown): string {
@@ -82,7 +93,7 @@ function getForcedRecruiterLogoByName(nameValue: unknown): string | null {
 
   for (const [partnerName, fileName] of Object.entries(forcedRecruiterFileByName)) {
     if (key.includes(partnerName)) {
-      return `${RECRUITERS_BACKEND_DIR}${fileName}`;
+      return `${CLEAN_RECRUITERS_PATH}${fileName}`;
     }
   }
 
@@ -114,38 +125,30 @@ function normalizeRecruiterLogoCandidate(candidate: unknown): string | null {
 
   // Bare filename from API should point to recruiters folder on backend.
   if (!trimmed.includes('/')) {
-    return `${RECRUITERS_BACKEND_DIR}${trimmed}`;
+    return `${RECRUITERS_BACKEND_PATH}${trimmed}`;
   }
+
+  // If path is absolute (e.g. from placementsService), leave as is.
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
 
   // Upload-style values should map to the canonical recruiters folder.
   const lower = trimmed.toLowerCase();
   if (lower.startsWith('/uploads/') || lower.startsWith('uploads/') || lower.includes('/uploads/')) {
     const fileName = extractFileName(trimmed);
-    if (fileName) return `${RECRUITERS_BACKEND_DIR}${fileName}`;
-  }
-
-  // Absolute URLs like https://.../uploads/<file>
-  try {
-    const parsed = new URL(trimmed);
-    const lowerPath = parsed.pathname.toLowerCase();
-    if (lowerPath.startsWith('/uploads/') || lowerPath.includes('/uploads/')) {
-      const fileName = extractFileName(parsed.pathname);
-      if (fileName) {
-        return `${parsed.origin}${encodeURI(`${RECRUITERS_BACKEND_DIR}${fileName}`)}`;
-      }
-    }
-  } catch {
-    // Non-absolute path: keep original behavior.
+    if (fileName) return `${RECRUITERS_BACKEND_PATH}${fileName}`;
   }
 
   return trimmed;
 }
 
 function resolveRecruiterLogo(raw: any): string | null {
-  const forcedByName = getForcedRecruiterLogoByName(raw?.company ?? raw?.name);
-  if (forcedByName) {
-    return resolveUploadedAssetUrl(forcedByName) ?? forcedByName;
-  }
+  const name = raw?.company ?? raw?.name;
+  const forcedPath = getForcedRecruiterLogoByName(name);
+  if (forcedPath) return resolveUploadedAssetUrl(forcedPath);
+
+  // Check manual mapping first
+  const mapped = findLocalLogo(name);
+  if (mapped) return resolveUploadedAssetUrl(mapped);
 
   const rawCandidate =
     raw?.logo ??
@@ -157,15 +160,11 @@ function resolveRecruiterLogo(raw: any): string | null {
     null;
 
   const candidate = normalizeRecruiterLogoCandidate(rawCandidate);
-
   const backendLogo = resolveUploadedAssetUrl(candidate);
+  
   if (backendLogo) {
-    // Prevent mixed-content blocking when frontend is HTTPS.
     if (typeof window !== "undefined" && window.location.protocol === "https:" && backendLogo.startsWith("http://")) {
       return `https://${backendLogo.slice("http://".length)}`;
-    }
-    if (backendLogo.startsWith("//")) {
-      return `https:${backendLogo}`;
     }
     return backendLogo;
   }
@@ -188,11 +187,11 @@ function getBackendImageRetryCandidates(url: string): string[] {
       const parsed = new URL(url);
       const fileName = extractFileName(parsed.pathname);
       if (!fileName) return null;
-      return `${parsed.origin}${encodeURI(`${RECRUITERS_BACKEND_DIR}${fileName}`)}`;
+      return resolveUploadedAssetUrl(`${RECRUITERS_BACKEND_PATH}${fileName}`) || `${RECRUITERS_BACKEND_PATH}${fileName}`;
     } catch {
       const fileName = extractFileName(url);
       if (!fileName) return null;
-      return encodeURI(`${RECRUITERS_BACKEND_DIR}${fileName}`);
+      return resolveUploadedAssetUrl(`${RECRUITERS_BACKEND_PATH}${fileName}`) || `${RECRUITERS_BACKEND_PATH}${fileName}`;
     }
   })();
   add(candidates, recruitersPathRetry);
@@ -522,7 +521,7 @@ const Recruiters: React.FC = () => {
 
     {/* Background image */}
     <img
-      src="/images/Main Page/PLACEMENT/Placement_Background.jpg"
+      src={resolveUploadedAssetUrl("/images/Main Page/PLACEMENT/Placement_Background.jpg") ?? "/images/Main Page/PLACEMENT/Placement_Background.jpg"}
       alt=""
       className="absolute inset-0 w-full h-full object-cover"
       aria-hidden="true"

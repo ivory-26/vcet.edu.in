@@ -50,12 +50,17 @@ const testimonials: Testimonial[] = [
 
 const TESTIMONIAL_CACHE_BUSTER = 'v=20260407';
 const FORCED_TESTIMONIAL_IMAGES: Record<string, string> = {
-  'dr amrita m a': 'https://vcet-3vjm.onrender.com/images/Main%20Page/testimonials/Dr_Amrita_M_A.jpg',
-  'anish patki': 'https://vcet-3vjm.onrender.com/images/Main%20Page/testimonials/Anish_Patki.jpg',
+  'dr amrita m a': '/images/Main Page/testimonials/Dr_Amrita_M_A.jpg',
+  'anish patki': '/images/Main Page/testimonials/Anish_Patki.jpg',
 };
 
 function normalizeName(name: string | null | undefined): string {
-  return (name ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+  return (name ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function appendCacheBuster(url: string): string {
@@ -70,7 +75,7 @@ function normalizeImagePath(path: string): string {
 
 function resolveTestimonialPhoto(name: string, rawPhoto: string | null | undefined): string | null {
   const forced = FORCED_TESTIMONIAL_IMAGES[normalizeName(name)];
-  if (forced) return appendCacheBuster(forced);
+  if (forced) return appendCacheBuster(resolveUploadedAssetUrl(forced) ?? forced);
 
   if (!rawPhoto) return null;
   const normalized = normalizeImagePath(rawPhoto);
@@ -87,14 +92,19 @@ const Testimonials: React.FC = () => {
   const apiTestimonials = useAggregate ? homepage!.data.testimonials : fallbackTestimonials;
   
   // Use API data if available, otherwise fallback to static data
-  const displayTestimonials = apiTestimonials.length > 0 ? apiTestimonials.map(t => ({
-    id: t.id,
-    text: t.text,
-    name: t.name,
-    position: t.role || '',
-    company: '', // Backend doesn't have company distinct from role yet
-    image: resolveTestimonialPhoto(t.name, t.photo)
-  })) : testimonials;
+  const displayTestimonials = apiTestimonials.length > 0
+    ? apiTestimonials.map((t) => ({
+        id: t.id,
+        text: t.text,
+        name: t.name,
+        position: t.role || '',
+        company: '', // Backend doesn't have company distinct from role yet
+        image: resolveTestimonialPhoto(t.name, t.photo),
+      }))
+    : testimonials.map((t) => ({
+        ...t,
+        image: resolveTestimonialPhoto(t.name, t.image),
+      }));
   return (
     <section id="testimonials" className="py-10 md:py-16 bg-brand-light relative overflow-hidden">
       <div className="absolute bottom-0 right-0 w-[240px] h-[240px] sm:w-[380px] sm:h-[380px] md:w-[500px] md:h-[500px] bg-brand-blue/[0.03] rounded-full translate-x-1/3 translate-y-1/3" />

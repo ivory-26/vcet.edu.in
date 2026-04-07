@@ -332,9 +332,13 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ activeSection, onBack }) 
 
     try {
       const response = await admissionsApi.getSection(config.slug);
+      const fetchedItems = (response.data.items ?? []).map(toEditableItem);
       setSection(response.data);
       setForm(toSectionFormState(response.data, config));
-      setItems((response.data.items ?? []).map(toEditableItem));
+      setItems(fetchedItems);
+      
+      // Initialize items as collapsed on first load
+      setCollapsedItems(new Set(fetchedItems.map(item => item.client_id)));
     } catch (error) {
       setToast({ message: error instanceof Error ? error.message : 'Unable to load admission section', type: 'error' });
     } finally {
@@ -348,13 +352,6 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ activeSection, onBack }) 
 
   useEffect(() => {
     itemsRef.current = items;
-  }, [items]);
-
-  useEffect(() => {
-    if (items.length > 0) {
-      const allItemIds = new Set(items.map((item) => item.client_id));
-      setCollapsedItems(allItemIds);
-    }
   }, [items]);
 
   useEffect(() => {
@@ -627,11 +624,25 @@ const AdmissionForm: React.FC<AdmissionFormProps> = ({ activeSection, onBack }) 
   };
 
   const addCourseItem = (category: string) => {
-    setItems((current) => [...current, createEmptyCourseItem(category)]);
+    const newItem = createEmptyCourseItem(category);
+    setItems((current) => [...current, newItem]);
+    // Ensure new item is NOT collapsed so user can fill it
+    setCollapsedItems(prev => {
+      const next = new Set(prev);
+      next.delete(newItem.client_id);
+      return next;
+    });
   };
 
   const addDocumentItem = () => {
-    setItems((current) => [...current, createEmptyDocumentItem(sectionKey)]);
+    const newItem = createEmptyDocumentItem(sectionKey);
+    setItems((current) => [...current, newItem]);
+    // Ensure new item is NOT collapsed
+    setCollapsedItems(prev => {
+      const next = new Set(prev);
+      next.delete(newItem.client_id);
+      return next;
+    });
   };
 
   const validateBeforeSave = (): string | null => {

@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { facultyApi } from '../admin/api/faculty';
 import type { Faculty } from '../admin/types';
 import fallbackFacultyData from './fallbackFaculty.json';
+import { resolveUploadedAssetUrl } from '../utils/uploadedAssets';
 
 interface DepartmentFacultySectionProps {
   departmentName: string;
+  selectedFacultyIds?: Array<number | string>;
 }
 
 const FALLBACK_FACULTY = (
@@ -35,6 +37,33 @@ const DEPARTMENT_ALIASES: Record<string, string> = {
   'mechanical engineering': 'mechanical engineering',
 };
 
+const CE_IMAGE_BASE = '/images/Departments/Computer Engineering';
+const CE_FACULTY_IMAGE_BY_KEY: Record<string, string> = {
+  anilhingmire: 'facultycompsMr.-Anil-Hingmire.jpg',
+  atharva: 'facultycompsAtharva.jpeg',
+  awantika: 'facultycompsAwantika-pic.jpeg',
+  bhaktijadhav: 'facultycompsMs.Bhakti-Jadhav.png',
+  brinal: 'facultycompsBrinal.jpeg',
+  dineshpatil: 'facultycompsDinesh-Patil.jpg',
+  joyce: 'facultycompsJoyce.jpg',
+  manali: 'Ms.facultycompsManali.jpg',
+  meghatrivedi: 'facultycompsDr.-Megha-Trivedi.jpg',
+  nehasurti: 'facultycompsNeha-Surti1.jpg',
+  sanketpatil: 'facultycompsMr.-Sanket-Patil.jpg',
+  shilpa: 'facultycompsShilpa-J.jpeg',
+  smitajawale: 'facultycompsMrs.-Smita-Jawale.jpg',
+  snehamhatre: 'facultycompsMrs.-Sneha-Mhatre.jpg',
+  soniya: 'facultycompsSoniya-R-Khatu.jpg',
+  sridhar: 'facultycompsSridhar.jpeg',
+  sunilkatkar: 'facultycompsMr.-Sunil-Katkar.jpg',
+  swapnaborde: 'facultycompsDr.-Swapna-Borde.jpg',
+  sweetypatil: 'facultycompsMs.Sweety-Patil.jpg',
+  swativarma: 'facultycompsSwati-Varma.jpg',
+  vanashree: 'facultycompsvanashree.jpg',
+  vinal: 'facultycompsVinal-photo.jpeg',
+  vishalpande: 'facultycompsMr.Vishal-Pande.jpg',
+};
+
 const normalizeDepartmentName = (value: string): string => {
   const normalized = value
     .toLowerCase()
@@ -44,6 +73,19 @@ const normalizeDepartmentName = (value: string): string => {
     .trim();
 
   return DEPARTMENT_ALIASES[normalized] || normalized;
+};
+
+const normalizeFacultyKey = (value: string): string => {
+  return value
+    .toLowerCase()
+    .replace(/\b(dr|mr|mrs|ms|prof)\.?\s*/g, '')
+    .replace(/[^a-z]/g, '');
+};
+
+const getComputerFacultyImage = (name: string): string | undefined => {
+  const key = normalizeFacultyKey(name);
+  const entry = Object.entries(CE_FACULTY_IMAGE_BY_KEY).find(([matchKey]) => key.includes(matchKey));
+  return entry ? `${CE_IMAGE_BASE}/${entry[1]}` : undefined;
 };
 
 const isFacultyActive = (faculty: Faculty): boolean => {
@@ -64,6 +106,20 @@ const filterFacultyByDepartment = (allFaculty: Faculty[], departmentName: string
   });
 };
 
+const normalizeSelectedFacultyIds = (ids?: Array<number | string>): Set<string> => {
+  if (!Array.isArray(ids)) return new Set<string>();
+  return new Set(ids.map((id) => String(id)).filter((id) => id.length > 0));
+};
+
+const filterFacultyBySelection = (allFaculty: Faculty[], selectedIds: Set<string>): Faculty[] => {
+  if (selectedIds.size === 0) return [];
+
+  return allFaculty.filter((faculty) => {
+    if (!isFacultyActive(faculty)) return false;
+    return selectedIds.has(String(faculty.id));
+  });
+};
+
 const getInitials = (name: string) => {
   const cleanName = name.replace(/^(Dr\.|Mr\.|Ms\.|Mrs\.|Prof\.)\s*/i, '').trim();
   const parts = cleanName.split(' ').filter(Boolean);
@@ -72,11 +128,12 @@ const getInitials = (name: string) => {
 
 const ImageWithFallback: React.FC<{ url?: string; name: string }> = ({ url, name }) => {
   const [error, setError] = useState(false);
+  const resolvedUrl = url ? resolveUploadedAssetUrl(url) ?? url : undefined;
 
-  if (url && !error) {
+  if (resolvedUrl && !error) {
     return (
       <img
-        src={url}
+        src={resolvedUrl}
         alt={name}
         onError={() => setError(true)}
         className="w-full h-full object-cover object-top"
@@ -91,32 +148,42 @@ const ImageWithFallback: React.FC<{ url?: string; name: string }> = ({ url, name
   );
 };
 
-const DepartmentFacultySection: React.FC<DepartmentFacultySectionProps> = ({ departmentName }) => {
+const DepartmentFacultySection: React.FC<DepartmentFacultySectionProps> = ({ departmentName, selectedFacultyIds }) => {
   const [faculty, setFaculty] = useState<Faculty[]>([]);
   const [loading, setLoading] = useState(true);
+  const isComputerDepartment = normalizeDepartmentName(departmentName) === 'computer engineering';
 
   useEffect(() => {
+    const selectedIdSet = normalizeSelectedFacultyIds(selectedFacultyIds);
+
+    const selectFaculty = (allFaculty: Faculty[]): Faculty[] => {
+      const selected = filterFacultyBySelection(allFaculty, selectedIdSet);
+      if (selected.length > 0) return selected;
+
+      return filterFacultyByDepartment(allFaculty, departmentName);
+    };
+
     setLoading(true);
     facultyApi.publicList()
       .then(r => {
         const all = Array.isArray(r.data) ? r.data : [];
-        const filtered = filterFacultyByDepartment(all, departmentName);
+        const picked = selectFaculty(all);
 
-        if (filtered.length > 0) {
-          setFaculty(filtered);
+        if (picked.length > 0) {
+          setFaculty(picked);
           return;
         }
 
-        const fallbackFiltered = filterFacultyByDepartment(FALLBACK_FACULTY, departmentName);
-        setFaculty(fallbackFiltered);
+        const fallbackPicked = selectFaculty(FALLBACK_FACULTY);
+        setFaculty(fallbackPicked);
       })
       .catch((e) => {
         console.warn('Failed to fetch faculty from backend API', e);
-        const fallbackFiltered = filterFacultyByDepartment(FALLBACK_FACULTY, departmentName);
-        setFaculty(fallbackFiltered);
+        const fallbackPicked = selectFaculty(FALLBACK_FACULTY);
+        setFaculty(fallbackPicked);
       })
       .finally(() => setLoading(false));
-  }, [departmentName]);
+  }, [departmentName, selectedFacultyIds]);
 
   if (loading) {
     return (
@@ -176,7 +243,10 @@ const DepartmentFacultySection: React.FC<DepartmentFacultySectionProps> = ({ dep
               {/* Photo with gold badge at bottom-right */}
               <div className="relative w-32 h-36 mb-4 shrink-0">
                 <div className="w-full h-full overflow-hidden rounded-t-sm shadow-sm border border-slate-100">
-                  <ImageWithFallback url={f.profileImage?.url} name={f.basicInfo.fullName} />
+                  <ImageWithFallback
+                    url={f.profileImage?.url || (isComputerDepartment ? getComputerFacultyImage(f.basicInfo.fullName) : undefined)}
+                    name={f.basicInfo.fullName}
+                  />
                 </div>
                 {/* Gold accent square */}
                 <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-[#fdb813] shadow-sm" />

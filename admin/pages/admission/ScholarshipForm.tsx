@@ -170,7 +170,9 @@ const ScholarshipForm: React.FC<ScholarshipFormProps> = ({ onBack }) => {
         sort_order: String(sectionData.sort_order ?? 0),
         is_active: sectionData.is_active,
       });
-      setItems((sectionData.items ?? []).map(toEditableItem));
+      const mappedItems = (sectionData.items ?? []).map(toEditableItem);
+      setItems(mappedItems);
+      setCollapsedItems(new Set(mappedItems.map(item => item.client_id)));
     } catch (error) {
       setToast({ message: error instanceof Error ? error.message : 'Unable to load scholarship section', type: 'error' });
     } finally {
@@ -181,14 +183,6 @@ const ScholarshipForm: React.FC<ScholarshipFormProps> = ({ onBack }) => {
   useEffect(() => {
     void loadScholarships();
   }, []);
-
-  useEffect(() => {
-    if (items.length > 0) {
-      setCollapsedItems(new Set(items.map((item) => item.client_id)));
-    } else {
-      setCollapsedItems(new Set());
-    }
-  }, [items]);
 
   useEffect(() => {
     dragStateRef.current = dragState;
@@ -419,7 +413,14 @@ const ScholarshipForm: React.FC<ScholarshipFormProps> = ({ onBack }) => {
   };
 
   const addItem = () => {
-    setItems((current) => [...current, createEmptyScholarshipItem()]);
+    const newItem = createEmptyScholarshipItem();
+    setItems((current) => [...current, newItem]);
+    // Ensure new item is expanded
+    setCollapsedItems(prev => {
+      const next = new Set(prev);
+      next.delete(newItem.client_id);
+      return next;
+    });
   };
 
   const toggleItemCollapse = (clientId: string) => {

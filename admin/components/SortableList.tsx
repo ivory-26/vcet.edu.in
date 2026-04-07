@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -75,8 +75,14 @@ export const SortableListContext = ({
 }) => {
   const { ids, handleMove, handleRemove } = useListSync(items || []);
   const sensors = useSensors(
-    useSensor(PointerSensor), 
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
   const onDragEnd = (event: DragEndEvent) => {

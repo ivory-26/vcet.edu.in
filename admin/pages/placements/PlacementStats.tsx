@@ -127,7 +127,7 @@ const PlacementStats: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {stats.map((s) => (
+              {(Array.isArray(stats) ? stats : []).map((s) => (
                 <tr key={s.id} className="group hover:bg-slate-50/50 transition-all">
                   <td className="px-8 py-4 text-sm font-bold text-slate-900">
                     {s.year}{s.is_ongoing ? ' *' : ''}

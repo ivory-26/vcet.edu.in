@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, ChevronDown, ChevronRight } from 'lucide-react';
+import { Menu, X, Search, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useHomepageData } from '../context/HomepageDataContext';
 import { academicsService, type AcademicDocument } from '../services/academics';
 import { naacScoresService, type DynamicNaacScoreUpload } from '../services/naacScores';
 import { getResearchSection } from '../services/research';
-import { resolveUploadedAssetUrl } from '../utils/uploadedAssets';
+import { resolveUploadedAssetUrl, resolveBackendHref } from '../utils/uploadedAssets';
+
+const VCET_LOGO_PATH = '/images/VCET logo.jpeg';
+const VCET_LOGO_URL = resolveUploadedAssetUrl(VCET_LOGO_PATH) ?? VCET_LOGO_PATH;
 
 const CAREER_AT_VCET_PDF_URL =
   'https://vcet.edu.in/wp-content/uploads/2025/05/Recruitment-Advertise-15-May-2025.pdf';
@@ -120,9 +123,10 @@ const menuGroups: MenuGroup[] = [
         ],
       },
       { label: 'Teaching Learning Process', href: '/teaching-learning' },
-      { label: 'Swayam - NPTEL', href: 'https://nptel.ac.in/' },
+      { label: 'Swayam - NPTEL', href: '/swayam-nptel' },
       {
         label: 'Honours / Minor Degree Program',
+        href: '/honours-minor',
         subItems: [
           { label: 'Booklet Part 1', href: resolveUploadedAssetUrl('/pdfs/Academics/Honours-Minor-Degree-Program/Honours-Minor-Degree-Program-_Booklet_Part-1-Final.pdf') || '/pdfs/Academics/Honours-Minor-Degree-Program/Honours-Minor-Degree-Program-_Booklet_Part-1-Final.pdf' },
           { label: 'Booklet Part 2', href: resolveUploadedAssetUrl('/pdfs/Academics/Honours-Minor-Degree-Program/Honours-Minor-Degree-Program-Booklet-_Part-2_Detailed-Syllabus-Final.pdf') || '/pdfs/Academics/Honours-Minor-Degree-Program/Honours-Minor-Degree-Program-Booklet-_Part-2_Detailed-Syllabus-Final.pdf' },
@@ -168,7 +172,7 @@ const menuGroups: MenuGroup[] = [
   {
     label: 'Student & Career',
     dropdown: [
-      { label: 'Career @ VCET', href: CAREER_AT_VCET_PDF_URL },
+      { label: 'Career @ VCET', href: '/career-at-vcet' },
       {
         label: 'Extra curricular Activities',
         subItems: [
@@ -631,13 +635,16 @@ const NestedFlyout: React.FC<{ sub: SubItem }> = ({ sub }) => {
   return (
     <div className="relative group/nested" onMouseEnter={openSub} onMouseLeave={closeSub}>
       <div className="flex items-center justify-between px-4 py-2.5 text-[11.5px] text-slate-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-150 border-l-2 border-transparent hover:border-brand-gold cursor-pointer select-none">
-        {itemHasLink ? (
-          sub.href!.startsWith('/') ? (
-            <Link to={sub.href!} className="flex-1">{linkContent}</Link>
+        {itemHasLink ? (() => {
+          const resolvedHref = resolveBackendHref(sub.href);
+          const isExternal = resolvedHref.startsWith('http') || resolvedHref.startsWith('blob:') || resolvedHref.startsWith('data:');
+          
+          return isExternal ? (
+            <a href={resolvedHref} target="_blank" rel="noopener noreferrer" className="flex-1">{linkContent}</a>
           ) : (
-            <a href={sub.href!} className="flex-1" target="_blank" rel="noopener noreferrer">{linkContent}</a>
-          )
-        ) : (
+            <Link to={resolvedHref} className="flex-1">{linkContent}</Link>
+          );
+        })() : (
           <div className="flex-1">{linkContent}</div>
         )}
         <ChevronRight className={`w-3.5 h-3.5 transition-transform ${open ? 'text-brand-blue translate-x-1' : 'text-brand-gold/50'}`} />
@@ -649,13 +656,16 @@ const NestedFlyout: React.FC<{ sub: SubItem }> = ({ sub }) => {
       >
         <div className="bg-white rounded-xl shadow-2xl border border-gray-100 min-w-[200px] py-2 ring-1 ring-black/5">
           {sub.subItems!.map(child => {
-            const isInternal = child.href?.startsWith('/');
+            const resolvedHref = resolveBackendHref(child.href);
+            const isExternal = resolvedHref.startsWith('http') || resolvedHref.startsWith('blob:') || resolvedHref.startsWith('data:');
+            
             const cls = "flex items-center gap-2.5 px-4 py-2.5 text-[11.5px] text-slate-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-150 border-l-2 border-transparent hover:border-brand-gold group whitespace-nowrap";
             const dot = <span className="w-1.5 h-1.5 rounded-full bg-brand-gold/40 flex-shrink-0 group-hover:bg-brand-blue transition-colors duration-150" />;
-            return isInternal ? (
-              <Link key={child.label} to={child.href!} className={cls}>{dot}{child.label}</Link>
+            
+            return isExternal ? (
+              <a key={child.label} href={resolvedHref} className={cls} target="_blank" rel="noopener noreferrer">{dot}{child.label}</a>
             ) : (
-              <a key={child.label} href={child.href!} className={cls} target="_blank" rel="noopener noreferrer">{dot}{child.label}</a>
+              <Link key={child.label} to={resolvedHref} className={cls}>{dot}{child.label}</Link>
             );
           })}
         </div>
@@ -716,15 +726,20 @@ const DesktopDropdownItem: React.FC<DesktopDropdownItemProps> = ({ item, flipSub
         onMouseLeave={closeSub}
       >
         {/* Trigger row — clickable link to navigate */}
-        {isInternal ? (
-          <Link to={item.href!} className={triggerClassName}>
-            {triggerContent}
-          </Link>
-        ) : (
-          <a href={item.href} target="_blank" rel="noopener noreferrer" className={triggerClassName}>
-            {triggerContent}
-          </a>
-        )}
+        {(() => {
+          const resolvedHref = resolveBackendHref(item.href);
+          const isExternal = resolvedHref.startsWith('http') || resolvedHref.startsWith('blob:') || resolvedHref.startsWith('data:');
+          
+          return isExternal ? (
+            <a href={resolvedHref} target="_blank" rel="noopener noreferrer" className={triggerClassName}>
+              {triggerContent}
+            </a>
+          ) : (
+            <Link to={resolvedHref} className={triggerClassName}>
+              {triggerContent}
+            </Link>
+          );
+        })()}
 
         {/* Sub-flyout panel */}
         <div
@@ -747,19 +762,22 @@ const DesktopDropdownItem: React.FC<DesktopDropdownItemProps> = ({ item, flipSub
               if (sub.subItems && sub.subItems.length > 0) {
                 return <NestedFlyout key={sub.label} sub={sub} />;
               }
-              const isInternal = sub.href?.startsWith('/');
+              const resolvedHref = resolveBackendHref(sub.href);
+              const isExternal = resolvedHref.startsWith('http') || resolvedHref.startsWith('blob:') || resolvedHref.startsWith('data:');
+              
               const cls = "flex items-center gap-2.5 px-4 py-2.5 text-[11.5px] text-slate-600 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-150 border-l-2 border-transparent hover:border-brand-gold group whitespace-nowrap";
               const dot = <span className="w-1.5 h-1.5 rounded-full bg-brand-gold/40 flex-shrink-0 group-hover:bg-brand-blue transition-colors duration-150" />;
-              return isInternal ? (
-                <Link key={sub.label} to={sub.href!} className={cls}>
-                  {dot}
-                  {sub.label}
-                </Link>
-              ) : (
-                <a key={sub.label} href={sub.href!} target="_blank" rel="noopener noreferrer" className={cls}>
+              
+              return isExternal ? (
+                <a key={sub.label} href={resolvedHref} target="_blank" rel="noopener noreferrer" className={cls}>
                   {dot}
                   {sub.label}
                 </a>
+              ) : (
+                <Link key={sub.label} to={resolvedHref} className={cls}>
+                  {dot}
+                  {sub.label}
+                </Link>
               );
             })}
           </div>
@@ -769,10 +787,13 @@ const DesktopDropdownItem: React.FC<DesktopDropdownItemProps> = ({ item, flipSub
   }
 
   /* ── Plain link ── */
-  if (item.href?.startsWith('/')) {
+  const resolvedHref = resolveBackendHref(item.href);
+  const isExternal = resolvedHref.startsWith('http') || resolvedHref.startsWith('blob:') || resolvedHref.startsWith('data:');
+
+  if (!isExternal) {
     return (
       <Link
-        to={item.href}
+        to={resolvedHref}
         className="block px-4 py-2.5 text-[11.5px] font-semibold text-slate-700 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-150 border-l-2 border-transparent hover:border-brand-gold"
       >
         {item.label}
@@ -781,8 +802,8 @@ const DesktopDropdownItem: React.FC<DesktopDropdownItemProps> = ({ item, flipSub
   }
   return (
     <a
-      href={item.href}
-      target={item.href?.startsWith('http') ? '_blank' : '_self'}
+      href={resolvedHref}
+      target="_blank"
       rel="noopener noreferrer"
       className="block px-4 py-2.5 text-[11.5px] font-semibold text-slate-700 hover:text-brand-blue hover:bg-brand-blue/5 transition-all duration-150 border-l-2 border-transparent hover:border-brand-gold"
     >
@@ -1145,6 +1166,37 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('keydown', handler);
   }, [searchOpen, searchResults, selectedResult, goToResult]);
 
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showScrollControls, setShowScrollControls] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+
+  const updateScrollProgress = useCallback(() => {
+    const el = navRef.current;
+    if (el) {
+      const scrollableWidth = el.scrollWidth - el.clientWidth;
+      if (scrollableWidth > 0) {
+        setScrollProgress((el.scrollLeft / scrollableWidth) * 100);
+        setShowScrollControls(true);
+      } else {
+        setShowScrollControls(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    updateScrollProgress();
+    window.addEventListener('resize', updateScrollProgress);
+    return () => window.removeEventListener('resize', updateScrollProgress);
+  }, [updateScrollProgress, navMenuGroups]);
+
+  const scrollNav = (direction: 'left' | 'right') => {
+    const el = navRef.current;
+    if (el) {
+      const scrollAmt = el.clientWidth * 0.4;
+      el.scrollBy({ left: direction === 'right' ? scrollAmt : -scrollAmt, behavior: 'smooth' });
+    }
+  };
+
   const openMenu = useCallback((label: string, el?: HTMLElement) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setActiveMenu(label);
@@ -1190,7 +1242,7 @@ const Header: React.FC = () => {
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 mr-0.5">
             <img
-              src="/images/VCET logo.jpeg"
+              src={VCET_LOGO_URL}
               alt="VCET Logo"
               className="h-12 md:h-14 w-auto rounded-sm"
               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
@@ -1198,47 +1250,93 @@ const Header: React.FC = () => {
           </Link>
 
           {/* â”€â”€â”€â”€ Desktop Nav â”€â”€â”€â”€ */}
-          <nav className="hidden lg:flex items-center flex-1 min-w-0 overflow-x-auto no-scrollbar" aria-label="Main navigation">
-            <ul className="flex items-center gap-0.5 lg:gap-1 xl:gap-1.5">
-              {navMenuGroups.map((group, idx) => (
-                <li key={group.label} className="relative flex-shrink-0">
-                  {group.dropdown ? (
-                    <button
-                      onMouseEnter={(e) => openMenu(group.label, e.currentTarget)}
-                      onMouseLeave={scheduleClose}
-                      onFocus={(e) => openMenu(group.label, e.currentTarget)}
-                      onBlur={scheduleClose}
-                      aria-haspopup="true"
-                      aria-expanded={activeMenu === group.label}
-                      className={`flex items-center gap-0.5 px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap select-none ${activeMenu === group.label
-                        ? 'bg-brand-blue text-white'
-                        : 'text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue'
-                        }`}
-                    >
-                      {group.label}
-                    </button>
+          {/* ────── Desktop Nav with Horizontal Scrollbar ────── */}
+          <div className="hidden lg:flex flex-col flex-1 min-w-0 mt-1 relative group/navbar">
+            <div className="flex-1 relative flex items-center overflow-hidden">
+              {/* Left Arrow */}
+              {showScrollControls && (
+                <button 
+                  onClick={() => scrollNav('left')}
+                  className={`absolute left-0 z-20 h-full w-8 flex items-center justify-center bg-white/95 text-brand-gold hover:text-brand-blue transition-all border-r border-gray-100 ${scrollProgress <= 0.5 ? 'opacity-0 pointer-events-none' : 'opacity-100 shadow-[2px_0_12px_rgba(0,0,0,0.05)]'}`}
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-4 h-4 ml-0.5" />
+                </button>
+              )}
 
-                  ) : group.href?.startsWith('/') ? (
-                    <Link
-                      to={group.href}
-                      className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
-                    >
-                      {group.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={group.href}
-                      target={group.href?.startsWith('http') ? '_blank' : '_self'}
-                      rel="noopener noreferrer"
-                      className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
-                    >
-                      {group.label}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
+              <nav 
+                ref={navRef}
+                onScroll={updateScrollProgress}
+                className="flex-1 overflow-x-auto no-scrollbar scroll-smooth flex items-center h-full px-2" 
+                aria-label="Main navigation"
+              >
+                <ul className="flex items-center gap-0.5 lg:gap-1 xl:gap-1.5 pb-0.5">
+                  {navMenuGroups.map((group, idx) => (
+                    <li key={group.label} className="relative flex-shrink-0">
+                      {group.dropdown ? (
+                        <button
+                          onMouseEnter={(e) => openMenu(group.label, e.currentTarget)}
+                          onMouseLeave={scheduleClose}
+                          onFocus={(e) => openMenu(group.label, e.currentTarget)}
+                          onBlur={scheduleClose}
+                          aria-haspopup="true"
+                          aria-expanded={activeMenu === group.label}
+                          className={`flex items-center gap-0.5 px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap select-none ${activeMenu === group.label
+                            ? 'bg-brand-blue text-white'
+                            : 'text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue'
+                            }`}
+                        >
+                          {group.label}
+                        </button>
+                      ) : group.href?.startsWith('/') ? (
+                        <Link
+                          to={group.href}
+                          className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
+                        >
+                          {group.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={group.href}
+                          target={group.href?.startsWith('http') ? '_blank' : '_self'}
+                          rel="noopener noreferrer"
+                          className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
+                        >
+                          {group.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+
+              {/* Right Arrow */}
+              {showScrollControls && (
+                <button 
+                  onClick={() => scrollNav('right')}
+                  className={`absolute right-0 z-20 h-full w-8 flex items-center justify-center bg-white/95 text-brand-gold hover:text-brand-blue transition-all border-l border-gray-100 ${scrollProgress >= 99.5 ? 'opacity-0 pointer-events-none' : 'opacity-100 shadow-[-2px_0_12px_rgba(0,0,0,0.05)]'}`}
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-4 h-4 mr-0.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Scroll Indicator below the options */}
+            {showScrollControls && (
+              <div className="px-10 h-0.5 mt-0.5 mb-1 opacity-0 group-hover/navbar:opacity-100 transition-opacity duration-300">
+                <div className="h-full w-full relative bg-gray-100 rounded-full overflow-hidden">
+                  <div 
+                    className="absolute top-0 bottom-0 bg-brand-gold rounded-full transition-all duration-300 ease-out"
+                    style={{ 
+                      width: '30%', 
+                      left: `${scrollProgress * 0.7}%` 
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Right actions â€” search */}
           <div className="hidden lg:flex items-center gap-1 flex-shrink-0">

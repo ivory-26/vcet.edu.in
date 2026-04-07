@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { resolveBackendHref, resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 import { departmentApi } from '../../admin/api/departments';
 import type { Department } from '../../admin/types';
-import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 import DepartmentHodImage from '../../components/DepartmentHodImage';
 
 
@@ -22,13 +22,12 @@ const sidebarLinks = [
   { id: 'aicte-funding', label: 'AICTE & University Funding', icon: 'ph-bank' },
   { id: 'teaching-learning', label: 'Innovative in Teaching learning', icon: 'ph-lightbulb' },
   { id: 'journal-publication', label: 'Journal Publication', icon: 'ph-file-text' },
-  { id: 'student-achievement', label: 'Student Achievement', icon: 'ph-medal' },
+  { id: 'student-achievements', label: 'Student Achievements', icon: 'ph-medal' },
   { id: 'infrastructure', label: 'Infrastructure',           icon: 'ph-buildings' },
   { id: 'toppers',    label: 'Toppers',                      icon: 'ph-medal' },
   { id: 'syllabus',   label: 'Syllabus',                     icon: 'ph-book-open' },
   { id: 'newsletter', label: 'Newsletter',                   icon: 'ph-newspaper' },
   { id: 'faculty-achievements', label: 'Faculty Achievements', icon: 'ph-trophy' },
-  { id: 'student-achievements', label: 'Students Achievements', icon: 'ph-medal' },
 ];
 
 const delayClass = (idx: number) => {
@@ -58,14 +57,27 @@ const DeptMech: React.FC = () => {
   const [dynamicApiItems, setDynamicApiItems] = useState<any[]>([]);
 
   useEffect(() => {
-    departmentApi.getBySlug('mechanical-engineering')
-      .then((res) => {
-        if (res.success) {
-          setDepartment(res.data);
-          newsletterApi.list(res.data.id).then(n => setDynamicApiItems(n.data)).catch(console.error);
+    const candidateSlugs = [
+      'mechanical-engineering',
+    ];
+
+    const loadDepartment = async () => {
+      for (const candidateSlug of candidateSlugs) {
+        try {
+          const res = await departmentApi.getBySlug(candidateSlug);
+          if (res.success) {
+            setDepartment(res.data);
+            newsletterApi.list(res.data.id).then(n => setDynamicApiItems(n.data)).catch(console.error);
+            return;
+          }
+        } catch {
+          // Try next compatible slug.
         }
-      })
-      .catch(() => setDepartment(null));
+      }
+      setDepartment(null);
+    };
+
+    loadDepartment();
   }, []);
 
   const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
@@ -125,9 +137,7 @@ const DeptMech: React.FC = () => {
             <nav className="flex flex-col py-2">
               {sidebarLinks.filter((link) => {
   const fa = department?.content?.facultyAchievements?.length > 0;
-  const sa = department?.content?.studentAchievements?.length > 0;
   if (link.id === 'faculty-achievements' && !fa) return false;
-  if (link.id === 'student-achievements' && !sa) return false;
   return true;
 }).map((link) => {
                 const isActive = activeId === link.id;
@@ -252,7 +262,7 @@ const DeptMech: React.FC = () => {
 
           {/* â•â•â•â• DAB â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'dab' && (() => {
-            const members = [
+            const staticMembers = [
               { sr: 1, name: 'Dr. Rakesh Himte', designation: 'Principal', org: 'VCET, Vasai', role: 'Chairman', tag: 'internal' },
               { sr: 2, name: 'Dr. Vikas Gupta', designation: 'Dean (Academic)', org: 'VCET, Vasai', role: 'Dean', tag: 'internal' },
               { sr: 3, name: 'Dr. Uday Aswalekar', designation: 'HOD, Mech', org: 'VCET, Vasai', role: 'HOD', tag: 'internal' },
@@ -265,6 +275,9 @@ const DeptMech: React.FC = () => {
               { sr: 10, name: 'Dr. Ashish Choudhari', designation: 'Asso. Professor', org: 'VCET, Vasai', role: 'Sr. Faculty', tag: 'internal' },
               { sr: 11, name: 'Mr. D. J. Choudhari', designation: 'Asst. Professor', org: 'VCET, Vasai', role: 'Convener', tag: 'internal' },
             ];
+            const members = department?.content?.dabMembers?.length
+              ? department.content.dabMembers.map((m, i) => ({ sr: i + 1, name: m.name || '-', designation: m.designation || '-', org: m.organization || '-', role: '-', tag: 'internal' }))
+              : staticMembers;
             const tagStyle: Record<string, string> = { internal: 'bg-brand-navylight text-brand-navy', academic: 'bg-blue-50 text-blue-700', industry: 'bg-amber-50 text-amber-700', student: 'bg-emerald-50 text-emerald-700', parent: 'bg-purple-50 text-purple-700' };
             return (
               <div className="space-y-10">
@@ -376,7 +389,7 @@ const DeptMech: React.FC = () => {
           })()}
 
           {/* â•â•â•â• FACULTY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-          {activeId === 'faculty' && <DepartmentFacultySection departmentName="Mechanical Engineering" />}
+          {activeId === 'faculty' && <DepartmentFacultySection departmentName="Mechanical Engineering" selectedFacultyIds={department?.content?.faculty} />}
 
           {/* â•â•â•â• PAQIC â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'paqic' && (() => {
@@ -482,7 +495,7 @@ const DeptMech: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">AICTE &amp; University Funding<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveBackendHref(item.url)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -493,19 +506,57 @@ const DeptMech: React.FC = () => {
           })()}
 
           {/* â•â•â•â• INNOVATIVE IN TEACHING LEARNING â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-          {activeId === 'teaching-learning' && (
-            <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-8 h-px bg-brand-gold" />
-                <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Mechanical Engineering</span>
-              </div>
-              <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Innovative in Teaching learning<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
-                <span>Innovation in Teaching Learning</span>
-                <i className="ph ph-arrow-up-right text-brand-gold" />
-              </a>
-            </section>
-          )}
+          {activeId === 'teaching-learning' && (() => {
+            const activities = department?.content?.activities || [];
+            if (activities.length > 0) {
+              return (
+                <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="w-8 h-px bg-brand-gold" />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Mechanical Engineering</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Department Activities<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {activities.map((a, idx) => (
+                      <div key={idx} className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col group">
+                        {a.image ? (
+                          <div className="h-48 overflow-hidden bg-slate-100">
+                            <img src={resolveUploadedAssetUrl(a.image as string)} alt={a.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        ) : (
+                          <div className="h-24 bg-gradient-to-r from-brand-navy to-slate-800 flex items-center justify-center text-white/20">
+                            <i className="ph-fill ph-image text-3xl" />
+                          </div>
+                        )}
+                        <div className="p-6 flex-1 flex flex-col">
+                          <h4 className="font-bold text-brand-navy text-[17px] leading-snug mb-3">{a.title}</h4>
+                          <p className="text-slate-600 text-sm leading-relaxed mb-5 flex-1">{a.description}</p>
+                          {a.pdf && (
+                            <a href={resolveUploadedAssetUrl(a.pdf as string) || '#'} target="_blank" rel="noreferrer" className="mt-auto inline-flex items-center justify-center w-full gap-2 px-4 py-2.5 bg-slate-50 text-slate-700 rounded-xl text-sm font-semibold hover:bg-brand-gold hover:text-white transition-colors border border-slate-200">
+                              <i className="ph-bold ph-download-simple" /> View Details
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            }
+            return (
+              <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-px bg-brand-gold" />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Mechanical Engineering</span>
+                </div>
+                <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Innovative in Teaching learning<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
+                <a href="pdfs/Department/MechanicalEngineering/InnovativeinTeachinglearning/innovation-in-Teaching-learning-1.pdf" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                  <span>Innovation in Teaching Learning</span>
+                  <i className="ph ph-arrow-up-right text-brand-gold" />
+                </a>
+              </section>
+            );
+          })()}
 
           {/* â•â•â•â• JOURNAL PUBLICATION â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'journal-publication' && (
@@ -515,7 +566,7 @@ const DeptMech: React.FC = () => {
                 <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Mechanical Engineering</span>
               </div>
               <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Journal Publication<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+              <a href={resolveBackendHref('')} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                 <span>Journal Publication</span>
                 <i className="ph ph-arrow-up-right text-brand-gold" />
               </a>
@@ -523,7 +574,7 @@ const DeptMech: React.FC = () => {
           )}
 
           {/* â•â•â•â• STUDENT ACHIEVEMENT â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-          {activeId === 'student-achievement' && (
+          {activeId === 'student-achievements' && (
             <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-8 h-px bg-brand-gold" />
@@ -741,6 +792,38 @@ const DeptMech: React.FC = () => {
 
           {/* â•â•â•â• TOPPERS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'toppers' && (() => {
+            const dynamicToppers = department?.content?.toppers || [];
+            if (dynamicToppers.length > 0) {
+              return (
+                <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="w-8 h-px bg-brand-gold" />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Mechanical Engineering</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Toppers<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-brand-navy text-white">
+                          <th className="px-4 py-3 text-left">Name</th>
+                          <th className="px-4 py-3 text-left">Year</th>
+                          <th className="px-4 py-3 text-left">CGPA</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {dynamicToppers.map((t, idx) => (
+                          <tr key={idx} className="border-t border-slate-100">
+                            <td className="px-4 py-3 text-slate-700">{t.name || '-'}</td>
+                            <td className="px-4 py-3 text-slate-700">{t.year || '-'}</td>
+                            <td className="px-4 py-3 text-slate-700">{t.cgpa || '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              );
+            }
             const toppers = {
               SE: [
                 'BHATKAR VED MAHESH VANDANA : 9',
@@ -792,13 +875,16 @@ const DeptMech: React.FC = () => {
 
           {/* â•â•â•â• SYLLABUS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'syllabus' && (() => {
-            const links = [
+            const staticLinks = [
               { label: 'R-19 SE Syllabus', url: 'https://vcet.edu.in/wp-content/uploads/2021/11/R2019-SE_-Mechanical_BE-Sem-III-and-IV-Teaching-Scheme-and-Course-Content_Final_04072020.pdf' },
               { label: 'R-19 TE Syllabus', url: 'https://vcet.edu.in/wp-content/uploads/2021/11/R2019Third_Year_Mechanical_BE-Sem-V-and-VI-Teaching-Scheme-and-Course-Content_Draft_Copy.pdf' },
               { label: 'R-19 BE Syllabus', url: 'https://vcet.edu.in/wp-content/uploads/2024/04/BE-Mechanical-Syllabus.pdf' },
               { label: 'PO PSO CO (R16)', url: 'https://vcet.edu.in/wp-content/uploads/2024/03/R-2016.pdf' },
               { label: 'PO PSO CO (R19)', url: 'https://vcet.edu.in/wp-content/uploads/2024/03/R-2019.pdf' },
             ];
+            const links = department?.content?.syllabus?.length
+              ? department.content.syllabus.map((s) => ({ label: s.title, url: resolveUploadedAssetUrl(s.pdf as string) || '#' }))
+              : staticLinks;
             return (
               <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
                 <div className="flex items-center gap-3 mb-4">
@@ -808,7 +894,7 @@ const DeptMech: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Syllabus<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveBackendHref(item.url)} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -828,7 +914,7 @@ const DeptMech: React.FC = () => {
           )}
 
           {/* â•â•â•â• OTHER SECTIONS (placeholder) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-          {activeId !== 'about' && activeId !== 'vision' && activeId !== 'dab' && activeId !== 'peo' && activeId !== 'faculty' && activeId !== 'paqic' && activeId !== 'mou' && activeId !== 'aicte-funding' && activeId !== 'teaching-learning' && activeId !== 'journal-publication' && activeId !== 'student-achievement' && activeId !== 'infrastructure' && activeId !== 'toppers' && activeId !== 'syllabus' && activeId !== 'newsletter' && (
+          {activeId !== 'about' && activeId !== 'vision' && activeId !== 'dab' && activeId !== 'peo' && activeId !== 'faculty' && activeId !== 'faculty-achievements' && activeId !== 'paqic' && activeId !== 'mou' && activeId !== 'aicte-funding' && activeId !== 'teaching-learning' && activeId !== 'journal-publication' && activeId !== 'student-achievements' && activeId !== 'student-achievement' && activeId !== 'infrastructure' && activeId !== 'toppers' && activeId !== 'syllabus' && activeId !== 'newsletter' && (
             <section className="reveal bg-white rounded-3xl p-12 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center min-h-[300px]">
               <div className="w-16 h-16 rounded-2xl bg-brand-navylight flex items-center justify-center mb-4">
                 <i className={`ph ${activeLink?.icon ?? 'ph-folder'} text-3xl text-brand-navy`} />
@@ -850,43 +936,6 @@ const DeptMech: React.FC = () => {
                   <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Excellence &amp; Recognition</span>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-display font-bold text-brand-navy leading-tight mb-8">Faculty Achievements</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {dynamicAch.map((item, idx) => (
-                    <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      {item.image && (
-                        <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
-                          <img src={resolveUploadedAssetUrl(item.image)} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                        </div>
-                      )}
-                      <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
-                      <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
-                      {item.pdf && (
-                        <a href={resolveUploadedAssetUrl(item.pdf)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
-                          <i className="ph ph-file-pdf text-lg" />
-                          View Document
-                          <i className="ph ph-arrow-right" />
-                        </a>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            );
-          })()}
-
-          {/* ════ STUDENT ACHIEVEMENTS ════════════════════════════════ */}
-          {activeId === 'student-achievements' && (() => {
-            const hasStaticSa = false;
-            const dynamicAch = department?.content?.studentAchievements || [];
-            if (!dynamicAch.length && !hasStaticSa) return null;
-            return (
-              <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="w-8 h-px bg-brand-gold" />
-                  <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Student Laurels</span>
-                </div>
-                <h3 className="text-3xl md:text-4xl font-display font-bold text-brand-navy leading-tight mb-8">Students Achievements</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {dynamicAch.map((item, idx) => (

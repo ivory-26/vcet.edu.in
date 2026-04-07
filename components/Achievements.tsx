@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
   motion,
   useScroll,
@@ -9,33 +9,33 @@ import {
   useAnimationFrame,
 } from 'framer-motion';
 import { resolveUploadedAssetUrl } from '../utils/uploadedAssets';
+import { useAchievements } from '../hooks/useAchievements';
 
-interface Achievement {
+interface AchievementItem {
   id: number;
   title: string;
   description: string;
   image: string;
 }
 
-const RENDER_ORIGIN = 'https://vcet-3vjm.onrender.com';
 const ACHIEVEMENTS_DIR = '/images/Main Page/Remarkable Acheivements/';
 
-function withRenderOrigin(pathname: string): string {
-  const normalized = pathname.startsWith('/') ? pathname : `/${pathname}`;
-  return `${RENDER_ORIGIN}${normalized}`;
-}
-
 function extractFileName(pathValue: string): string | null {
+  if (!pathValue) return null;
   const cleanPath = pathValue.split('?')[0].split('#')[0];
   const segments = cleanPath.split('/').filter(Boolean);
   return segments.length ? segments[segments.length - 1] : null;
 }
 
 function normalizeAchievementImagePath(pathValue: string): string {
-  const trimmed = pathValue.trim();
+  const trimmed = (pathValue || '').trim();
   if (!trimmed) return trimmed;
 
   if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return trimmed;
+  }
+
+  if (trimmed.startsWith('/') || trimmed.startsWith('images/') || trimmed.startsWith('storage/') || trimmed.startsWith('uploads/')) {
     return trimmed;
   }
 
@@ -46,14 +46,18 @@ function normalizeAchievementImagePath(pathValue: string): string {
 }
 
 function resolveAchievementImage(pathValue: string): string {
+  if (!pathValue) return '';
+
   const normalizedPath = normalizeAchievementImagePath(pathValue);
-  const resolved = resolveUploadedAssetUrl(normalizedPath) ?? normalizedPath;
 
-  if (/^https?:\/\//i.test(resolved) || resolved.startsWith('data:') || resolved.startsWith('blob:')) {
-    return resolved;
+  const segments = normalizedPath.split('/');
+  const lastIdx = segments.length - 1;
+  if (lastIdx >= 0) {
+    segments[lastIdx] = segments[lastIdx].replace(/\s+/g, '_');
   }
+  const spaceResolvedPath = segments.join('/');
 
-  return withRenderOrigin(resolved);
+  return resolveUploadedAssetUrl(spaceResolvedPath) ?? '';
 }
 
 function handleAchievementImageError(event: React.SyntheticEvent<HTMLImageElement>): void {
@@ -64,20 +68,20 @@ function handleAchievementImageError(event: React.SyntheticEvent<HTMLImageElemen
     img.dataset.originalSrc = originalSrc;
   }
 
-  // Retry once with strict Render directory format before using placeholder.
   if (img.dataset.renderRetry !== '1') {
     img.dataset.renderRetry = '1';
     const fileName = extractFileName(originalSrc);
     if (fileName) {
-      const retryUrl = `${RENDER_ORIGIN}${encodeURI(`${ACHIEVEMENTS_DIR}${fileName}`)}`;
-      if (retryUrl !== img.src) {
+      const sanitizedFileName = fileName.replace(/\s+/g, '_');
+      const retryPath = `${ACHIEVEMENTS_DIR}${sanitizedFileName}`;
+      const retryUrl = resolveUploadedAssetUrl(retryPath);
+      if (retryUrl && retryUrl !== img.src) {
         img.src = retryUrl;
         return;
       }
     }
   }
 
-  // Keep backend URL intact in src; UI should not hide/replace the image URL.
   img.dataset.loadFailed = '1';
 }
 
@@ -88,34 +92,34 @@ function handleAchievementImageLoad(event: React.SyntheticEvent<HTMLImageElement
   img.style.filter = '';
 }
 
-const achievements: Achievement[] = [
-  { id: 1, title: "Best Faculty Award", description: "Prof. Deepak Chaudhary won best faculty award in St.VC 2025, Coimbatore", image: "/images/Main Page/Remarkable Acheivements/Prof.Deepak Chaudhary.png" },
-  { id: 2, title: "VCET KABADDI TEAM Runners Up", description: "At MIT WPU PUNE NATIONAL LEVEL 'SUMMIT' CHAMPIONSHIP 2025.", image: "/images/Main Page/Remarkable Acheivements/VCET KABADDI TEAM Runners Up.png" },
-  { id: 3, title: "Grant from AICTE", description: "Dept. of Mechanical Engineering received Grant of ₹1 lakh from AICTE under SPICES.", image: "/images/Main Page/Remarkable Acheivements/Congratulations to Department of Mechanical Engineering and Team VCET SOLECTHON.png" },
-  { id: 4, title: "Avishkar 2nd Rank", description: "Avishkar secured 2nd rank, University level — WiFi-based Control System for Pond Aerators.", image: "/images/Main Page/Remarkable Acheivements/Avishkar secured 2nd rank final round(University Level).jpg" },
-  { id: 5, title: "MoU with IITM Pune", description: "MoU for Installation of Short-Range X-Band Polarimetric Scanning Doppler Weather Radar at VCET.", image: "/images/Main Page/Remarkable Acheivements/Memorandum of Understanding (MoU) between IITM Pune and VCET.jpg" },
-  { id: 6, title: "Team Airnova — 1st Place", description: "SkyGlider Competition at Ascension 2025, Technex IIT (BHU) Varanasi.", image: "/images/Main Page/Remarkable Acheivements/Team Airnova of VCET has secured 1st place ..png" },
-  { id: 7, title: "Miss Shyamli Jadhav — SSC Officer", description: "Selected as Officer — Short Service Commission (SSC). 2019 Passout, Mechanical.", image: "/images/Main Page/Remarkable Acheivements/Congratulations Miss Shyamli Jadhav, (2019 passout) fMechanical..png" },
-  { id: 8, title: "Grant of Patent Awarded", description: "Ms. Vaishali Shirshat and Ms. Pragati Patil awarded for innovation and patent grant.", image: "/images/Main Page/Remarkable Acheivements/Ms.Vaishali Shirsath and Ms.Pragati Patil..jpg" },
-  { id: 9, title: "Jitendra Prajapati — 1.06 Cr Package", description: "Placed in Perplexity AI with a 1.06 Crore per annum package.", image: "/images/Main Page/Remarkable Acheivements/Jitendra Prajapati.jpg" },
-  { id: 10, title: "5th Time National Champion", description: "1st Prize & 9 awards at Solar EV Championship 2025, Coimbatore.", image: "/images/Main Page/Remarkable Acheivements/5th Time National Champion.png" },
-  { id: 11, title: "Snehal Tate & Team — 1st Prize", description: "National Project Competition, Mumbai.", image: "/images/Main Page/Remarkable Acheivements/Snehal Tate and Team.png" },
-  { id: 12, title: "Sanjeev Sharma & Team — 1st Prize", description: "National Project Competition, Mumbai.", image: "/images/Main Page/Remarkable Acheivements/Sanjeev Sharma & Team.png" },
-  { id: 13, title: "Devanshi Solanki — 3rd Place", description: "Maharashtra State University Chess Tournament.", image: "/images/Main Page/Remarkable Acheivements/Devanshi-Solanki-1.jpg" },
-  { id: 14, title: "Team Centurion — 11th Rank", description: "Quad Bike Design Challenge, Hyderabad.", image: "/images/Main Page/Remarkable Acheivements/Team Centurion.png" },
-  { id: 15, title: "Tanvi Patil — 1st Place", description: "Carrom Singles at SKREAM 2025, KJ Somaiya College.", image: "/images/Main Page/Remarkable Acheivements/Tanvi Patil from SE Comps has Won First place in Carrom Singles.png" },
-  { id: 16, title: "Shreyas Pathe — Gold Medal", description: "Badminton Men's Singles & Doubles, Clara's College of Commerce, 2025.", image: "/images/Main Page/Remarkable Acheivements/Shreyas Pathe TE IT won Gold Medal in Badminton Men's Singles and Doubles.png" },
-  { id: 17, title: "Kishor Madne — Silver Medal", description: "Mumbai Suburban Zone II Tournament.", image: "/images/Main Page/Remarkable Acheivements/Kishor Madne SE IT.jpg" },
-  { id: 18, title: "SIH 2023 Grand Finale Winner", description: "Team Softracer IT — VCET won Smart India Hackathon 2023.", image: "/images/Main Page/Remarkable Acheivements/SIH 2023 Grand Finale.jpg" },
-  { id: 19, title: "Palak Churi — AIU Selection", description: "Inter University National Mallakhamb Competition 2025-26.", image: "/images/Main Page/Remarkable Acheivements/Palak Churi TE Comps.jpg" },
-].map((item) => ({
-  ...item,
-  image: resolveAchievementImage(item.image),
-}));
+const STATIC_ACHIEVEMENTS: AchievementItem[] = [
+  { id: 1, title: "Best Faculty Award", description: "Prof. Deepak Chaudhary won best faculty award in St.VC 2025, Coimbatore", image: "Prof.Deepak Chaudhary.png" },
+  { id: 2, title: "VCET KABADDI TEAM Runners Up", description: "At MIT WPU PUNE NATIONAL LEVEL 'SUMMIT' CHAMPIONSHIP 2025.", image: "VCET KABADDI TEAM Runners Up.png" },
+  { id: 3, title: "Grant from AICTE", description: "Dept. of Mechanical Engineering received Grant of ₹1 lakh from AICTE under SPICES.", image: "Congratulations to Department of Mechanical Engineering and Team VCET SOLECTHON.png" },
+  { id: 4, title: "Avishkar 2nd Rank", description: "Avishkar secured 2nd rank, University level — WiFi-based Control System for Pond Aerators.", image: "Avishkar secured 2nd rank final round(University Level.jpg" },
+  { id: 5, title: "MoU with IITM Pune", description: "MoU for Installation of Short-Range X-Band Polarimetric Scanning Doppler Weather Radar at VCET.", image: "Memorandum of Understanding (MoU) between IITM Pune and VCET.jpg" },
+  { id: 6, title: "Team Airnova — 1st Place", description: "SkyGlider Competition at Ascension 2025, Technex IIT (BHU) Varanasi.", image: "Team Airnova of VCET has secured 1st place ..png" },
+  { id: 7, title: "Miss Shyamli Jadhav — SSC Officer", description: "Selected as Officer — Short Service Commission (SSC). 2019 Passout, Mechanical.", image: "Congratulations Miss Shyamli Jadhav, (2019 passout) fMechanical..png" },
+  { id: 8, title: "Grant of Patent Awarded", description: "Ms. Vaishali Shirshat and Ms. Pragati Patil awarded for innovation and patent grant.", image: "Ms.Vaishali Shirsath and Ms.Pragati Patil..jpg" },
+  { id: 9, title: "Jitendra Prajapati — 1.06 Cr Package", description: "Placed in Perplexity AI with a 1.06 Crore per annum package.", image: "Jitendra Prajapati.jpg" },
+  { id: 10, title: "5th Time National Champion", description: "1st Prize & 9 awards at Solar EV Championship 2025, Coimbatore.", image: "5th Time National Champion.png" },
+  { id: 11, title: "Snehal Tate & Team — 1st Prize", description: "National Project Competition, Mumbai.", image: "Snehal Tate and Team.png" },
+  { id: 12, title: "Sanjeev Sharma & Team — 1st Prize", description: "National Project Competition, Mumbai.", image: "Sanjeev Sharma & Team.png" },
+  { id: 13, title: "Devanshi Solanki — 3rd Place", description: "Maharashtra State University Chess Tournament.", image: "Devanshi-Solanki-1.jpg" },
+  { id: 14, title: "Team Centurion — 11th Rank", description: "Quad Bike Design Challenge, Hyderabad.", image: "Team Centurion.png" },
+  { id: 15, title: "Tanvi Patil — 1st Place", description: "Carrom Singles at SKREAM 2025, KJ Somaiya College.", image: "Tanvi Patil from SE Comps has Won First place in Carrom Singles.png" },
+  { id: 16, title: "Shreyas Pathe — Gold Medal", description: "Badminton Men's Singles & Doubles, Clara's College of Commerce, 2025.", image: "Shreyas Pathe TE IT won Gold Medal in Badminton Men s Singles and Doubles.png" },
+  { id: 17, title: "Kishor Madne — Silver Medal", description: "Mumbai Suburban Zone II Tournament.", image: "Kishor Madne SE IT.jpg" },
+  { id: 18, title: "SIH 2023 Grand Finale Winner", description: "Team Softracer IT — VCET won Smart India Hackathon 2023.", image: "SIH 2023 Grand Finale.jpg" },
+  { id: 19, title: "Palak Churi — AIU Selection", description: "Inter University National Mallakhamb Competition 2025-26.", image: "Palak Churi TE Comps.jpg" },
+];
 
-// Split into two rows — row 2 is reversed for visual contrast
-const rowOne = achievements.slice(0, 10);
-const rowTwo = [...achievements.slice(9)].reverse();
+function wrapAchievements(items: AchievementItem[]): AchievementItem[] {
+  return items.map((item) => ({
+    ...item,
+    image: resolveAchievementImage(item.image),
+  }));
+}
 
 // Utility: keep a value wrapping between min and max
 const wrap = (min: number, max: number, v: number) => {
@@ -124,9 +128,9 @@ const wrap = (min: number, max: number, v: number) => {
 };
 
 interface ParallaxRowProps {
-  items: Achievement[];
+  items: AchievementItem[];
   baseVelocity: number;
-  onImageClick: (item: Achievement) => void;
+  onImageClick: (item: AchievementItem) => void;
 }
 
 function ParallaxRow({ items, baseVelocity, onImageClick }: ParallaxRowProps) {
@@ -198,7 +202,7 @@ function ParallaxRow({ items, baseVelocity, onImageClick }: ParallaxRowProps) {
   );
 }
 
-function MobileParallaxRow({ items, speed, direction, onImageClick }: { items: Achievement[], speed: number, direction: 1 | -1, onImageClick: (a: Achievement) => void }) {
+function MobileParallaxRow({ items, speed, direction, onImageClick }: { items: AchievementItem[], speed: number, direction: 1 | -1, onImageClick: (a: AchievementItem) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isInteracting = useRef(false);
 
@@ -288,12 +292,47 @@ function MobileParallaxRow({ items, speed, direction, onImageClick }: { items: A
 }
 
 const Achievements: React.FC = () => {
-  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
+  const { achievements: backendAchievements, loading } = useAchievements();
+  const [selectedAchievement, setSelectedAchievement] = useState<AchievementItem | null>(null);
   const [lightboxZoom, setLightboxZoom] = useState(1);
+
+  const displayAchievements = useMemo(() => {
+    if (backendAchievements && backendAchievements.length > 0) {
+      const mapped = backendAchievements
+        .map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description || '',
+          // Use the dedicated image_url field added in the migration/seeder
+          image: item.image_url || '',
+        }))
+        .filter((a) => a.image);
+
+      // If backend has records but none with images, fall back to static data
+      if (mapped.length === 0) {
+        return wrapAchievements(STATIC_ACHIEVEMENTS);
+      }
+
+      return wrapAchievements(mapped);
+    }
+    return wrapAchievements(STATIC_ACHIEVEMENTS);
+  }, [backendAchievements]);
+
+  const rowOne = useMemo(() => displayAchievements.slice(0, Math.ceil(displayAchievements.length / 2)), [displayAchievements]);
+  const rowTwo = useMemo(() => [...displayAchievements.slice(Math.ceil(displayAchievements.length / 2))].reverse(), [displayAchievements]);
 
   useEffect(() => {
     setLightboxZoom(1);
   }, [selectedAchievement]);
+
+  if (loading && (!backendAchievements || backendAchievements.length === 0)) {
+    return (
+      <div className="py-20 flex flex-col items-center justify-center space-y-4">
+        <div className="w-12 h-12 border-4 border-brand-gold/20 border-t-brand-gold rounded-full animate-spin" />
+        <p className="text-brand-navy/60 font-medium animate-pulse">Loading achievements...</p>
+      </div>
+    );
+  }
 
   return (
     <section id="achievements" className="py-10 md:py-14 bg-brand-light relative overflow-hidden">

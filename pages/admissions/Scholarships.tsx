@@ -4,75 +4,75 @@ import PageBanner from '../../components/PageBanner';
 import { Award, FileText, ExternalLink, BookOpen } from 'lucide-react';
 import { useAdmissionSection } from '../../hooks/useAdmissionSection';
 import { getSectionContentValue, groupItemsByGroupKey } from './admissionSectionUtils';
-import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
+import { resolveBackendHref } from '../../utils/uploadedAssets';
 
 const fallbackGovernmentScholarships = [
   {
     title: 'Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna - EBC',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Rajarshi-Chhatrapati-Shahu-Maharaj-Shikshan-Shulkh-Shishyavrutti-Yojna-EBC..pdf',
+    link: '/pdfs/Admission/Scholarships/Rajarshi-Chhatrapati-Shahu-Maharaj-Shikshan-Shulkh-Shishyavrutti-Yojna-EBC..pdf',
   },
   {
     title: 'Post Matric Scholarship to OBC Students - OBC Scholarship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Post-Matric-Scholarship-to-OBC-Students-OBC-Scholarship.pdf',
+    link: '/pdfs/Admission/Scholarships/Post-Matric-Scholarship-to-OBC-Students-OBC-Scholarship.pdf',
   },
   {
     title: 'Tuition Fees and Examination Fees to OBC Students - OBC Freeship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Tuition-Fees-and-Examination-Fees-to-OBC-Students-OBC-Freeship.pdf',
+    link: '/pdfs/Admission/Scholarships/Tuition-Fees-and-Examination-Fees-to-OBC-Students-OBC-Freeship.pdf',
   },
   {
     title: 'Scholarship Scheme for State Minority Communities Pursuing Higher Professional Education - Technical Course DTE',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Scholarship-Scheme-for-State-Minority-Communities-Pursuing-Higher-Professional-Education-Technical-Course-DTE..pdf',
+    link: '/pdfs/Admission/Scholarships/Scholarship-Scheme-for-State-Minority-Communities-Pursuing-Higher-Professional-Education-Technical-Course-DTE..pdf',
   },
   {
     title: 'Post Matric Scholarship to SBC Students - SBC Scholarship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Post-Matric-Scholarship-to-SBC-Students-SBC-Scholarship.pdf',
+    link: '/pdfs/Admission/Scholarships/Post-Matric-Scholarship-to-SBC-Students-SBC-Scholarship.pdf',
   },
   {
     title: 'Tuition Fees and Examination Fees to SBC Students - SBC Freeship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Tuition-Fees-and-Examination-Fees-to-SBC-Students-SBC-Freeship.pdf',
+    link: '/pdfs/Admission/Scholarships/Tuition-Fees-and-Examination-Fees-to-SBC-Students-SBC-Freeship.pdf',
   },
   {
     title: 'Post Matric Scholarship Scheme - Government of India - ST Scholarship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Post-Matric-Scholarship-Scheme-Government-of-India-ST-Scholarship.pdf',
+    link: '/pdfs/Admission/Scholarships/Post-Matric-Scholarship-Scheme-Government-of-India-ST-Scholarship.pdf',
   },
   {
     title: 'Government of India Post-Matric Scholarship for SC Category',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Government-of-India-Post-Matric-Scholarship-for-SC-Category.pdf',
+    link: '/pdfs/Admission/Scholarships/Government-of-India-Post-Matric-Scholarship-for-SC-Category.pdf',
   },
   {
     title: 'Post-Matric Tuition Fee and Examination Fee SC Category Freeship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Post-Matric-Tuition-Fee-and-Examination-Fee-SC-Category-Freeship.pdf',
+    link: '/pdfs/Admission/Scholarships/Post-Matric-Tuition-Fee-and-Examination-Fee-SC-Category-Freeship.pdf',
   },
   {
     title: 'Post Matric Scholarship to VJNT Students VJ-DT-NT Scholarship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Post-Matric-Scholarship-to-VJNT-Students-VJ-DT-NT-Scholarship.pdf',
+    link: '/pdfs/Admission/Scholarships/Post-Matric-Scholarship-to-VJNT-Students-VJ-DT-NT-Scholarship.pdf',
   },
   {
     title: 'Tuition Fees and Examination Fees to VJNT Students - VJ-DT-NT Freeship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Tuition-Fees-and-Examination-Fees-to-VJNT-Students-VJ-DT-NT-Freeship.pdf',
+    link: '/pdfs/Admission/Scholarships/Tuition-Fees-and-Examination-Fees-to-VJNT-Students-VJ-DT-NT-Freeship.pdf',
   },
   {
     title: 'Vocational Education Fee Reimbursement ST Category Freeship',
-    link: 'https://vcet.edu.in/wp-content/uploads/2022/11/Vocational-Education-Fee-Reimbursement-ST-Category-Freeship.pdf',
+    link: '/pdfs/Admission/Scholarships/Vocational-Education-Fee-Reimbursement-ST-Category-Freeship.pdf',
   },
 ];
 
 const fallbackAicteSchemes = [
   { 
     title: 'AICTE Swanath Scheme Document_Sept 2021', 
-    link: 'https://vcet.edu.in/wp-content/uploads/2021/12/AICTE-Swanath-Scheme-Document_Sept-2021-1.pdf' 
+    link: '/pdfs/Admission/Scholarships/AICTE-Swanath-Scheme-Document_Sept-2021-1.pdf' 
   },
   { 
     title: 'Brief Summary_Swanath', 
-    link: 'https://vcet.edu.in/wp-content/uploads/2021/12/Brief-Summary_Swanath-1.pdf' 
+    link: '/pdfs/Admission/Scholarships/Brief-Summary_Swanath-.pdf' 
   },
   { 
     title: 'AICTE SCHOLARSHIP Schemes 2021-22', 
-    link: 'https://vcet.edu.in/wp-content/uploads/2021/12/AICTE-SCHOLARSHIP-Schemes-2021-22-2.pdf' 
+    link: '/pdfs/Admission/Scholarships/AICTE-SCHOLARSHIP-Schemes-2021-22-2.pdf' 
   },
   { 
     title: 'Scholarship/Freeship Notice 2023-24', 
-    link: 'https://vcet.edu.in/wp-content/uploads/2023/08/NOTICE-WEBSITE.pdf' 
+    link: '/pdfs/Admission/Scholarships/Scholarship(Freeship)2023-24.pdf' 
   },
 ];
 
@@ -82,11 +82,11 @@ const Scholarships: React.FC = () => {
   const groupedItems = groupItemsByGroupKey(section?.items ?? []);
   const governmentScholarships = groupedItems.govt?.map((item) => ({
     title: item.title,
-    link: resolveUploadedAssetUrl(item.document_url) || item.document_url || item.external_url || '#',
+    link: resolveBackendHref(item.document_url || item.external_url || '#'),
   })) ?? fallbackGovernmentScholarships;
   const aicteSchemes = groupedItems.aicte?.map((item) => ({
     title: item.title,
-    link: resolveUploadedAssetUrl(item.document_url) || item.document_url || item.external_url || '#',
+    link: resolveBackendHref(item.document_url || item.external_url || '#'),
   })) ?? fallbackAicteSchemes;
 
   const scrollTo = (id: string, section: string) => {
@@ -202,7 +202,7 @@ const Scholarships: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 text-right">
                             <a 
-                              href={item.link} 
+                              href={resolveBackendHref(item.link)} 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-slate-100 text-slate-400 hover:bg-[#1e4e85] hover:text-white transition-all shadow-sm"
@@ -228,7 +228,7 @@ const Scholarships: React.FC = () => {
                   {aicteSchemes.map((item, idx) => (
                     <a
                       key={idx}
-                      href={item.link}
+                      href={resolveBackendHref(item.link)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex items-center justify-between"
