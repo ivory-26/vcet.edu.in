@@ -49,6 +49,8 @@ const delayClass = (idx: number) => {
   return 'delay-300';
 };
 
+const CE_IMAGE_BASE = '/images/Departments/Computer Engineering';
+
 /* â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const DeptComputerEngg: React.FC = () => {
   const [activeId, setActiveId] = useState('about');
@@ -67,7 +69,9 @@ const DeptComputerEngg: React.FC = () => {
       .catch(() => setDepartment(null));
   }, []);
 
-  const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
+  const hodImageUrl =
+    resolveUploadedAssetUrl(department?.content?.hodImage as string | null) ||
+    `${CE_IMAGE_BASE}/about-comps-HOD.jpg`;
 
   const newsletters = dynamicApiItems
     .filter(item => item.type === 'newsletter' && item.pdf)
@@ -122,8 +126,8 @@ const DeptComputerEngg: React.FC = () => {
           <div className="lg:sticky lg:top-24 bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <nav className="flex flex-col py-2">
               {sidebarLinks.filter((link) => {
-  const fa = department?.content?.facultyAchievements?.length > 0;
-  const sa = department?.content?.studentAchievements?.length > 0;
+  const fa = Boolean(department?.content?.facultyAchievements?.length);
+  const sa = Boolean(department?.content?.studentAchievements?.length);
   if (link.id === 'faculty-achievements' && !fa) return false;
   if (link.id === 'student-achievements' && !sa) return false;
   return true;
@@ -495,6 +499,7 @@ const DeptComputerEngg: React.FC = () => {
             const labs = [
               {
                 title: 'LAB 01 - PROGRAMMING LAB',
+                image: `${CE_IMAGE_BASE}/InfrastructurecompsLAB-01.jpg`,
                 incharge: 'Dr. SNEHA MHATRE & Ms. JOYCE D\'SOUZA',
                 software: 'OS - Windows 11 and Ubuntu Linux. SW- TC, JAVA, Google Chrome.',
                 hardware: 'PC - HP Core i5 - No. 20, Printer - Laser printer, LCD Projector, Network switch etc.',
@@ -502,6 +507,7 @@ const DeptComputerEngg: React.FC = () => {
               },
               {
                 title: 'LAB 02 - PROJECT & RESEARCH LAB',
+                image: `${CE_IMAGE_BASE}/InfrastructurecompsLAB-02.jpg`,
                 incharge: 'Dr. ANIL HINGMIRE & Ms. BRINAL COLACO',
                 software: 'OS - Windows 11 and Ubuntu Linux. SW- TC, JAVA, Google Chrome.',
                 hardware: 'PC - HP Core i5 - No. 16, HP Core i5 with GPU - No. 06, Printer - Laser printer, LCD Projector, Network Switch etc.',
@@ -509,6 +515,7 @@ const DeptComputerEngg: React.FC = () => {
               },
               {
                 title: 'LAB 03 - AI & ADVANCED TECHNOLOGY LAB',
+                image: `${CE_IMAGE_BASE}/InfrastructurecompsLAB-03.jpg`,
                 incharge: 'Dr. SWAPNA BORDE & Ms. SONIYA KHATU',
                 software: 'OS - Windows 11 and Ubuntu Linux. SW- TC, JAVA, Google Chrome.',
                 hardware: 'PC - HP Core i5 with GPU - No. 19, Printer - Laser printer, LCD Projector, Network Switch etc.',
@@ -516,6 +523,7 @@ const DeptComputerEngg: React.FC = () => {
               },
               {
                 title: 'LAB 04 - DATABASE LAB',
+                image: `${CE_IMAGE_BASE}/InfrastructurecompsLAB-04.jpg`,
                 incharge: 'Ms. SMITA JAWALE & Ms. BHAKTI JADHAV',
                 software: 'OS - Windows 11 and Ubuntu Linux. SW- TC, JAVA, Google Chrome.',
                 hardware: 'PC - HP Core i5 - No. 21, Printer - Laser printer, LCD Projector, Network Switch & HP Server 01.',
@@ -523,6 +531,7 @@ const DeptComputerEngg: React.FC = () => {
               },
               {
                 title: 'LAB 05 - NETWORK & SECURITY LAB',
+                image: `${CE_IMAGE_BASE}/InfrastructurecompsLAB-05.jpg`,
                 incharge: 'Dr. DINESH PATIL & Dr. SWATI VARMA',
                 software: 'OS - Windows 11 and Kali Linux. SW- TC, JAVA, Google Chrome.',
                 hardware: 'PC - HP Core i5 - No. 20, Printer - Laser printer, LCD Projector, Network Switch etc.',
@@ -530,6 +539,7 @@ const DeptComputerEngg: React.FC = () => {
               },
               {
                 title: 'LAB 06 - SOFTWARE DEVELOPMENT LAB',
+                image: `${CE_IMAGE_BASE}/InfrastructurecompsLAB-06.jpg`,
                 incharge: 'Mr. SUNIL KATKAR & Ms. VINAL WAGHELA',
                 software: 'OS - Windows 11 and Ubuntu Linux. SW- TC, JAVA, Google Chrome.',
                 hardware: 'PC - HP Core i5 - No. 20, Printer - Laser Printer, LCD Projector, Network Switch etc.',
@@ -537,6 +547,7 @@ const DeptComputerEngg: React.FC = () => {
               },
               {
                 title: 'Department Conference Room',
+                image: `${CE_IMAGE_BASE}/InfrastructurecompsDepartment-Conference-room.jpg`,
                 isConferenceRoom: true,
                 incharge: '-',
                 software: '-',
@@ -555,9 +566,8 @@ const DeptComputerEngg: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {labs.map((lab, idx) => (
                     <article key={lab.title} className={`reveal ${delayClass(idx)} rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden`}>
-                      <div className="w-full aspect-[16/9] bg-slate-100 border-b border-slate-200 flex flex-col items-center justify-center text-slate-400">
-                        <i className="ph ph-image text-4xl mb-2" />
-                        <span className="text-sm font-medium">Image Holder {idx + 1}</span>
+                      <div className="w-full aspect-[16/9] bg-slate-100 border-b border-slate-200 overflow-hidden">
+                        <img src={lab.image} alt={lab.title} className="h-full w-full object-cover" />
                       </div>
 
                       <div className="p-5 space-y-4">
@@ -803,6 +813,8 @@ const DeptComputerEngg: React.FC = () => {
               departmentLabel="Computer Engineering"
               newsletterItems={newsletters.length > 0 ? newsletters : newsletterPdfs}
               magazineItems={magazines.length > 0 ? magazines : magazinePdfs}
+              staffName="Mr. Vikrant Agaskar"
+              staffImage={`${CE_IMAGE_BASE}/Newsletter_and_MagazinecompsMr.-Vikrant-Agaskar.jpg`}
             />
           )}
 
@@ -833,15 +845,15 @@ const DeptComputerEngg: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {dynamicAch.map((item, idx) => (
                     <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      {item.image && (
+                      {typeof item.image === 'string' && (
                         <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
-                          <img src={resolveUploadedAssetUrl(item.image)} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={resolveUploadedAssetUrl(item.image) || undefined} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
                       )}
                       <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
                       <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
-                      {item.pdf && (
-                        <a href={resolveUploadedAssetUrl(item.pdf)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                      {typeof item.pdf === 'string' && (
+                        <a href={resolveUploadedAssetUrl(item.pdf) || undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
                           <i className="ph ph-file-pdf text-lg" />
                           View Document
                           <i className="ph ph-arrow-right" />
@@ -870,15 +882,15 @@ const DeptComputerEngg: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {dynamicAch.map((item, idx) => (
                     <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      {item.image && (
+                      {typeof item.image === 'string' && (
                         <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
-                          <img src={resolveUploadedAssetUrl(item.image)} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={resolveUploadedAssetUrl(item.image) || undefined} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
                       )}
                       <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
                       <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
-                      {item.pdf && (
-                        <a href={resolveUploadedAssetUrl(item.pdf)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                      {typeof item.pdf === 'string' && (
+                        <a href={resolveUploadedAssetUrl(item.pdf) || undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
                           <i className="ph ph-file-pdf text-lg" />
                           View Document
                           <i className="ph ph-arrow-right" />
