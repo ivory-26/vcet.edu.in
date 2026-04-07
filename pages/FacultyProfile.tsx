@@ -13,6 +13,12 @@ const getInitials = (name: string) => {
   return (parts[0]?.[0] || '') + (parts[1]?.[0] || parts[0]?.[1] || '').toUpperCase();
 };
 
+const formatDisplayDate = (value: string | null | undefined): string => {
+  if (!value) return 'N/A';
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? 'N/A' : parsed.toLocaleDateString();
+};
+
 const FALLBACK_FACULTY = (
   Array.isArray(fallbackFacultyData)
     ? fallbackFacultyData
@@ -145,7 +151,7 @@ const FacultyProfile: React.FC = () => {
                 <p className="hero-dept">Vidyavardhini's College of Engineering and Technology</p>
                 <div className="hero-meta">
                   <div className="m-item"><i className="fa-solid fa-envelope" /> {basicInfo.email}</div>
-                  <div className="m-item"><i className="fa-solid fa-calendar-check" /> Joined {new Date(basicInfo.joinDate).toLocaleDateString()}</div>
+                  <div className="m-item"><i className="fa-solid fa-calendar-check" /> Joined {formatDisplayDate(basicInfo.joinDate)}</div>
                 </div>
                 <div className="mt-4">
                   <Link to={backToDepartment(basicInfo.department)} className="text-sm text-blue-600 font-bold hover:underline">
