@@ -74,11 +74,16 @@ export const SortableListContext = ({
   ) => React.ReactNode 
 }) => {
   const { ids, handleMove, handleRemove } = useListSync(items || []);
-  const pointerSensor = useSensor(PointerSensor);
-  const keyboardSensor = useSensor(KeyboardSensor, {
-    coordinateGetter: sortableKeyboardCoordinates,
-  });
-  const sensors = useMemo(() => [pointerSensor, keyboardSensor], [pointerSensor, keyboardSensor]);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

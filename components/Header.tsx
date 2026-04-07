@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, ChevronDown, ChevronRight } from 'lucide-react';
+import { Menu, X, Search, ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useHomepageData } from '../context/HomepageDataContext';
 import { academicsService, type AcademicDocument } from '../services/academics';
 import { naacScoresService, type DynamicNaacScoreUpload } from '../services/naacScores';
@@ -1148,6 +1148,37 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('keydown', handler);
   }, [searchOpen, searchResults, selectedResult, goToResult]);
 
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showScrollControls, setShowScrollControls] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+
+  const updateScrollProgress = useCallback(() => {
+    const el = navRef.current;
+    if (el) {
+      const scrollableWidth = el.scrollWidth - el.clientWidth;
+      if (scrollableWidth > 0) {
+        setScrollProgress((el.scrollLeft / scrollableWidth) * 100);
+        setShowScrollControls(true);
+      } else {
+        setShowScrollControls(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    updateScrollProgress();
+    window.addEventListener('resize', updateScrollProgress);
+    return () => window.removeEventListener('resize', updateScrollProgress);
+  }, [updateScrollProgress, navMenuGroups]);
+
+  const scrollNav = (direction: 'left' | 'right') => {
+    const el = navRef.current;
+    if (el) {
+      const scrollAmt = el.clientWidth * 0.4;
+      el.scrollBy({ left: direction === 'right' ? scrollAmt : -scrollAmt, behavior: 'smooth' });
+    }
+  };
+
   const openMenu = useCallback((label: string, el?: HTMLElement) => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setActiveMenu(label);
@@ -1201,47 +1232,93 @@ const Header: React.FC = () => {
           </Link>
 
           {/* â”€â”€â”€â”€ Desktop Nav â”€â”€â”€â”€ */}
-          <nav className="hidden lg:flex items-center flex-1 min-w-0 overflow-x-auto no-scrollbar" aria-label="Main navigation">
-            <ul className="flex items-center gap-0.5 lg:gap-1 xl:gap-1.5">
-              {navMenuGroups.map((group, idx) => (
-                <li key={group.label} className="relative flex-shrink-0">
-                  {group.dropdown ? (
-                    <button
-                      onMouseEnter={(e) => openMenu(group.label, e.currentTarget)}
-                      onMouseLeave={scheduleClose}
-                      onFocus={(e) => openMenu(group.label, e.currentTarget)}
-                      onBlur={scheduleClose}
-                      aria-haspopup="true"
-                      aria-expanded={activeMenu === group.label}
-                      className={`flex items-center gap-0.5 px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap select-none ${activeMenu === group.label
-                        ? 'bg-brand-blue text-white'
-                        : 'text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue'
-                        }`}
-                    >
-                      {group.label}
-                    </button>
+          {/* ────── Desktop Nav with Horizontal Scrollbar ────── */}
+          <div className="hidden lg:flex flex-col flex-1 min-w-0 mt-1 relative group/navbar">
+            <div className="flex-1 relative flex items-center overflow-hidden">
+              {/* Left Arrow */}
+              {showScrollControls && (
+                <button 
+                  onClick={() => scrollNav('left')}
+                  className={`absolute left-0 z-20 h-full w-8 flex items-center justify-center bg-white/95 text-brand-gold hover:text-brand-blue transition-all border-r border-gray-100 ${scrollProgress <= 0.5 ? 'opacity-0 pointer-events-none' : 'opacity-100 shadow-[2px_0_12px_rgba(0,0,0,0.05)]'}`}
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-4 h-4 ml-0.5" />
+                </button>
+              )}
 
-                  ) : group.href?.startsWith('/') ? (
-                    <Link
-                      to={group.href}
-                      className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
-                    >
-                      {group.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={group.href}
-                      target={group.href?.startsWith('http') ? '_blank' : '_self'}
-                      rel="noopener noreferrer"
-                      className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
-                    >
-                      {group.label}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
+              <nav 
+                ref={navRef}
+                onScroll={updateScrollProgress}
+                className="flex-1 overflow-x-auto no-scrollbar scroll-smooth flex items-center h-full px-2" 
+                aria-label="Main navigation"
+              >
+                <ul className="flex items-center gap-0.5 lg:gap-1 xl:gap-1.5 pb-0.5">
+                  {navMenuGroups.map((group, idx) => (
+                    <li key={group.label} className="relative flex-shrink-0">
+                      {group.dropdown ? (
+                        <button
+                          onMouseEnter={(e) => openMenu(group.label, e.currentTarget)}
+                          onMouseLeave={scheduleClose}
+                          onFocus={(e) => openMenu(group.label, e.currentTarget)}
+                          onBlur={scheduleClose}
+                          aria-haspopup="true"
+                          aria-expanded={activeMenu === group.label}
+                          className={`flex items-center gap-0.5 px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap select-none ${activeMenu === group.label
+                            ? 'bg-brand-blue text-white'
+                            : 'text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue'
+                            }`}
+                        >
+                          {group.label}
+                        </button>
+                      ) : group.href?.startsWith('/') ? (
+                        <Link
+                          to={group.href}
+                          className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
+                        >
+                          {group.label}
+                        </Link>
+                      ) : (
+                        <a
+                          href={group.href}
+                          target={group.href?.startsWith('http') ? '_blank' : '_self'}
+                          rel="noopener noreferrer"
+                          className="block px-1 lg:px-2 xl:px-2.5 py-1.5 lg:py-2 text-[8.5px] md:text-[9px] lg:text-[10px] xl:text-[11px] 2xl:text-[12px] font-bold uppercase tracking-wide rounded-md transition-all duration-200 whitespace-nowrap text-slate-700 hover:bg-brand-blue/8 hover:text-brand-blue"
+                        >
+                          {group.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+
+              {/* Right Arrow */}
+              {showScrollControls && (
+                <button 
+                  onClick={() => scrollNav('right')}
+                  className={`absolute right-0 z-20 h-full w-8 flex items-center justify-center bg-white/95 text-brand-gold hover:text-brand-blue transition-all border-l border-gray-100 ${scrollProgress >= 99.5 ? 'opacity-0 pointer-events-none' : 'opacity-100 shadow-[-2px_0_12px_rgba(0,0,0,0.05)]'}`}
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-4 h-4 mr-0.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Scroll Indicator below the options */}
+            {showScrollControls && (
+              <div className="px-10 h-0.5 mt-0.5 mb-1 opacity-0 group-hover/navbar:opacity-100 transition-opacity duration-300">
+                <div className="h-full w-full relative bg-gray-100 rounded-full overflow-hidden">
+                  <div 
+                    className="absolute top-0 bottom-0 bg-brand-gold rounded-full transition-all duration-300 ease-out"
+                    style={{ 
+                      width: '30%', 
+                      left: `${scrollProgress * 0.7}%` 
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Right actions â€” search */}
           <div className="hidden lg:flex items-center gap-1 flex-shrink-0">
