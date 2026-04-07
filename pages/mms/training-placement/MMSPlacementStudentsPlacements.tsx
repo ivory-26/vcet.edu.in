@@ -87,7 +87,7 @@ export default function MMSPlacementStudentsPlacements() {
         student: row.studentName,
         specialization: row.specialization,
         company: row.company,
-        src: resolveUploadedAssetUrl(row.image) ?? resolveApiUrl(row.image) || undefined,
+        src: resolveUploadedAssetUrl(row.image) ?? resolveApiUrl(row.image) ?? undefined,
       }))
     : defaultPlacementsRows.map((row) => ({
         ...row,
