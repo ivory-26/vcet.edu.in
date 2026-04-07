@@ -12,11 +12,7 @@ export function useNotices(enabled = true) {
     enabled,
     initialData: [],
     cacheKey: 'public:notices:list',
-    cacheTtlMs: 5 * 60_000,
     refreshIntervalMs: REFRESH_INTERVAL_MS,
-    // Disabled to prevent API flooding
-    revalidateOnFocus: false,
-    revalidateOnVisibility: false,
   });
 
   return { notices: data, loading, error };

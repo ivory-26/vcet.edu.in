@@ -16,8 +16,8 @@ import { useEvents } from "../hooks/useEvents";
 import { useNotices } from "../hooks/useNotices";
 import { useHeroSlides } from "../hooks/useHeroSlides";
 import { useHomepageBanners } from "../hooks/useHomepageBanners";
-import ImagePreviewModal from "./ImagePreviewModal";
 import { resolveUploadedAssetUrl } from "../utils/uploadedAssets";
+import ImagePreviewModal from "./ImagePreviewModal";
 
 const HOMEPAGE_BG_PATH = "/images/Main Page/Home background/VCET-Home-1-scaled.jpg";
 const HOMEPAGE_BG_URL = resolveUploadedAssetUrl(HOMEPAGE_BG_PATH) ?? HOMEPAGE_BG_PATH;
@@ -320,20 +320,9 @@ const AdmissionForm: React.FC = () => {
   );
 };
 
-const fallbackPackageImages = [
-  {
-    src: "/images/Main Page/Packages/HIGEST_Package_banner.jpg",
-    label: "Highest Package",
-  },
-  {
-    src: "/images/Main Page/Packages/AICTE-Pamphlet_page-0001.jpg",
-    label: "AICTE Pamphlet",
-  },
-];
-
 const fallbackBannerSlides = [
-    { src: "/images/Main Page/Banner/Bruse_Banner.png", alt: "Bruse Banner" },
-    { src: "/images/Main Page/Banner/Yearly_banner.png", alt: "Yearly Banner" },
+    { src: resolveUploadedAssetUrl("/images/Main Page/Banner/Bruse_Banner.png") ?? "/images/Main Page/Banner/Bruse_Banner.png", alt: "Bruse Banner" },
+    { src: resolveUploadedAssetUrl("/images/Main Page/Banner/Yearly_banner.png") ?? "/images/Main Page/Banner/Yearly_banner.png", alt: "Yearly Banner" },
   ];
 
 const Hero: React.FC = () => {
@@ -359,30 +348,34 @@ const Hero: React.FC = () => {
   const apiSlides = useAggregate ? homepage!.data.heroSlides : fallbackSlides;
   const apiHomepageBanners = useAggregate ? homepage!.data.homepageBanners : fallbackHomepageBanners;
 
-  const packageImages = apiHomepageBanners.length
-    ? apiHomepageBanners
-        .filter((banner) => Boolean(banner.image_url))
-        .map((banner) => ({
-          src: banner.image_url as string,
-          label: banner.description || banner.title || 'Homepage Banner',
-        }))
-    : fallbackPackageImages;
+  const packageImages = apiHomepageBanners
+    .filter((banner) => Boolean(banner.image_url))
+    .map((banner) => ({
+      src: banner.image_url as string,
+      label: banner.description || banner.title || 'Homepage Banner',
+    }));
 
-  // Format the API slides
-  const apiFormattedSlides = apiSlides
-    .filter((s) => Boolean(s.image_url))
-    .map((s) => ({ src: s.image_url as string, alt: s.title || 'Slide' }));
+  // Hero slideshow is independent from popup banners and uses hero slide records.
+  const displaySlides = apiSlides
+    .filter((slide) => Boolean(slide.image_url))
+    .map((slide) => ({
+      src: slide.image_url as string,
+      alt: slide.title || "Hero Slide",
+    }));
 
-  // Use API slides when available; only fall back to static slides if the API has none.
-  const displaySlides = apiFormattedSlides.length > 0 ? apiFormattedSlides : fallbackBannerSlides;
+  const resolvedDisplaySlides = displaySlides.length > 0 ? displaySlides : fallbackBannerSlides;
 
   useEffect(() => {
-    if (displaySlides.length <= 1) return;
+    if (resolvedDisplaySlides.length <= 1) return;
     const timer = setInterval(() => {
-      setSlideIndex((i) => (i + 1) % displaySlides.length);
+      setSlideIndex((i) => (i + 1) % resolvedDisplaySlides.length);
     }, 10000);
     return () => clearInterval(timer);
-  }, [displaySlides.length]);
+  }, [resolvedDisplaySlides.length]);
+
+  useEffect(() => {
+    setSlideIndex((prev) => (prev >= resolvedDisplaySlides.length ? 0 : prev));
+  }, [resolvedDisplaySlides.length]);
 
   useEffect(() => {
     if (!packageImages.length) return;
@@ -457,14 +450,14 @@ const Hero: React.FC = () => {
       <div className="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 z-10 w-[40%] max-w-[560px] shadow-2xl rounded-lg overflow-hidden">
         <div className="relative w-full">
           {/* Spacer image to set natural aspect ratio */}
-          {displaySlides[0]?.src ? (
+          {resolvedDisplaySlides[0]?.src ? (
             <img
-              src={displaySlides[0].src}
+              src={resolvedDisplaySlides[0].src}
               alt=""
               className="w-full h-auto block opacity-0 pointer-events-none"
             />
           ) : null}
-          {displaySlides.map((slide, i) => (
+          {resolvedDisplaySlides.map((slide, i) => (
             <img
               key={slide.src}
               src={slide.src}
@@ -476,7 +469,7 @@ const Hero: React.FC = () => {
         </div>
         {/* Dot indicators */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          {displaySlides.map((_, i) => (
+          {resolvedDisplaySlides.map((_, i) => (
             <button
               key={i}
               onClick={() => setSlideIndex(i)}
@@ -831,8 +824,15 @@ const Hero: React.FC = () => {
 
       {/* PACKAGES — vertical tab below ENQUIRE NOW */}
       <button
-        onClick={() => { setPackagesOpen(true); setPackageIndex(0); setPkgZoom(1); }}
+        onClick={() => {
+          if (!packageImages.length) return;
+          setPackagesOpen(true);
+          setPackageIndex(0);
+          setPkgZoom(1);
+        }}
+        disabled={!packageImages.length}
         className="hidden lg:flex absolute left-0 z-20 flex-col items-center justify-center gap-1 py-4 px-2 shadow-2xl transition-all duration-200 hover:brightness-110 active:scale-95"
+        aria-disabled={!packageImages.length}
         style={{
           background: 'rgba(196, 149, 53, 0.55)',
           backdropFilter: 'blur(16px)',

@@ -458,6 +458,12 @@ export interface Department {
   name: string;
   slug: string;
   content: {
+      about?: string;
+      vision?: string;
+      mission?: string;
+      hodImage?: string | File;
+      peos?: string[];
+      psos?: string[];
     dabMembers: { name: string; designation: string; organization: string }[];
     faculty: number[];
     toppers: { name: string; year: string; cgpa: string }[];
@@ -492,6 +498,12 @@ export interface DepartmentPayload {
   name?: string;
   slug?: string;
   content?: {
+      about?: string;
+      vision?: string;
+      mission?: string;
+      hodImage?: string | File;
+      peos?: string[];
+      psos?: string[];
     dabMembers?: { name: string; designation: string; organization: string }[];
     faculty?: number[];
     toppers?: { name: string; year: string; cgpa: string }[];
@@ -1207,6 +1219,7 @@ export interface Newsletter {
   title: string;
   description: string;
   departmentId: string | number;
+  type: 'newsletter' | 'magazine';
   image: string | null;
   pdf: string | null;
   createdAt: string;
@@ -1217,6 +1230,7 @@ export interface NewsletterPayload {
   title: string;
   description: string;
   departmentId: string | number;
+  type: 'newsletter' | 'magazine';
   image?: File | null;
   pdf?: File | null;
 }
@@ -1249,4 +1263,5 @@ export interface MMSHomeData {
   documents: MMSHomeDocument[];
 }
 export type MMSHomePayload = MMSHomeData;
+
 
