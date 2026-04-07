@@ -446,6 +446,10 @@ const DeptFE: React.FC = () => {
 
           {/* â•â•â•â• TIME TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'time-table' && (() => {
+            const dynamicLinks = (department?.content?.timetable || []).map((t, idx) => ({
+              label: (t.class || '').trim() || `Time Table ${idx + 1}`,
+              url: resolveUploadedAssetUrl(t.pdf as string) || '#',
+            }));
             const sem2Links = [
               { label: 'Sem II - FE A (Comp 1)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM2/DivAComps1_Sem2_TT.pdf' },
               { label: 'Sem II - FE B (Comp 2)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM2/DivBComps2_Sem2_TT-.pdf' },
@@ -474,6 +478,23 @@ const DeptFE: React.FC = () => {
               { label: 'Sem I - FE K (VLSI)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM1/Div-K-VLSI-engg.-_-TT.pdf' },
               { label: 'Sem I - FE L (CSE-DS 3)', url: '/pdfs/Department/FirstYearEngineering/TimeTable/SEM1/L-Div-_-CSE-DS-3_-TT.pdf' },
             ];
+
+            if (dynamicLinks.length > 0) {
+              return (
+                <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100 space-y-6">
+                  <div className="flex items-center gap-3"><span className="w-8 h-px bg-brand-gold" /><span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">First Year Engineering</span></div>
+                  <h3 className="text-2xl font-bold text-brand-navy relative inline-block">Time Table<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
+                  <div className="space-y-3">
+                    {dynamicLinks.map((item) => (
+                      <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                        <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              );
+            }
+
             return (
               <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100 space-y-8">
                 <div className="flex items-center gap-3"><span className="w-8 h-px bg-brand-gold" /><span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">First Year Engineering</span></div>

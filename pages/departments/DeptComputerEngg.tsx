@@ -849,19 +849,33 @@ const DeptComputerEngg: React.FC = () => {
           )}
 
           {/* â•â•â•â• TIME TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
-          {activeId === 'time-table' && (
-            <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="w-8 h-px bg-brand-gold" />
-                <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Computer Engineering</span>
-              </div>
-              <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Time Table<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-              <div className="space-y-3">
-                <a href="/pdfs/Department/ComputerEngineering/TimeTable/TT_master_2025-26.pdf" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>Master TT 2025-26</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
-                <a href="/pdfs/Department/ComputerEngineering/TimeTable/Master_TT_Even_24-25.pdf" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>Master TT Even Sem 2024-25</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
-              </div>
-            </section>
-          )}
+          {activeId === 'time-table' && (() => {
+            const staticLinks = [
+              { label: 'Master TT 2025-26', url: '/pdfs/Department/ComputerEngineering/TimeTable/TT_master_2025-26.pdf' },
+              { label: 'Master TT Even Sem 2024-25', url: '/pdfs/Department/ComputerEngineering/TimeTable/Master_TT_Even_24-25.pdf' },
+            ];
+            const links = department?.content?.timetable?.length
+              ? department.content.timetable.map((t, idx) => ({
+                  label: (t.class || '').trim() || `Time Table ${idx + 1}`,
+                  url: resolveUploadedAssetUrl(t.pdf as string) || '#',
+                }))
+              : staticLinks;
+
+            return (
+              <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-px bg-brand-gold" />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Computer Engineering</span>
+                </div>
+                <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Time Table<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
+                <div className="space-y-3">
+                  {links.map((item) => (
+                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
 
           {/* â•â•â•â• NEWSLETTER & MAGAZINE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'newsletter' && (

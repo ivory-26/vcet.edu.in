@@ -1010,7 +1010,7 @@ const DeptIT: React.FC = () => {
 
           {/* â•â•â•â• TIME TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'time-table' && (() => {
-            const links = [
+            const staticLinks = [
               { label: '2025-26 Odd Sem Time Table', url: '/pdfs/Department/InformationTechnology/TimeTable/2025-26OddSem.pdf' },
               { label: '2024-25 Even Sem Time Table', url: '/pdfs/Department/InformationTechnology/TimeTable/Eve-Sem-Time-Table-2024-25.pdf' },
               { label: '2024-25 Odd Sem Time Table', url: '/pdfs/Department/InformationTechnology/TimeTable/2024-25OddSem.pdf' },
@@ -1018,6 +1018,12 @@ const DeptIT: React.FC = () => {
               { label: '2023-24 Odd Sem Time Table', url: '/pdfs/Department/InformationTechnology/TimeTable/2023-24EvenSem.pdf' },
               { label: '2022-23 Even Sem Time Table', url: '/pdfs/Department/InformationTechnology/TimeTable/2022-23EvenSem.pdf' },
             ];
+            const links = department?.content?.timetable?.length
+              ? department.content.timetable.map((t, idx) => ({
+                  label: (t.class || '').trim() || `Time Table ${idx + 1}`,
+                  url: resolveDepartmentAssetUrl(t.pdf) || '#',
+                }))
+              : staticLinks;
             return (
               <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
                 <div className="flex items-center gap-3 mb-4">

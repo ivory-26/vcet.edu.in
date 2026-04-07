@@ -728,10 +728,16 @@ const DeptENTC: React.FC = () => {
 
           {/* â•â•â•â• TIME TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
           {activeId === 'time-table' && (() => {
-            const links = [
+            const staticLinks = [
               { label: 'Time Table 2024-25 Even Sem', url: 'https://vcet.edu.in/wp-content/uploads/2025/04/Master-timetable-Even-sem-24-25.jpg' },
               { label: 'Time Table 2024-25 Odd Sem', url: 'https://vcet.edu.in/wp-content/uploads/2025/04/Master-timetable-Odd-sem-24-25.jpg' },
             ];
+            const links = department?.content?.timetable?.length
+              ? department.content.timetable.map((t, idx) => ({
+                  label: (t.class || '').trim() || `Time Table ${idx + 1}`,
+                  url: resolveUploadedAssetUrl(t.pdf as string) || '#',
+                }))
+              : staticLinks;
             return (
               <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
                 <div className="flex items-center gap-3 mb-4">
