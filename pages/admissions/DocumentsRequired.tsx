@@ -4,6 +4,7 @@ import PageBanner from '../../components/PageBanner';
 import { FileText, Download } from 'lucide-react';
 import { useAdmissionSection } from '../../hooks/useAdmissionSection';
 import { getSectionContentValue } from './admissionSectionUtils';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 const fallbackDocuments = [
   {
@@ -37,7 +38,7 @@ const DocumentsRequired: React.FC = () => {
   const documents = section?.items?.map((item) => ({
     title: item.title,
     description: item.description || '',
-    link: item.document_url || item.external_url || '#',
+    link: resolveUploadedAssetUrl(item.document_url) || item.document_url || item.external_url || '#',
     tag: item.tag || item.category || '',
   })) ?? fallbackDocuments;
 

@@ -99,15 +99,15 @@ const magazinePdfs = [
 ];
 
 const facultyAchievementLinks = [
-  { label: 'Faculty Patents and Copyright (2024-25)', href: 'https://vcet.edu.in/wp-content/uploads/2025/03/2024-25-Patent-1.pdf' },
-  { label: 'Faculty Awards', href: 'https://vcet.edu.in/wp-content/uploads/2024/07/Staff_achievements.pdf' },
-  { label: 'Faculty Publications', href: 'https://vcet.edu.in/wp-content/uploads/2024/07/Staff_Publications_Stats.pdf' },
-  { label: 'Research Grants Received', href: 'https://vcet.edu.in/wp-content/uploads/2024/07/Research-Grants-of-IT-Dept-1-1.pdf' },
+  { label: 'Faculty Patents and Copyright (2024-25)', description: '', href: 'https://vcet.edu.in/wp-content/uploads/2025/03/2024-25-Patent-1.pdf' },
+  { label: 'Faculty Awards', description: '', href: 'https://vcet.edu.in/wp-content/uploads/2024/07/Staff_achievements.pdf' },
+  { label: 'Faculty Publications', description: '', href: 'https://vcet.edu.in/wp-content/uploads/2024/07/Staff_Publications_Stats.pdf' },
+  { label: 'Research Grants Received', description: '', href: 'https://vcet.edu.in/wp-content/uploads/2024/07/Research-Grants-of-IT-Dept-1-1.pdf' },
 ];
 
 const studentAchievementLinks = [
-  { label: 'Student Achievements (Hackathon Achievers)', href: '/pdfs/Department/InformationTechnology/StudentsAchievements/Hackathon-Achivers.pdf' },
-  { label: 'Sports/Cultural Activities at National/International Level', href: '/pdfs/Department/InformationTechnology/StudentsAchievements/Student-Cultural-Sports.pdf' },
+  { label: 'Student Achievements (Hackathon Achievers)', description: '', href: '/pdfs/Department/InformationTechnology/StudentsAchievements/Hackathon-Achivers.pdf' },
+  { label: 'Sports/Cultural Activities at National/International Level', description: '', href: '/pdfs/Department/InformationTechnology/StudentsAchievements/Student-Cultural-Sports.pdf' },
 ];
 
 const editorialRows = [
@@ -541,7 +541,7 @@ const DeptIT: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">MoU<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -757,7 +757,7 @@ const DeptIT: React.FC = () => {
                     <i className="ph ph-arrow-up-right text-brand-gold" />
                   </Link>
                   {externalLinks.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -938,7 +938,7 @@ const DeptIT: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Syllabus<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -967,7 +967,7 @@ const DeptIT: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Time Table<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>

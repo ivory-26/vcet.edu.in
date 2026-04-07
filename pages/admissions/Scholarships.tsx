@@ -4,6 +4,7 @@ import PageBanner from '../../components/PageBanner';
 import { Award, FileText, ExternalLink, BookOpen } from 'lucide-react';
 import { useAdmissionSection } from '../../hooks/useAdmissionSection';
 import { getSectionContentValue, groupItemsByGroupKey } from './admissionSectionUtils';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 const fallbackGovernmentScholarships = [
   {
@@ -81,11 +82,11 @@ const Scholarships: React.FC = () => {
   const groupedItems = groupItemsByGroupKey(section?.items ?? []);
   const governmentScholarships = groupedItems.govt?.map((item) => ({
     title: item.title,
-    link: item.document_url || item.external_url || '#',
+    link: resolveUploadedAssetUrl(item.document_url) || item.document_url || item.external_url || '#',
   })) ?? fallbackGovernmentScholarships;
   const aicteSchemes = groupedItems.aicte?.map((item) => ({
     title: item.title,
-    link: item.document_url || item.external_url || '#',
+    link: resolveUploadedAssetUrl(item.document_url) || item.document_url || item.external_url || '#',
   })) ?? fallbackAicteSchemes;
 
   const scrollTo = (id: string, section: string) => {

@@ -2,6 +2,7 @@ import React from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { FileText, Download, Calendar } from 'lucide-react';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 interface PlanDocument {
   label: string;
@@ -42,7 +43,7 @@ const StrategicPlan: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {plans.map((plan, idx) => {
-                const fileHref = plan.fileUrl;
+                const fileHref = resolveUploadedAssetUrl(plan.fileUrl) || plan.fileUrl;
                 return (
                   <a
                     key={`${plan.year}-${idx}`}

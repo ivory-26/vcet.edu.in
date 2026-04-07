@@ -421,7 +421,7 @@ const DeptCivil: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Faculty List<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
                   ))}
@@ -442,7 +442,7 @@ const DeptCivil: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Student List<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
                   ))}
@@ -456,7 +456,7 @@ const DeptCivil: React.FC = () => {
             <section className="reveal bg-white rounded-3xl p-6 sm:p-8 md:p-10 shadow-sm border border-slate-100">
               <div className="flex items-center gap-3 mb-4"><span className="w-8 h-px bg-brand-gold" /><span className="text-[11px] font-bold uppercase tracking-[0.28em] text-brand-gold">Civil Engineering</span></div>
               <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Placement Record<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
-              <a href="/pdfs/Department/CivilEngineering/PlacementRecord/Placement-Record.pdf" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                 <span>Placement Record - Civil</span><i className="ph ph-arrow-up-right text-brand-gold" />
               </a>
             </section>
@@ -597,7 +597,7 @@ const DeptCivil: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Syllabus<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
                   ))}
@@ -626,7 +626,7 @@ const DeptCivil: React.FC = () => {
                   <h4 className="text-lg font-bold text-brand-navy mb-3">Innovation in Teaching Learning</h4>
                   <div className="space-y-3">
                     {innovationLinks.map((item) => item.url ? (
-                      <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                      <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                         <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                       </a>
                     ) : (
@@ -640,7 +640,7 @@ const DeptCivil: React.FC = () => {
                   <h4 className="text-lg font-bold text-brand-navy mb-3">ICT Tools in Teaching Learning</h4>
                   <div className="space-y-3">
                     {ictLinks.map((item) => (
-                      <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                      <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                         <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                       </a>
                     ))}
@@ -712,7 +712,7 @@ const DeptCivil: React.FC = () => {
                   <h4 className="text-lg font-bold text-brand-navy mb-3">Consultancy Record</h4>
                   <div className="space-y-3">
                     {consultLinks.map((item) => (
-                      <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                      <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                         <span>{item.label}</span><i className="ph ph-arrow-up-right text-brand-gold" />
                       </a>
                     ))}

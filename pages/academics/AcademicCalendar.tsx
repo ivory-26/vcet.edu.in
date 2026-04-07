@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { Calendar, Download, ExternalLink, Loader2 } from 'lucide-react';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 interface AcademicDocument {
   title: string;
@@ -86,9 +87,12 @@ const AcademicCalendar: React.FC = () => {
 
                 <div className="space-y-5">
                   {calendars.map((cal, idx) => (
+                    (() => {
+                      const resolvedFileUrl = resolveUploadedAssetUrl(cal.fileUrl) || cal.fileUrl;
+                      return (
                     <a
                       key={idx}
-                      href={cal.fileUrl || '#'}
+                      href={resolvedFileUrl || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="reveal visible group block"
@@ -124,6 +128,8 @@ const AcademicCalendar: React.FC = () => {
                         </div>
                       </div>
                     </a>
+                      );
+                    })()
                   ))}
                 </div>
               </div>

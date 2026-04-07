@@ -4,6 +4,7 @@ import MMSLayout from '../../components/mms/MMSLayout';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { mmsHomeContent } from './mmsHomeContent';
 import { get, resolveApiUrl } from '../../services/api';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 const sectionTitleClass = 'text-2xl md:text-3xl font-display font-bold text-brand-blue';
 const sectionKickerClass = 'text-[11px] font-bold uppercase tracking-[0.2em] text-brand-gold';
@@ -73,7 +74,7 @@ const toArray = (obj: any): any[] => {
 
   const documentsList = toArray(data?.documents);
   const docsSection = documentsList.some((d:any)=> d.url || d.pdfFile)
-    ? { id: 'pdf-docs', title: 'Documents', items: documentsList.filter((d:any)=> d.url || d.pdfFile).map((d:any, idx:number) => ({ id: String(idx), label: d.label || d.pdfFile?.name || 'Document', url: resolveApiUrl(d.pdfFile) || d.url })) }
+    ? { id: 'pdf-docs', title: 'Documents', items: documentsList.filter((d:any)=> d.url || d.pdfFile).map((d:any, idx:number) => ({ id: String(idx), label: d.label || d.pdfFile?.name || 'Document', url: resolveUploadedAssetUrl(d.pdfFile) || d.url })) }
     : getFallback('pdf-docs');
 
   const noticesList = toArray(data?.notices);

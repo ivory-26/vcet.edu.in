@@ -4,6 +4,7 @@ import PageBanner from '../../components/PageBanner';
 import { Download, BookOpen, Image } from 'lucide-react';
 import { useAdmissionSection } from '../../hooks/useAdmissionSection';
 import { getSectionContentValue } from './admissionSectionUtils';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 const BROCHURE_PDF_URL = '/documents/admissions/vcet-brochure.pdf';
 const BROCHURE_FILE_NAME = 'vcet-brochure.pdf';
@@ -11,7 +12,11 @@ const BROCHURE_FILE_NAME = 'vcet-brochure.pdf';
 const Brochure: React.FC = () => {
   const { section, loading, error } = useAdmissionSection('brochure');
   const brochureItem = section?.items?.[0];
-  const brochureUrl = brochureItem?.document_url || brochureItem?.external_url || BROCHURE_PDF_URL;
+  const brochureUrl =
+    resolveUploadedAssetUrl(brochureItem?.document_url) ||
+    brochureItem?.document_url ||
+    brochureItem?.external_url ||
+    BROCHURE_PDF_URL;
   const brochureFileName = brochureItem?.pdf_name || BROCHURE_FILE_NAME;
 
   if (loading) {

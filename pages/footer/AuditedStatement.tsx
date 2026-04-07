@@ -2,6 +2,7 @@
 import PageLayout from '../../components/PageLayout';
 import PageBanner from '../../components/PageBanner';
 import { ExternalLink, FileText } from 'lucide-react';
+import { resolveUploadedAssetUrl } from '../../utils/uploadedAssets';
 
 type StatementItem = {
   label: string;
@@ -58,7 +59,7 @@ const AuditedStatement: React.FC = () => {
             {statementItems.map((item, idx) => (
               <div key={`${item.label}-${idx}`} className="reveal border border-[#E5E7EB] bg-white" style={{ transitionDelay: `${idx * 0.04}s` }}>
                 <a
-                  href={item.href}
+                  href={resolveUploadedAssetUrl(item.href) || item.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 px-4 sm:px-6 py-4 sm:py-5 group hover:bg-[#F7F9FC] transition-colors duration-200"

@@ -122,8 +122,8 @@ const DeptComputerEngg: React.FC = () => {
           <div className="lg:sticky lg:top-24 bg-white rounded-xl shadow-md overflow-hidden border border-slate-200 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
             <nav className="flex flex-col py-2">
               {sidebarLinks.filter((link) => {
-  const fa = department?.content?.facultyAchievements?.length > 0;
-  const sa = department?.content?.studentAchievements?.length > 0;
+  const fa = (department?.content?.facultyAchievements?.length ?? 0) > 0;
+  const sa = (department?.content?.studentAchievements?.length ?? 0) > 0;
   if (link.id === 'faculty-achievements' && !fa) return false;
   if (link.id === 'student-achievements' && !sa) return false;
   return true;
@@ -659,7 +659,7 @@ const DeptComputerEngg: React.FC = () => {
                 <p className="text-slate-600 mb-5">NEP-2020 MU syllabus link is currently not available in the provided document.</p>
                 <div className="grid md:grid-cols-2 gap-3">
                   {syllabusLinks.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -691,7 +691,7 @@ const DeptComputerEngg: React.FC = () => {
                   <div className="space-y-6">
                     <div className="space-y-3">
                       {links.map((item) => (
-                        <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                        <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                           <span>{item.label}</span>
                           <i className="ph ph-arrow-up-right text-brand-gold" />
                         </a>
@@ -743,7 +743,7 @@ const DeptComputerEngg: React.FC = () => {
                 <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Innovation &amp; Technique<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
                 <div className="space-y-3">
                   {links.map((item) => (
-                    <a key={item.label} href={item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
+                    <a key={item.label} href={resolveUploadedAssetUrl(item.url) || item.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors">
                       <span>{item.label}</span>
                       <i className="ph ph-arrow-up-right text-brand-gold" />
                     </a>
@@ -791,8 +791,8 @@ const DeptComputerEngg: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-brand-navy mb-5 relative inline-block">Time Table<span className="absolute -bottom-2 left-0 w-12 h-1 bg-brand-gold rounded-full" /></h3>
               <div className="space-y-3">
-                <a href="/pdfs/Department/ComputerEngineering/TimeTable/TT_master_2025-26.pdf" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>Master TT 2025-26</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
-                <a href="/pdfs/Department/ComputerEngineering/TimeTable/Master_TT_Even_24-25.pdf" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>Master TT Even Sem 2024-25</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>Master TT 2025-26</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
+                <a href="#" target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:border-brand-gold hover:bg-brand-navylight transition-colors"><span>Master TT Even Sem 2024-25</span><i className="ph ph-arrow-up-right text-brand-gold" /></a>
               </div>
             </section>
           )}
@@ -833,15 +833,15 @@ const DeptComputerEngg: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {dynamicAch.map((item, idx) => (
                     <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      {item.image && (
+                      {typeof item.image === 'string' && item.image && (
                         <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
-                          <img src={resolveUploadedAssetUrl(item.image)} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={resolveUploadedAssetUrl(item.image) || undefined} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
                       )}
                       <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
                       <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
-                      {item.pdf && (
-                        <a href={resolveUploadedAssetUrl(item.pdf)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                      {typeof item.pdf === 'string' && item.pdf && (
+                        <a href={resolveUploadedAssetUrl(item.pdf) || undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
                           <i className="ph ph-file-pdf text-lg" />
                           View Document
                           <i className="ph ph-arrow-right" />
@@ -870,15 +870,15 @@ const DeptComputerEngg: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {dynamicAch.map((item, idx) => (
                     <div key={idx} className="group relative bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      {item.image && (
+                      {typeof item.image === 'string' && item.image && (
                         <div className="mb-5 overflow-hidden rounded-xl h-48 w-full">
-                          <img src={resolveUploadedAssetUrl(item.image)} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <img src={resolveUploadedAssetUrl(item.image) || undefined} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
                       )}
                       <h4 className="text-xl font-bold text-brand-navy mb-2">{item.title}</h4>
                       <p className="text-slate-600 text-sm leading-relaxed mb-4">{item.description}</p>
-                      {item.pdf && (
-                        <a href={resolveUploadedAssetUrl(item.pdf)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
+                      {typeof item.pdf === 'string' && item.pdf && (
+                        <a href={resolveUploadedAssetUrl(item.pdf) || undefined} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-brand-gold hover:text-brand-navy transition-colors">
                           <i className="ph ph-file-pdf text-lg" />
                           View Document
                           <i className="ph ph-arrow-right" />
