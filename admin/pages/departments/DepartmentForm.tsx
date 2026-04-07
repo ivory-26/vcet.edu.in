@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { resolveUploadedAssetUrl } from '../../../utils/uploadedAssets';
 import { departmentApi } from '../../api/departments';
 import { facultyApi } from '../../api/faculty';
 import type { DepartmentPayload, Department, Faculty } from '../../types';
@@ -31,17 +32,29 @@ const TrashIcon = () => (
 /* ── Custom File Input (PDF) ── */
 const FileUpload = ({ label, value, onChange, id, accept = ".pdf" }: { label: string; value: string | File | undefined; onChange: (f: File | undefined) => void; id: string; accept?: string }) => {
   const fileName = value instanceof File ? value.name : (value ? value.split('/').pop()?.split('?')[0] : 'Choose PDF file');
+  const isUploaded = typeof value === 'string' && value.length > 0;
+  
+  // Resolve asset URL safely inside the component
+  const assetUrl = isUploaded ? resolveUploadedAssetUrl(value) : null;
+
   return (
     <div className="space-y-2">
       <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">{label}</label>
       <div className="flex items-center gap-3">
         <label className="flex-1 flex items-center gap-3 p-3.5 bg-slate-50 ring-1 ring-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 transition-all overflow-hidden border border-dashed border-slate-300">
-          <svg className="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+          <svg className="w-4 h-4 text-indigo-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>        
           <span className="text-xs font-bold text-slate-600 truncate">{fileName}</span>
           <input id={id} name={id} aria-label="departmentform field" type="file" className="hidden" accept={accept} onChange={e => { const f = e.target.files?.[0]; if (f) onChange(f); }} />
         </label>
+        
+        {isUploaded && assetUrl && (
+          <a href={assetUrl} target="_blank" rel="noreferrer" title="View Current File" className="p-3 text-indigo-500 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-2xl transition-all">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+          </a>
+        )}
+
         {value && (
-          <button type="button" onClick={() => onChange(undefined)} className="p-3 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all">
+          <button type="button" onClick={() => onChange(undefined)} className="p-3 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all"> 
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         )}
@@ -87,11 +100,15 @@ const ImageUpload = ({ label, value, onChange, id }: { label: string; value: str
 
 /* ── Initial Empty Content State ────────────────────────────────────────────── */
 const initialContent = {
+  about: '',
+  vision: '',
+  mission: '',
+  hodImage: undefined as string | File | undefined,
+  peos: [] as string[],
+  psos: [] as string[],
   dabMembers: [{ name: '', designation: '', organization: '' }],
   faculty: [] as number[],
   toppers: [{ name: '', year: '', cgpa: '' }],
-  newsletter: [{ title: '', link: '' }],
-  
   // New / Modernized Structure
   patents: [{ title: '', description: '', pdf: undefined as string | File | undefined }],
   mous: [{ organization: '', description: '', pdf: undefined as string | File | undefined }],
@@ -115,16 +132,7 @@ const initialContent = {
   },
 };
 
-const newsletterMagazineLimits = {
-  committeeDetails: 2400,
-  pdfButtonLabel: 70,
-  staffName: 80,
-  email: 120,
-  phone: 25,
-  tableTitle: 100,
-  tablePost: 60,
-  tableName: 180,
-};
+
 
 export default function DepartmentForm() {
   const { slug: existingSlug } = useParams<{ slug: string }>();
@@ -244,46 +252,6 @@ export default function DepartmentForm() {
     setContent(prev => ({ ...prev, [key]: ((prev[key] as any[]) || []).filter((_, i) => i !== index) }));
   };
 
-  const updateNmSection = (updates: any) => {
-    setContent(prev => ({
-      ...prev,
-      newsletterMagazineSection: {
-        ...prev.newsletterMagazineSection,
-        ...updates,
-      },
-    }));
-  };
-
-  const updateNmStaff = (updates: any) => {
-    setContent(prev => ({
-      ...prev,
-      newsletterMagazineSection: {
-        ...prev.newsletterMagazineSection,
-        staffIncharge: {
-          ...prev.newsletterMagazineSection?.staffIncharge,
-          ...updates,
-        },
-      },
-    }));
-  };
-
-  const updateNmListItem = (listKey: 'newsletters' | 'magazines' | 'tableRows', index: number, value: any) => {
-    const list = [...((content.newsletterMagazineSection as any)?.[listKey] || [])];
-    if (!isValidArrayIndex(list, index)) return;
-    list[index] = value;
-    updateNmSection({ [listKey]: list });
-  };
-
-  const addNmListItem = (listKey: 'newsletters' | 'magazines' | 'tableRows', emptyValue: any) => {
-    const list = [...((content.newsletterMagazineSection as any)?.[listKey] || [])];
-    updateNmSection({ [listKey]: [...list, emptyValue] });
-  };
-
-  const removeNmListItem = (listKey: 'newsletters' | 'magazines' | 'tableRows', index: number) => {
-    const list = [...((content.newsletterMagazineSection as any)?.[listKey] || [])];
-    if (!isValidArrayIndex(list, index)) return;
-    updateNmSection({ [listKey]: list.filter((_, i) => i !== index) });
-  };
 
   if (loading) {
     return (
@@ -380,7 +348,54 @@ export default function DepartmentForm() {
             </div>
           </AdminFormSection>
 
-          {/* Patents */}
+            {/* Department Overview */}
+            <AdminFormSection
+              title="Department Overview"
+              icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+              isOpen={activeSection === 'overview'}
+              onToggle={() => toggleSection('overview')}
+            >
+              <div className="space-y-6">
+                <ImageUpload
+                  label="HOD Image"
+                  id="departmentform-hod-image"
+                  value={content.hodImage || ''}
+                  onChange={f => setContent({ ...content, hodImage: f })}
+                />
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">About Us</label>
+                  <textarea
+                    value={content.about || ""}
+                    onChange={e => setContent({ ...content, about: e.target.value })}
+                    className="w-full bg-slate-50 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#1e293b] rounded-2xl px-5 py-4 text-sm transition-all outline-none"
+                    placeholder="A brief introduction to the department..."
+                    rows={4}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Vision</label>
+                  <textarea
+                    value={content.vision || ""}
+                    onChange={e => setContent({ ...content, vision: e.target.value })}
+                    className="w-full bg-slate-50 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#1e293b] rounded-2xl px-5 py-4 text-sm transition-all outline-none"
+                    placeholder="Department's Vision Statement..."
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Mission</label>
+                  <textarea
+                    value={content.mission || ""}
+                    onChange={e => setContent({ ...content, mission: e.target.value })}
+                    className="w-full bg-slate-50 ring-1 ring-slate-200 focus:ring-2 focus:ring-[#1e293b] rounded-2xl px-5 py-4 text-sm transition-all outline-none"
+                    placeholder="Department's Mission Statement..."
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </AdminFormSection>
+
+            {/* Patents */}
           <AdminFormSection 
             title="Patents" 
             icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>}
@@ -462,7 +477,7 @@ export default function DepartmentForm() {
                   <button type="button" onClick={() => removeArrayItem('mous', i)} className="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition-all"><TrashIcon /></button>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
-                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Organization Name</label>
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Heading / Organization Name</label>
                       <input id={`departmentform-mou-org-${i}`} name={`departmentform-mou-org-${i}`} aria-label="departmentform field"
                         type="text"
                         value={mou.organization || ""}
@@ -838,272 +853,6 @@ export default function DepartmentForm() {
             </div>
           </AdminFormSection>
 
-          <AdminFormSection 
-            title="Newsletters" 
-            icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" /></svg>}
-            isOpen={activeSection === 'newsletter'}
-            onToggle={() => toggleSection('newsletter')}
-          >
-            <div className="flex justify-end mb-4">
-              <button 
-                type="button"
-                onClick={(e) => { e.stopPropagation(); addArrayItem('newsletter', { title: '', link: '' }); }} 
-                className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-emerald-100 transition-all shadow-sm border border-emerald-100"
-              >
-                <PlusIcon /> Add Item
-              </button>
-            </div>
-            <div className="space-y-4">
-              {content.newsletter?.map((n, i) => (
-                <div key={`newsletter-item-${n.title || n.link || 'row'}-${i}`} className="flex flex-col gap-3 p-4 bg-slate-50 rounded-3xl relative group/row border border-slate-100 hover:border-slate-200 transition-all font-sans">
-                  <input id={`departmentform-newsletter-title-${i}`} name={`departmentform-newsletter-title-${i}`} aria-label="departmentform field"
-                    type="text"
-                    placeholder="Title (e.g. Jan 2024 Edition)"
-                    value={n.title || ""}
-                    onChange={e => updateArrayItem('newsletter', i, { ...n, title: e.target.value })}
-                    className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-4 py-3 text-xs font-bold outline-none"
-                  />
-                  <input id={`departmentform-newsletter-link-${i}`} name={`departmentform-newsletter-link-${i}`} aria-label="departmentform field"
-                    type="url"
-                    placeholder="External Link URL"
-                    value={n.link || ""}
-                    onChange={e => updateArrayItem('newsletter', i, { ...n, link: e.target.value })}
-                    className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-4 py-3 text-xs text-blue-500 font-medium outline-none"
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => removeArrayItem('newsletter', i)} 
-                    className="absolute -top-2 -right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all shadow-md active:scale-95"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
-                </div>
-              ))}
-            </div>
-          </AdminFormSection>
-
-          <AdminFormSection
-            title="Newsletter & Magazine Section"
-            icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14" /></svg>}
-            isOpen={activeSection === 'newsletter-magazine-section'}
-            onToggle={() => toggleSection('newsletter-magazine-section')}
-          >
-            <div className="space-y-8">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Committee Details</label>
-                <textarea
-                  id="departmentform-textarea-newsletter-magazine-details"
-                  name="departmentform-textarea-newsletter-magazine-details"
-                  aria-label="departmentform textarea field"
-                  value={content.newsletterMagazineSection?.committeeDetails || ''}
-                  onChange={e => updateNmSection({ committeeDetails: e.target.value.slice(0, newsletterMagazineLimits.committeeDetails) })}
-                  maxLength={newsletterMagazineLimits.committeeDetails}
-                  rows={6}
-                  placeholder="Write committee details content..."
-                  className="w-full bg-white ring-1 ring-slate-200 focus:ring-2 focus:ring-emerald-500 rounded-2xl px-5 py-3.5 text-sm font-medium outline-none transition-all"
-                />
-                <p className="text-[11px] font-semibold text-slate-400 text-right">
-                  {(content.newsletterMagazineSection?.committeeDetails || '').length}/{newsletterMagazineLimits.committeeDetails}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-sm font-bold text-slate-700">Newsletter PDF Buttons</h4>
-                    <button
-                      type="button"
-                      onClick={() => addNmListItem('newsletters', { label: '', pdf: undefined })}
-                      className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-emerald-100 transition-all border border-emerald-100"
-                    >
-                      <PlusIcon /> Add
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    {(content.newsletterMagazineSection?.newsletters || []).map((item, i) => (
-                      <div key={`newsletter-${item.label || 'row'}-${i}`} className="bg-white p-3 rounded-xl border border-slate-200 relative group/row">
-                        <input
-                          id={`departmentform-newsletter-label-${i}`}
-                          name={`departmentform-newsletter-label-${i}`}
-                          aria-label="departmentform field"
-                          type="text"
-                          placeholder="Button Name (e.g. NEWSLETTER 2024-25)"
-                          value={item.label || ''}
-                          onChange={e => updateNmListItem('newsletters', i, { ...item, label: e.target.value.slice(0, newsletterMagazineLimits.pdfButtonLabel) })}
-                          maxLength={newsletterMagazineLimits.pdfButtonLabel}
-                          className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-emerald-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
-                        />
-                        <div className="mt-2">
-                          <FileUpload
-                            label="PDF File"
-                            id={`departmentform-newsletter-pdf-${i}`}
-                            value={item.pdf || ''}
-                            onChange={f => updateNmListItem('newsletters', i, { ...item, pdf: f })}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeNmListItem('newsletters', i)}
-                          className="absolute -top-2 -right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all shadow-md"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-sm font-bold text-slate-700">Magazine PDF Buttons</h4>
-                    <button
-                      type="button"
-                      onClick={() => addNmListItem('magazines', { label: '', pdf: undefined })}
-                      className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-indigo-100 transition-all border border-indigo-100"
-                    >
-                      <PlusIcon /> Add
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    {(content.newsletterMagazineSection?.magazines || []).map((item, i) => (
-                      <div key={`magazine-${item.label || 'row'}-${i}`} className="bg-white p-3 rounded-xl border border-slate-200 relative group/row">
-                        <input
-                          id={`departmentform-magazine-label-${i}`}
-                          name={`departmentform-magazine-label-${i}`}
-                          aria-label="departmentform field"
-                          type="text"
-                          placeholder="Button Name (e.g. MAGAZINE 2024-25)"
-                          value={item.label || ''}
-                          onChange={e => updateNmListItem('magazines', i, { ...item, label: e.target.value.slice(0, newsletterMagazineLimits.pdfButtonLabel) })}
-                          maxLength={newsletterMagazineLimits.pdfButtonLabel}
-                          className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
-                        />
-                        <div className="mt-2">
-                          <FileUpload
-                            label="PDF File"
-                            id={`departmentform-magazine-pdf-${i}`}
-                            value={item.pdf || ''}
-                            onChange={f => updateNmListItem('magazines', i, { ...item, pdf: f })}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeNmListItem('magazines', i)}
-                          className="absolute -top-2 -right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all shadow-md"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
-                <h4 className="text-sm font-bold text-slate-700">Staff Incharge</h4>
-                <input
-                  id="departmentform-staff-name"
-                  name="departmentform-staff-name"
-                  aria-label="departmentform field"
-                  type="text"
-                  placeholder="Professor Name"
-                  value={content.newsletterMagazineSection?.staffIncharge?.name || ''}
-                  onChange={e => updateNmStaff({ name: e.target.value.slice(0, newsletterMagazineLimits.staffName) })}
-                  maxLength={newsletterMagazineLimits.staffName}
-                  className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
-                />
-                <ImageUpload
-                  label="Professor Image"
-                  id="departmentform-staff-image"
-                  value={content.newsletterMagazineSection?.staffIncharge?.image || ''}
-                  onChange={f => updateNmStaff({ image: f })}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <input
-                    id="departmentform-staff-email"
-                    name="departmentform-staff-email"
-                    aria-label="departmentform field"
-                    type="email"
-                    placeholder="Email ID"
-                    value={content.newsletterMagazineSection?.staffIncharge?.email || ''}
-                    onChange={e => updateNmStaff({ email: e.target.value.slice(0, newsletterMagazineLimits.email) })}
-                    maxLength={newsletterMagazineLimits.email}
-                    className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-medium outline-none"
-                  />
-                  <input
-                    id="departmentform-staff-phone"
-                    name="departmentform-staff-phone"
-                    aria-label="departmentform field"
-                    type="text"
-                    placeholder="Phone Number"
-                    value={content.newsletterMagazineSection?.staffIncharge?.phone || ''}
-                    onChange={e => updateNmStaff({ phone: e.target.value.slice(0, newsletterMagazineLimits.phone) })}
-                    maxLength={newsletterMagazineLimits.phone}
-                    className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-medium outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
-                <h4 className="text-sm font-bold text-slate-700">Table Content</h4>
-                <input
-                  id="departmentform-table-title"
-                  name="departmentform-table-title"
-                  aria-label="departmentform field"
-                  type="text"
-                  placeholder="Table Name (e.g. ITECH Editorial Committee)"
-                  value={content.newsletterMagazineSection?.tableTitle || ''}
-                  onChange={e => updateNmSection({ tableTitle: e.target.value.slice(0, newsletterMagazineLimits.tableTitle) })}
-                  maxLength={newsletterMagazineLimits.tableTitle}
-                  className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-indigo-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
-                />
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => addNmListItem('tableRows', { post: '', name: '' })}
-                    className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-slate-200 transition-all border border-slate-200"
-                  >
-                    <PlusIcon /> Add Row
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {(content.newsletterMagazineSection?.tableRows || []).map((row, i) => (
-                    <div key={`table-row-${row.post || row.name || 'row'}-${i}`} className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white p-3 rounded-xl border border-slate-200 relative group/row">
-                      <input
-                        id={`departmentform-table-post-${i}`}
-                        name={`departmentform-table-post-${i}`}
-                        aria-label="departmentform field"
-                        type="text"
-                        placeholder="Post"
-                        value={row.post || ''}
-                        onChange={e => updateNmListItem('tableRows', i, { ...row, post: e.target.value.slice(0, newsletterMagazineLimits.tablePost) })}
-                        maxLength={newsletterMagazineLimits.tablePost}
-                        className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-slate-500 rounded-xl px-3 py-2.5 text-xs font-bold outline-none"
-                      />
-                      <input
-                        id={`departmentform-table-name-${i}`}
-                        name={`departmentform-table-name-${i}`}
-                        aria-label="departmentform field"
-                        type="text"
-                        placeholder="Name"
-                        value={row.name || ''}
-                        onChange={e => updateNmListItem('tableRows', i, { ...row, name: e.target.value.slice(0, newsletterMagazineLimits.tableName) })}
-                        maxLength={newsletterMagazineLimits.tableName}
-                        className="w-full bg-white border-0 ring-1 ring-slate-200/50 focus:ring-2 focus:ring-slate-500 rounded-xl px-3 py-2.5 text-xs font-medium outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeNmListItem('tableRows', i)}
-                        className="absolute -top-2 -right-2 w-7 h-7 bg-red-100 text-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/row:opacity-100 transition-all shadow-md"
-                      >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </AdminFormSection>
 
           <AdminFormSection 
             title="Timetable" 
@@ -1153,6 +902,9 @@ export default function DepartmentForm() {
     </div>
   );
 }
+
+
+
 
 
 

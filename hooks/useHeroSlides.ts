@@ -12,11 +12,7 @@ export function useHeroSlides(enabled = true) {
     enabled,
     initialData: [],
     cacheKey: 'public:hero-slides:list',
-    cacheTtlMs: 5 * 60_000,
     refreshIntervalMs: REFRESH_INTERVAL_MS,
-    // Disabled to prevent API flooding on focus/visibility changes
-    revalidateOnFocus: false,
-    revalidateOnVisibility: false,
   });
 
   return { slides: data, loading, error };
