@@ -3,11 +3,16 @@ import { useHomepageData } from '../context/HomepageDataContext';
 import { PixelImage } from '../ui/pixel-image';
 import { useGalleries } from '../hooks/useGalleries';
 import { Link } from 'react-router-dom';
+import type { Gallery as GalleryRecord } from '../admin/types';
 
 interface FallbackGalleryItem {
   title: string;
   subtitle: string;
   src: string;
+}
+
+interface DisplayGalleryItem extends FallbackGalleryItem {
+  id: string;
 }
 
 const fallbackGalleryItems: FallbackGalleryItem[] = [
@@ -66,15 +71,53 @@ const Gallery: React.FC = () => {
   const { galleries: fallbackGalleries } = useGalleries(!useAggregate);
   const galleries = useAggregate ? homepage!.data.galleries : fallbackGalleries;
 
-  const activeGalleries = galleries.filter(g => g.is_active);
-  const displayGalleries = activeGalleries.length > 0
-    ? activeGalleries.map(g => ({
-        title: g.title || '',
-        subtitle: g.subtitle || '',
-        src: g.image_url || '/images/Main Page/gallery/Gallary_1.jpg',
-        id: String(g.id)
-      }))
-    : fallbackGalleryItems.map((fg, i) => ({ ...fg, id: `fallback-${i}` }));
+  const sortedActiveGalleries = [...galleries]
+    .filter((gallery) => gallery.is_active)
+    .sort((a, b) => {
+      const sortOrderDiff = Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0);
+      if (sortOrderDiff !== 0) return sortOrderDiff;
+      return Number(a.id) - Number(b.id);
+    });
+
+  const fallbackTiles: DisplayGalleryItem[] = fallbackGalleryItems.map((item, index) => ({
+    ...item,
+    id: `fallback-${index}`,
+  }));
+
+  const displayGalleries: DisplayGalleryItem[] = fallbackTiles.map((item) => ({ ...item }));
+  const occupiedIndexes = new Set<number>();
+
+  const assignGalleryToIndex = (gallery: GalleryRecord, index: number) => {
+    if (index < 0 || index >= displayGalleries.length) return;
+    displayGalleries[index] = {
+      id: String(gallery.id),
+      title: gallery.title || displayGalleries[index].title,
+      subtitle: gallery.subtitle || displayGalleries[index].subtitle,
+      src: gallery.image_url || displayGalleries[index].src,
+    };
+    occupiedIndexes.add(index);
+  };
+
+  for (const gallery of sortedActiveGalleries) {
+    const explicitIndex = Number(gallery.sort_order ?? 0) - 1;
+    if (explicitIndex >= 0 && explicitIndex < displayGalleries.length && !occupiedIndexes.has(explicitIndex)) {
+      assignGalleryToIndex(gallery, explicitIndex);
+      continue;
+    }
+
+    const titleIndex = displayGalleries.findIndex(
+      (item, index) => !occupiedIndexes.has(index) && item.title.toLowerCase() === (gallery.title || '').toLowerCase(),
+    );
+    if (titleIndex !== -1) {
+      assignGalleryToIndex(gallery, titleIndex);
+      continue;
+    }
+
+    const firstFreeIndex = displayGalleries.findIndex((_, index) => !occupiedIndexes.has(index));
+    if (firstFreeIndex !== -1) {
+      assignGalleryToIndex(gallery, firstFreeIndex);
+    }
+  }
 
   return (
     <section id="gallery" className="py-10 md:py-14 bg-white relative">
