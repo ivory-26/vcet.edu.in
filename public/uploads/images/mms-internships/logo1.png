@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VCET - Vidyavardhini's College of Engineering & Technology</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/Images/VCET%20logo.jpeg" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+      html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* Base 16px — all Tailwind rem utilities stay predictable */
+        font-size: 16px;
+      }
+      body {
+        line-height: 1.6;
+        letter-spacing: -0.01em;
+        min-height: 100vh;
+      }
+      /* Hero background always covers the full viewport */
+      #home {
+        min-height: 100vh;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      /* Intersection observer fade-in utility */
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Smooth hover transitions globally */
+      a, button {
+        transition: all 0.3s ease;
+      }
+      /* Custom scrollbar for placement section */
+      .custom-scrollbar::-webkit-scrollbar { height: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(253,184,19,0.4); border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(253,184,19,0.8); }
+      /* Glassmorphism utility for dept timeline cards */
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+      /* Line clamp utility */
+      .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      .line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+      /* Gradient text utility */
+      .text-gradient {
+        background: linear-gradient(135deg, #1a4b7c 0%, #fdb813 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      /* ── Info Card (editorial header-band) ─────────── */
+      .info-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: 1px solid rgba(18, 58, 110, 0.10);
+        box-shadow: 0 3px 22px rgba(18, 58, 110, 0.08);
+        transition: transform 0.32s ease, box-shadow 0.32s ease;
+      }
+      .info-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 36px rgba(18, 58, 110, 0.14);
+      }
+      .info-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.65rem 1.75rem;
+        background: linear-gradient(90deg, #EEF3F9 0%, #dde8f4 100%);
+        border-bottom: 1px solid rgba(18, 58, 110, 0.10);
+      }
+      .info-card-body {
+        background: #ffffff;
+        padding: 1.5rem 1.75rem 1.85rem;
+      }
+      /* ── Glass Card with Shine Ray ─────────────────── */
+      .glass-card {
+        position: relative;
+        background: rgba(18, 58, 110, 0.055);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(18, 58, 110, 0.13);
+        border-left: 3px solid rgba(26, 79, 140, 0.45);
+        border-radius: 1rem;
+        box-shadow: 0 2px 16px rgba(18, 58, 110, 0.07), inset 0 1px 0 rgba(255,255,255,0.45);
+        overflow: hidden;
+        transition: box-shadow 0.35s ease, transform 0.35s ease, border-color 0.35s ease;
+      }
+      
+      .glass-card > * { position: relative; z-index: 1; }
+      .glass-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 55%;
+        height: 100%;
+        background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+        transition: left 1s ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .glass-card:hover::after { left: 140%; }
+      .glass-card:hover {
+        transform: translateY(-2px);
+        border-left-color: rgba(26, 79, 140, 0.70);
+        box-shadow: 0 6px 24px rgba(18, 58, 110, 0.12), inset 0 1px 0 rgba(255,255,255,0.55);
+      }
+      /* ── Scroll Progress Bar ─────────────────────────── */
+      #scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        width: 0%;
+        background: linear-gradient(90deg, #1a4b7c, #fdb813);
+        z-index: 9999;
+        transition: width 0.08s linear;
+        border-radius: 0 2px 2px 0;
+      }
+      /* ── Scroll-to-Top Button ─────────────────────────── */
+      #scroll-top-btn {
+        position: fixed;
+        bottom: 32px;
+        right: 24px;
+        z-index: 9998;
+        width: 44px;
+        height: 44px;
+        background: #1a4b7c;
+        color: #fdb813;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 0.35s ease, transform 0.35s ease, background 0.2s;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        pointer-events: none;
+      }
+      @media (max-width: 639px) {
+        #scroll-top-btn {
+          bottom: 16px;
+          right: 16px;
+          width: 36px;
+          height: 36px;
+          background: rgba(26, 75, 124, 0.65); /* translucent */
+          backdrop-filter: blur(6px);
+        }
+      }
+      #scroll-top-btn.visible {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: all;
+      }
+      #scroll-top-btn:hover {
+        background: rgba(253, 184, 19, 0.9);
+        color: #1a4b7c;
+        box-shadow: 0 6px 28px rgba(253,184,19,0.4);
+        transform: translateY(-2px);
+      }
+      /* ── Hero entrance animations ─────────────────────── */
+      .hero-anim {
+        opacity: 0;
+        transform: translateY(28px);
+        animation: heroFadeUp 0.8s ease-out forwards;
+      }
+      @keyframes heroFadeUp {
+        to { opacity: 1; transform: translateY(0); }
+      }
+      /* ── Hero background — desktop (mouse): full-cover, no animation ─── */
+      .hero-bg-pan {
+        background-size: cover;
+        background-position: center center;
+      }
+      /* ── Hero background pan — ONLY on touch/mobile devices ─────────── */
+      @media (pointer: coarse) {
+        .hero-bg-pan {
+          background-size: auto 100%;
+          background-position: left center;
+          animation: heroPan 26s ease-in-out infinite alternate;
+        }
+      }
+      @keyframes heroPan {
+        0%   { background-position: left center; }
+        100% { background-position: right center; }
+      }
+      /* ── Animated counter ─────────────────────────────── */
+      .counter-value {
+        display: inline-block;
+        transition: transform 0.3s ease;
+      }
+      /* ── Marquee ticker ───────────────────────────────── */
+      .ticker-wrap {
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .ticker-track {
+        display: inline-flex;
+        animation: ticker 35s linear infinite;
+      }
+      .ticker-track:hover {
+        animation-play-state: paused;
+      }
+      @keyframes ticker {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      /* ── Card tilt microinteraction ───────────────────── */
+      .tilt-card {
+        transform-style: preserve-3d;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .tilt-card:hover {
+        box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+      }
+      /* ── Shimmer loader ───────────────────────────────── */
+      @keyframes shimmer {
+        0%   { background-position: -400px 0; }
+        100% { background-position: 400px 0; }
+      }
+      /* ── Glow pulse for stat tabs ────────────────────── */
+      @keyframes glowPulse {
+        0%, 100% { box-shadow: 0 0 8px rgba(212,168,67,0.3), 0 0 20px rgba(212,168,67,0.1); }
+        50%      { box-shadow: 0 0 16px rgba(212,168,67,0.6), 0 0 40px rgba(212,168,67,0.25); }
+      }
+      .stat-glow {
+        animation: glowPulse 2.5s ease-in-out infinite;
+      }
+    </style>
+
+  <style>
+    .gold-scrollbar::-webkit-scrollbar { width: 6px; }
+    .gold-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 3px; }
+    .gold-scrollbar::-webkit-scrollbar-thumb { background: rgba(253,184,19,0.65); border-radius: 3px; }
+    .gold-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(253,184,19,1); }
+  </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.574.0"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-Crx7qieo.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-C3hwjhmk.css">
+</head>
+  <body class="bg-white text-slate-900 antialiased selection:bg-brand-blue selection:text-white">
+    <!-- Scroll progress bar -->
+    <div id="scroll-progress"></div>
+
+    <!-- Scroll-to-top button -->
+    <button id="scroll-top-btn" aria-label="Scroll to top" title="Back to top">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+
+    <div id="root"></div>
+
+    <script>
+      // Scroll progress bar + scroll-to-top button
+      (function() {
+        var bar = document.getElementById('scroll-progress');
+        var btn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', function() {
+          var scrolled = window.scrollY;
+          var total = document.documentElement.scrollHeight - window.innerHeight;
+          var pct = total > 0 ? (scrolled / total) * 100 : 0;
+          if (bar) bar.style.width = pct + '%';
+          if (btn) {
+            if (scrolled > 400) btn.classList.add('visible');
+            else btn.classList.remove('visible');
+          }
+        }, { passive: true });
+        if (btn) {
+          btn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

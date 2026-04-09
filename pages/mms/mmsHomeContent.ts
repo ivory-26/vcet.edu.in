@@ -146,9 +146,15 @@ export const mmsHomeContent = {
       subtitle: 'Image tab data',
       fieldType: 'image',
       items: [
-        { id: 'i1', imageUrl: '', alt: 'Internship Logo 1' },
-        { id: 'i2', imageUrl: '', alt: 'Internship Logo 2' },
-        { id: 'i3', imageUrl: '', alt: 'Internship Logo 3' },
+        { id: 'i1', imageUrl: '/uploads/images/mms-internships/l2.png', alt: 'Summer Internship Logo 1' },
+        { id: 'i2', imageUrl: '/uploads/images/mms-internships/l7.png', alt: 'Summer Internship Logo 2' },
+        { id: 'i3', imageUrl: '/uploads/images/mms-internships/logo1.png', alt: 'Summer Internship Logo 3' },
+        { id: 'i4', imageUrl: '/uploads/images/mms-internships/dabur.png', alt: 'Dabur' },
+        { id: 'i5', imageUrl: '/uploads/images/mms-internships/davison-instruments.jpg', alt: 'Davison Instruments Pvt. Ltd.' },
+        { id: 'i6', imageUrl: '/uploads/images/mms-internships/aarti-drugs.png', alt: 'Aarti Drugs Ltd.' },
+        { id: 'i7', imageUrl: '/uploads/images/mms-internships/apl.png', alt: 'APL' },
+        { id: 'i8', imageUrl: '/uploads/images/mms-internships/synergy.png', alt: 'Synergy' },
+        { id: 'i9', imageUrl: '/uploads/images/mms-internships/parle.png', alt: 'Parle' },
       ],
     },
     {

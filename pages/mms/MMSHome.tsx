@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../../components/Button';
 import MMSLayout from '../../components/mms/MMSLayout';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
@@ -12,6 +12,7 @@ const sectionKickerClass = 'text-[11px] font-bold uppercase tracking-[0.2em] tex
 export default function MMSHome() {
   const [activeHero, setActiveHero] = useState(0);
   const [data, setData] = useState<any>(null);
+  const internshipsScrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     get<any>('/pages/mms-home')
@@ -53,9 +54,50 @@ const toArray = (obj: any): any[] => {
   };
 
   const internshipsList = toArray(data?.internships);
+  const fallbackInternshipItems = ((getFallback('internships') as any)?.items || []) as Array<Record<string, string>>;
   const internshipsSection = internshipsList.some((i:any)=> i.logo || i.title)
-    ? { id: 'internships', title: "Summer Internship's", items: internshipsList.filter((i:any)=> i.logo || i.title).map((i:any, idx:number) => ({ id: String(idx), imageUrl: resolveApiUrl(i.logo), alt: i.altText || i.title })) }
+    ? {
+      id: 'internships',
+      title: "Summer Internship's",
+      items: [
+        ...internshipsList
+          .filter((i:any)=> i.logo || i.title)
+          .map((i:any, idx:number) => ({
+            id: String(idx),
+            imageUrl: resolveApiUrl(i.logo) || fallbackInternshipItems[idx % Math.max(1, fallbackInternshipItems.length)]?.imageUrl || '',
+            alt: i.altText || i.title || fallbackInternshipItems[idx % Math.max(1, fallbackInternshipItems.length)]?.alt || `Internship logo ${idx + 1}`,
+          })),
+        ...fallbackInternshipItems.filter((item) => {
+          const imageUrl = (item.imageUrl || '').trim();
+          return imageUrl && !internshipsList.some((entry:any) => resolveApiUrl(entry.logo) === imageUrl);
+        }),
+      ].filter((item, index, arr) => {
+        const imageUrl = (item.imageUrl as string) || '';
+        if (!imageUrl) return true;
+        return arr.findIndex((x) => x.imageUrl === imageUrl) === index;
+      }),
+    }
     : getFallback('internships');
+
+  useEffect(() => {
+    const container = internshipsScrollRef.current;
+    const itemsCount = internshipsSection?.items?.length || 0;
+    if (!container || itemsCount <= 1) return;
+
+    const autoScroll = window.setInterval(() => {
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const nextScrollLeft = container.scrollLeft + container.clientWidth * 0.9;
+
+      if (nextScrollLeft >= maxScrollLeft - 4) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+        return;
+      }
+
+      container.scrollTo({ left: nextScrollLeft, behavior: 'smooth' });
+    }, 2800);
+
+    return () => window.clearInterval(autoScroll);
+  }, [internshipsSection?.items?.length]);
 
   const eventsList = toArray(data?.events);
   const eventsSection = eventsList.some((e:any)=> e.image || e.title)
@@ -251,17 +293,21 @@ const toArray = (obj: any): any[] => {
             <h2 className={sectionTitleClass}>{internshipsSection?.title || "Summer Internship's"}</h2>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div
+            ref={internshipsScrollRef}
+            className="flex gap-4 overflow-x-auto pb-2 scroll-smooth snap-x snap-mandatory"
+            aria-label="Summer internship logos"
+          >
             {internshipsSection?.items.map((item, index) => (
               <article
                 key={(item.id as string) || index}
-                className="group flex min-h-[150px] items-center justify-center rounded-xl border border-brand-blue/10 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-blue/25 hover:shadow-md"
+                className="group flex min-h-[220px] w-[92%] shrink-0 snap-start items-center justify-center rounded-xl border border-brand-blue/10 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-blue/25 hover:shadow-md sm:w-[calc(50%-0.5rem)] md:min-h-[260px] md:p-6 lg:w-[calc((100%-2rem)/3)]"
               >
                 {(item.imageUrl as string) ? (
                   <img
                     src={resolveUploadedAssetUrl(item.imageUrl as string) ?? (item.imageUrl as string)}
-                    alt={`Internship logo ${index + 1}`}
-                    className="max-h-20 w-full object-contain"
+                    alt={(item.alt as string) || `Internship logo ${index + 1}`}
+                    className="max-h-[200px] w-full object-contain md:max-h-[230px]"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
