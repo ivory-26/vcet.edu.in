@@ -35,10 +35,9 @@ const ExamTimetable: React.FC = () => {
           if (uploadedPdfs.length > 0) {
              setTimetableGroups([
                {
-                 groupName: 'Latest Uploads',
+                 groupName: 'University Exam Timetable',
                  pdfs: uploadedPdfs
-               },
-               ...defaultTimetableGroups
+               }
              ]);
           }
         }

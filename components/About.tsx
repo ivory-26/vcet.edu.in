@@ -1,14 +1,23 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import SectionHeader from './SectionHeader';
 import { Target, Eye, Users, BookOpen, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
 import { resolveUploadedAssetUrl } from '../utils/uploadedAssets';
-import { useHomepageBanners } from '../hooks/useHomepageBanners';
-import { useGalleries } from '../hooks/useGalleries';
 
 const HOMEPAGE_BG_PATH = '/images/Main Page/Home background/VCET-Home-1-scaled.jpg';
 const HOMEPAGE_BG_URL = resolveUploadedAssetUrl(HOMEPAGE_BG_PATH) ?? HOMEPAGE_BG_PATH;
 const ABOUT_SLIDE_INTERVAL_MS = 4500;
 const ABOUT_MAX_SLIDES = 20;
+const WHO_WE_ARE_IMAGE_PATHS = [
+  '/images/home/who-we-are/who-we-are-01.jpg',
+  '/images/home/who-we-are/who-we-are-02.jpg',
+  '/images/home/who-we-are/who-we-are-03.jpg',
+  '/images/home/who-we-are/who-we-are-04.jpg',
+  '/images/home/who-we-are/who-we-are-05.jpg',
+];
+const WHO_WE_ARE_HARDCODED_SLIDES = WHO_WE_ARE_IMAGE_PATHS.slice(0, ABOUT_MAX_SLIDES).map((path, index) => ({
+  src: resolveUploadedAssetUrl(path) ?? path,
+  alt: `VCET Who We Are ${index + 1}`,
+}));
 
 const ESTABLISHED_DATE = new Date(1994, 6, 1); // July 1994
 const currentYear = new Date().getFullYear();
@@ -72,39 +81,11 @@ const StatCard: React.FC<{ stat: typeof stats[0]; onVisible: () => void }> = ({ 
 };
 
 const About: React.FC = () => {
-  const { banners } = useHomepageBanners();
-  const { galleries } = useGalleries();
   const [aboutSlideIndex, setAboutSlideIndex] = useState(0);
 
-  const aboutSlides = useMemo(() => {
-    const gallerySlides = [...galleries]
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .filter((gallery) => Boolean(gallery.image_url))
-      .slice(0, ABOUT_MAX_SLIDES)
-      .map((gallery) => ({
-        src: gallery.image_url as string,
-        alt: gallery.subtitle || gallery.title || 'VCET Campus',
-      }));
-
-    const bannerSlides = [...banners]
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .filter((banner) => Boolean(banner.image_url))
-      .slice(0, ABOUT_MAX_SLIDES)
-      .map((banner) => ({
-        src: banner.image_url as string,
-        alt: banner.description || banner.title || 'VCET Campus',
-      }));
-
-    if (gallerySlides.length > 0) {
-      return gallerySlides;
-    }
-
-    if (bannerSlides.length > 0) {
-      return bannerSlides;
-    }
-
-    return [{ src: HOMEPAGE_BG_URL, alt: 'VCET Campus' }];
-  }, [banners, galleries]);
+  const aboutSlides = WHO_WE_ARE_HARDCODED_SLIDES.length > 0
+    ? WHO_WE_ARE_HARDCODED_SLIDES
+    : [{ src: HOMEPAGE_BG_URL, alt: 'VCET Campus' }];
 
   useEffect(() => {
     setAboutSlideIndex((previousIndex) => (previousIndex >= aboutSlides.length ? 0 : previousIndex));

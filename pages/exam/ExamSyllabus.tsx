@@ -89,21 +89,7 @@ const ExamSyllabus: React.FC = () => {
           })).filter((group: PDFGroup) => group.pdfs.length > 0);
 
           if (newGroups.length > 0) {
-            const mergedGroups = [...defaultSyllabusGroups];
-            newGroups.forEach(newGroup => {
-              const existingIndex = mergedGroups.findIndex(
-                g => g.groupName.trim().toLowerCase() === newGroup.groupName.trim().toLowerCase()
-              );
-              if (existingIndex !== -1) {
-                mergedGroups[existingIndex] = {
-                  ...mergedGroups[existingIndex],
-                  pdfs: [...newGroup.pdfs, ...mergedGroups[existingIndex].pdfs]
-                };
-              } else {
-                mergedGroups.unshift(newGroup);
-              }
-            });
-            setSyllabusGroups(mergedGroups);
+            setSyllabusGroups(newGroups);
           }
         }
         setLoading(false);
