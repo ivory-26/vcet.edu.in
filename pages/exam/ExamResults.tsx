@@ -116,23 +116,7 @@ const ExamResults: React.FC = () => {
           })).filter((group: PDFGroup) => group.pdfs.length > 0);
 
           if (newGroups.length > 0) {
-            const mergedGroups = [...defaultResultGroups];
-            newGroups.forEach(newGroup => {
-              const existingIndex = mergedGroups.findIndex(
-                g => 
-                  g.groupName.trim().toLowerCase() === newGroup.groupName.trim().toLowerCase() && 
-                  (g.subTitle || '').trim().toLowerCase() === (newGroup.subTitle || '').trim().toLowerCase()
-              );
-              if (existingIndex !== -1) {
-                mergedGroups[existingIndex] = {
-                  ...mergedGroups[existingIndex],
-                  pdfs: [...newGroup.pdfs, ...mergedGroups[existingIndex].pdfs]
-                };
-              } else {
-                mergedGroups.unshift(newGroup);
-              }
-            });
-            setResultGroups(mergedGroups);
+            setResultGroups(newGroups);
           }
         }
         setLoading(false);

@@ -134,9 +134,6 @@ const TeachingLearning: React.FC = () => {
           opacity: 1;
           transform: translateY(0);
         }
-        .container {
-          max-width: 1200px;
-        }
       `}</style>
 
       <PageBanner

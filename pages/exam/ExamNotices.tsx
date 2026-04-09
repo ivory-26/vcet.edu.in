@@ -36,10 +36,9 @@ const ExamNotices: React.FC = () => {
           if (uploadedPdfs.length > 0) {
              setNoticeGroups([
                {
-                 groupName: 'Latest Uploads',
+                 groupName: 'Important Examination Notices',
                  pdfs: uploadedPdfs
-               },
-               ...defaultNoticeGroups
+               }
              ]);
           }
         }

@@ -79,13 +79,13 @@ const TEXAS_GALLERY_IMAGES = [
 
 const TEXAS_COMMITTEE_IMAGES = {
   vikas: {
-    primary: withBaseUrl('uploads/images/texas-instruments-committee-vikas-gupta.png'),
-    fallback: texasCommitteeVikasFallback,
+    primary: withBaseUrl('uploads/images/texas-instruments-committee-shaista-khanam.png'),
+    fallback: texasCommitteeShaistaFallback,
     alt: 'Dr. Vikas Gupta portrait',
   },
   shaista: {
-    primary: withBaseUrl('uploads/images/texas-instruments-committee-shaista-khanam.png'),
-    fallback: texasCommitteeShaistaFallback,
+    primary: withBaseUrl('uploads/images/texas-instruments-committee-vikas-gupta.png'),
+    fallback: texasCommitteeVikasFallback,
     alt: 'Ms. Shaista Khanam portrait',
   },
 };
