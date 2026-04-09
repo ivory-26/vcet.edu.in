@@ -77,6 +77,14 @@ const About: React.FC = () => {
   const [aboutSlideIndex, setAboutSlideIndex] = useState(0);
 
   const aboutSlides = useMemo(() => {
+    const hardcodedSlides = [
+      { src: '/images/about/slide1.jpeg', alt: 'Who We Are Slide 1' },
+      { src: '/images/about/slide2.jpeg', alt: 'Who We Are Slide 2' },
+      { src: '/images/about/slide3.jpeg', alt: 'Who We Are Slide 3' },
+      { src: '/images/about/slide4.jpeg', alt: 'Who We Are Slide 4' },
+      { src: '/images/about/slide5.jpeg', alt: 'Who We Are Slide 5' },
+    ];
+
     const gallerySlides = [...galleries]
       .sort((a, b) => a.sort_order - b.sort_order)
       .filter((gallery) => Boolean(gallery.image_url))
@@ -95,12 +103,11 @@ const About: React.FC = () => {
         alt: banner.description || banner.title || 'VCET Campus',
       }));
 
-    if (gallerySlides.length > 0) {
-      return gallerySlides;
-    }
-
-    if (bannerSlides.length > 0) {
-      return bannerSlides;
+    const combined = [...hardcodedSlides, ...gallerySlides, ...bannerSlides];
+    
+    if (combined.length > 0) {
+      // Allow more slides if combining hardcoded with dynamic
+      return combined.slice(0, Math.max(ABOUT_MAX_SLIDES, hardcodedSlides.length + 5));
     }
 
     return [{ src: HOMEPAGE_BG_URL, alt: 'VCET Campus' }];
