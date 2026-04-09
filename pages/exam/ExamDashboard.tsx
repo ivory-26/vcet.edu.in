@@ -79,7 +79,6 @@ const ExamDashboard: React.FC = () => {
       <PageBanner
         title="Exam Cell"
         breadcrumbs={[
-          { label: 'Academics', href: '/dean-academics' },
           { label: 'Exam Cell' }
         ]}
       />
