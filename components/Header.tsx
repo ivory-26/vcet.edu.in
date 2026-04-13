@@ -135,7 +135,18 @@ const menuGroups: MenuGroup[] = [
     ],
   },
 
-  // 5. RESEARCH
+  // 5. TRAINING & PLACEMENT
+  {
+    label: 'Training & Placement',
+    dropdown: [
+      { label: 'Placement', href: '/placement' },
+      { label: 'Training', href: '/training' },
+      { label: 'E-CELL', href: '/e-cell' },
+      { label: 'IIIC', href: '/iiic' },
+    ],
+  },
+
+  // 6. RESEARCH
   {
     label: 'Research',
     dropdown: [
@@ -153,7 +164,7 @@ const menuGroups: MenuGroup[] = [
     ],
   },
 
-  // 6. FACILITIES
+  // 7. FACILITIES
   {
     label: 'Facilities',
     dropdown: [
@@ -168,7 +179,7 @@ const menuGroups: MenuGroup[] = [
   },
 
 
-  // 7. STUDENT & CAREER
+  // 8. STUDENT & CAREER
   {
     label: 'Student & Career',
     dropdown: [
@@ -216,7 +227,7 @@ const menuGroups: MenuGroup[] = [
   },
 
 
-  // 8. COMMITTEES
+  // 9. COMMITTEES
   {
     label: 'Committees',
     dropdown: [
@@ -237,19 +248,19 @@ const menuGroups: MenuGroup[] = [
     ],
   },
 
-  // 9. ALUMNI
+  // 10. ALUMNI
   {
     label: 'Alumni',
     href: 'https://alumni.vcet.edu.in/',
   },
 
-  // 10. EXAM
+  // 11. EXAM
   {
     label: 'Exam',
     href: '/exam',
   },
 
-  // 11. NAAC ACCREDITATION
+  // 12. NAAC ACCREDITATION
   {
     label: 'NAAC',
     dropdown: [
@@ -273,21 +284,10 @@ const menuGroups: MenuGroup[] = [
     ],
   },
 
-  // 12. ACCREDITATION
+  // 13. ACCREDITATION
   {
     label: 'Accreditation',
     href: resolveUploadedAssetUrl('/pdfs/Accreditation/NBA_Certificate.pdf') || '/pdfs/Accreditation/NBA_Certificate.pdf',
-  },
-
-  // 13. TRAINING & PLACEMENT
-  {
-    label: 'Training & Placement',
-    dropdown: [
-      { label: 'Placement', href: '/placement' },
-      { label: 'Training', href: '/training' },
-      { label: 'E-CELL', href: '/e-cell' },
-      { label: 'IIIC', href: '/iiic' },
-    ],
   },
 ];
 

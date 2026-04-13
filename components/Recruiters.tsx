@@ -626,13 +626,20 @@ const Recruiters: React.FC = () => {
           }}
         >
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#0B3D91" }}>
+            <p className="text-sm font-bold uppercase tracking-widest mb-3" style={{ color: "#0B3D91" }}>
               Highest Package
             </p>
-            <h3 className="text-5xl font-extrabold leading-none" style={{ color: "#F4B400" }}>
-              ₹1.06 Cpa
+            <h3
+              className="text-[38px] sm:text-[50px] font-extrabold leading-none"
+              style={{
+                color: "#F4B400",
+                textShadow: "0 1px 0 rgba(255,255,255,0.35), 0 2px 4px rgba(15, 23, 42, 0.22)",
+              }}
+            >
+              ₹1.06 Crore{' '}
+              <span className="inline-block whitespace-nowrap text-[0.53em] align-middle font-bold tracking-wide">Per Annum</span>
             </h3>
-            <p className="text-sm mt-2" style={{ color: "#64748B" }}>Best offer &middot; 2024-25 batch</p>
+            <p className="text-base mt-2" style={{ color: "#64748B" }}>Best offer &middot; 2024-25 batch</p>
           </div>
           <Bar pct="90%" gold />
         </BentoBox>

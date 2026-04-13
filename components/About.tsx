@@ -158,29 +158,29 @@ const About: React.FC = () => {
           </div>
 
           <div className="space-y-6 reveal" style={{transitionDelay: '0.2s'}}>
-            <div className="group md:-mt-2 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition-all duration-300 hover:border-brand-blue/20 hover:shadow-md">
+            <div className="group md:-mt-2 rounded-2xl border border-brand-blue/15 bg-gradient-to-br from-white via-white to-brand-blue/[0.03] p-8 shadow-sm ring-1 ring-brand-blue/[0.04] transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-blue/30 hover:shadow-md">
               <div className="flex justify-between items-start mb-5">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-blue/8 transition-colors duration-300 group-hover:bg-brand-blue">
                   <Target className="h-6 w-6 text-brand-blue transition-colors group-hover:text-white" />
                 </div>
                 <span className="text-xs font-bold text-brand-gold/40 uppercase tracking-widest">01</span>
               </div>
-              <h3 className="mb-3 text-xl md:text-2xl font-bold text-brand-navy">Our Mission</h3>
-              <p className="text-sm md:text-base leading-relaxed text-slate-600">
-                To provide a dynamic learning environment that fosters innovation, critical thinking, and ethical leadership in engineering and technology.
+              <h3 className="mb-3 text-2xl md:text-[1.65rem] font-bold text-brand-navy">Our Mission</h3>
+              <p className="text-base md:text-lg leading-relaxed text-slate-700">
+                To provide technologically inspiring environment for learning. To promote creativity, innovation and professional activities. To inculcate ethical and moral values. To cater personal, professional and societal needs through quality education.
               </p>
             </div>
 
-            <div className="group md:-mt-1 rounded-2xl border border-gray-100 bg-white p-8 shadow-sm transition-all duration-300 hover:border-brand-blue/20 hover:shadow-md">
+            <div className="group md:-mt-1 rounded-2xl border border-brand-gold/20 bg-gradient-to-br from-white via-white to-brand-gold/[0.05] p-8 shadow-sm ring-1 ring-brand-gold/[0.06] transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-gold/35 hover:shadow-md">
               <div className="flex justify-between items-start mb-5">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-gold/10 transition-colors duration-300 group-hover:bg-brand-gold">
                   <Eye className="h-6 w-6 text-brand-gold transition-colors group-hover:text-white" />
                 </div>
                 <span className="text-xs font-bold text-brand-gold/40 uppercase tracking-widest">02</span>
               </div>
-              <h3 className="mb-3 text-xl md:text-2xl font-bold text-brand-navy">Our Vision</h3>
-              <p className="text-sm md:text-base leading-relaxed text-slate-600">
-                To be a globally recognized centre of excellence, shaping the future through sustainable engineering practices and impactful research.
+              <h3 className="mb-3 text-2xl md:text-[1.65rem] font-bold text-brand-navy">Our Vision</h3>
+              <p className="text-base md:text-lg leading-relaxed text-slate-700">
+                To be a premier institution of technical education, aiming at becoming a valuable resource for industry and society.
               </p>
             </div>
 
