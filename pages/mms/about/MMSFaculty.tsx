@@ -105,6 +105,18 @@ export default function MMSFaculty() {
                   <span className="mt-2 rounded bg-gray-100 px-3 py-0.5 text-center text-xs font-medium text-gray-500">
                     {faculty.designation}
                   </span>
+                  {faculty.email ? (
+                    <a
+                      href={`mailto:${faculty.email}`}
+                      className="mt-2 inline-flex items-center rounded bg-blue-50 px-3 py-1 text-center text-xs font-semibold text-[#1a4b7c] hover:bg-blue-100"
+                    >
+                      {faculty.email}
+                    </a>
+                  ) : (
+                    <span className="mt-2 rounded bg-slate-50 px-3 py-1 text-center text-xs font-medium text-slate-400">
+                      Email not available
+                    </span>
+                  )}
                   <div className="my-3 h-0.5 w-10 bg-gray-300" />
                   <span className="mt-2 text-[11px] font-semibold text-slate-400">#{String(index + 1).padStart(2, '0')}</span>
                 </article>
