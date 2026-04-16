@@ -1035,9 +1035,9 @@ export interface MMSAdmissionData {
   entranceExamination: { primaryExam: string; alternativeExams: { exam: string; }[]; };
   eligibilityCertificates: { certificate: string; }[];
   universityLinks: { link: string; url: string; }[];
-  documentsRequired: { document: string; }[];
+  documentsRequired: { document: string; details?: string; link?: string; }[];
   feeSummary: { description: string; reference: string; };
-  admissionPdf: { label: string; url: string; }[];
+  admissionPdf: { label: string; url: string; pdfFile?: string | File | null; }[];
   updatedAt?: string;
 }
 export type MMSAdmissionPayload = Partial<MMSAdmissionData>;

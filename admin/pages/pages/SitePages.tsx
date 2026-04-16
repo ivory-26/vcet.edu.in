@@ -257,12 +257,12 @@ const mmsEditables = [
   },
   {
     title: 'Admission Details',
-    description: 'Manage admission eligibility, entrance exams, scholarship programs, required documents, fee structure, and admission PDF resources.',
+    description: 'Manage admission eligibility, scholarship notes, required documents with links/details, and fee structure in one consolidated editor.',
     links: [
-      { label: 'Admission Info', to: '/admin/pages/mms/admission/edit' },
-      { label: 'Scholarship', to: '/admin/pages/mms/scholarship/edit' },
-      { label: 'Documents Required', to: '/admin/pages/mms/documents/edit' },
-      { label: 'Fee Structure', to: '/admin/pages/mms/fees/edit' },
+      { label: 'Eligibility Criteria', to: '/admin/pages/mms/admission/edit#eligibilityCriteria' },
+      { label: 'Scholarship', to: '/admin/pages/mms/admission/edit#scholarship' },
+      { label: 'Documents Required', to: '/admin/pages/mms/admission/edit#documentsRequired' },
+      { label: 'Fees Structure', to: '/admin/pages/mms/admission/edit#feeSummary' },
     ],
   },
   {

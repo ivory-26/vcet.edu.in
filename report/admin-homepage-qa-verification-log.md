@@ -51,6 +51,10 @@ Use this section to map QA outcomes to backend/frontend git commits.
 | Admin Panel | MMS Enquiries Excel export | Working | 2026-04-15 | XLSX file download available |
 | Admin Panel | MMS Enquiries PDF export | Working | 2026-04-15 | PDF file download available |
 | Admin Panel | MMS Home content editor | Working | 2026-04-15 | Save and reload verified |
+| Admin Panel | MMS Admission Details consolidated editor | Working | 2026-04-16 | Unified 4-section form (Eligibility, Scholarship, Documents Required, Fees Structure) |
+| Admin Panel | MMS Admission documents richer inputs | Working | 2026-04-16 | Document entries now support title, additional details text, and optional reference link |
+| Admin Panel | MMS Admission list limits removed | Working | 2026-04-16 | Add buttons for exams, notes, links, and documents are no longer capped |
+| Admin Panel | MMS SitePages admission quick-links alignment | Working | 2026-04-16 | Admission card buttons route to section hashes in consolidated admission editor |
 | MMS About | MMS About seeded content load | Working | 2026-04-15 | About, Principal Desk, HOD Desk, Faculty, and DAB now loaded from seeded backend data |
 | MMS About | Faculty email visibility on public page | Working | 2026-04-15 | Faculty cards now display clickable email or fallback text |
 
@@ -144,6 +148,24 @@ Tester: Shubham pawar
 - Seeder executed: `php artisan db:seed --class=MmsPageContentSeeder`.
 - DB key check completed for `mms-about` record.
 - Frontend view updated: `pages/mms/about/MMSFaculty.tsx` now renders `faculty.email`.
+
+#### Result
+- Overall status: Working
+
+### Cycle 006 - 2026-04-16
+Tester: Shubham pawar
+
+#### Verified Working
+- MMS Admission Details admin editor now uses the requested 4-section structure.
+- Documents Required rows now support long-form text and optional reference link per entry.
+- Prior list caps removed from admission editor add-actions (exams, notes, links, documents).
+- Admission Details card in Site Pages now points to the consolidated editor section anchors instead of old separate forms.
+
+#### Technical Verification Notes
+- Updated files: `admin/pages/mms/MMSAdmissionForm.tsx`, `admin/pages/pages/SitePages.tsx`, `admin/types.ts`.
+- Frontend diagnostics: no editor/type errors in changed files.
+- Frontend build executed: `npm run build` in `vcet.edu.in`.
+- Result: build succeeded; existing Vite chunk-size warnings remain unchanged.
 
 #### Result
 - Overall status: Working
