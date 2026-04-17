@@ -120,6 +120,31 @@ const filterFacultyBySelection = (allFaculty: Faculty[], selectedIds: Set<string
   });
 };
 
+const mergeSelectedWithDepartment = (
+  allFaculty: Faculty[],
+  departmentName: string,
+  selectedIds: Set<string>,
+): Faculty[] => {
+  const selected = filterFacultyBySelection(allFaculty, selectedIds).filter((faculty) => {
+    const facultyDepartment = normalizeDepartmentName(faculty?.basicInfo?.department || '');
+    const targetDepartment = normalizeDepartmentName(departmentName);
+
+    return facultyDepartment === targetDepartment;
+  });
+  const departmentFaculty = filterFacultyByDepartment(allFaculty, departmentName);
+
+  if (selected.length === 0) {
+    return departmentFaculty;
+  }
+
+  const selectedIdSet = new Set(selected.map((faculty) => String(faculty.id)));
+  const missingDepartmentFaculty = departmentFaculty.filter(
+    (faculty) => !selectedIdSet.has(String(faculty.id)),
+  );
+
+  return [...selected, ...missingDepartmentFaculty];
+};
+
 const getInitials = (name: string) => {
   const cleanName = name.replace(/^(Dr\.|Mr\.|Ms\.|Mrs\.|Prof\.)\s*/i, '').trim();
   const parts = cleanName.split(' ').filter(Boolean);
@@ -157,10 +182,7 @@ const DepartmentFacultySection: React.FC<DepartmentFacultySectionProps> = ({ dep
     const selectedIdSet = normalizeSelectedFacultyIds(selectedFacultyIds);
 
     const selectFaculty = (allFaculty: Faculty[]): Faculty[] => {
-      const selected = filterFacultyBySelection(allFaculty, selectedIdSet);
-      if (selected.length > 0) return selected;
-
-      return filterFacultyByDepartment(allFaculty, departmentName);
+      return mergeSelectedWithDepartment(allFaculty, departmentName, selectedIdSet);
     };
 
     setLoading(true);

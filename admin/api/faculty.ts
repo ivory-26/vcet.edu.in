@@ -213,7 +213,7 @@ const normalizeItemResponse = (response: ItemResponse<Faculty>): ItemResponse<Fa
 export const facultyApi = {
   list: USE_MOCK
     ? () => mockFacultyApi.list()
-    : () => client.request<ListResponse<Faculty>>('/faculty/all').then(normalizeListResponse),
+    : () => client.request<ListResponse<Faculty>>('/faculty/all?paginate=false').then(normalizeListResponse),
 
   get: USE_MOCK
     ? (id: number | string) => mockFacultyApi.get(String(id))
@@ -285,5 +285,5 @@ export const facultyApi = {
 
   publicList: USE_MOCK
     ? () => mockFacultyApi.list()
-    : () => client.request<ListResponse<Faculty>>('/faculty').then(normalizeListResponse),
+    : () => client.request<ListResponse<Faculty>>('/faculty?paginate=false').then(normalizeListResponse),
 };
