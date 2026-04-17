@@ -107,6 +107,25 @@ export const EMPTY_HOMEPAGE_DATA: HomepageData = {
   },
 };
 
+function sanitizeLegacyRemoteImageUrl(url: string | null): string | null {
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+    const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+    const isLegacyRenderHost = /(?:^|\.)onrender\.com$/i.test(parsed.hostname);
+    const isCurrentRenderHost = /(?:^|\.)onrender\.com$/i.test(currentHost);
+
+    if (isLegacyRenderHost && !isCurrentRenderHost) {
+      return null;
+    }
+  } catch {
+    // Non-absolute URLs are handled as-is.
+  }
+
+  return url;
+}
+
 function normalizeNotice(notice: NoticeRecord): NoticeRecord {
   return {
     ...notice,
@@ -136,6 +155,7 @@ function normalizeHeroSlide(slide: Partial<HeroSlideRecord> & { is_fixed?: boole
   const resolvedImageUrl = shouldUseImageNamePath
     ? resolveUploadedAssetUrl(`/images/${slide.image_name}`)
     : resolveUploadedAssetUrl(slide.image_url ?? null);
+  const sanitizedImageUrl = sanitizeLegacyRemoteImageUrl(resolvedImageUrl);
 
   return {
     id: Number(slide.id ?? 0),
@@ -148,7 +168,7 @@ function normalizeHeroSlide(slide: Partial<HeroSlideRecord> & { is_fixed?: boole
     button_link: slide.button_link ?? null,
     sort_order: Number(slide.sort_order ?? 0),
     is_active: Boolean(slide.is_active),
-    image_url: resolvedImageUrl,
+    image_url: sanitizedImageUrl,
     created_at: slide.created_at ?? '',
     updated_at: slide.updated_at ?? '',
   };
@@ -157,11 +177,14 @@ function normalizeHeroSlide(slide: Partial<HeroSlideRecord> & { is_fixed?: boole
 function normalizeHomepageBanner(
   banner: Partial<HomepageBannerRecord> & { subtitle?: string | null },
 ): HomepageBannerRecord {
+  const resolvedImageUrl = resolveUploadedAssetUrl(banner.image_url ?? null);
+  const sanitizedImageUrl = sanitizeLegacyRemoteImageUrl(resolvedImageUrl);
+
   return {
     id: Number(banner.id ?? 0),
     title: banner.title ?? '',
     description: banner.description ?? banner.subtitle ?? banner.title ?? '',
-    image_url: resolveUploadedAssetUrl(banner.image_url ?? null),
+    image_url: sanitizedImageUrl,
     sort_order: Number(banner.sort_order ?? 0),
     is_active: Boolean(banner.is_active),
     is_fixed: Boolean(banner.is_fixed),

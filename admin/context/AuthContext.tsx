@@ -25,6 +25,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+    const isAdminRoute = currentPath.startsWith('/admin');
+
+    // Public pages do not need an authenticated session check.
+    if (!isAdminRoute) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     let isMounted = true;
 
     authApi
