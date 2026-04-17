@@ -1,9 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Linkedin, Youtube, ArrowRight, MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
 import { resolveBackendHref } from '../utils/uploadedAssets';
 
 const Footer: React.FC = () => {
+  const DEFAULT_COPYRIGHT_YEAR = 2026;
+  const [currentYear, setCurrentYear] = useState<number>(DEFAULT_COPYRIGHT_YEAR);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const resolveServerYear = async () => {
+      try {
+        const response = await fetch(window.location.origin, {
+          method: 'HEAD',
+          cache: 'no-store',
+        });
+        const serverDate = response.headers.get('date');
+        if (!serverDate) return;
+        const parsed = new Date(serverDate);
+        if (Number.isNaN(parsed.getTime())) return;
+        if (mounted) {
+          setCurrentYear(parsed.getUTCFullYear());
+        }
+      } catch {
+        // Keep default year when server date cannot be resolved.
+      }
+    };
+
+    resolveServerYear();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <footer id="footer" className="bg-brand-dark text-white relative overflow-hidden">
       {/* Top decorative line */}
@@ -157,7 +188,7 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-6 border-t border-white/5 text-[11px] text-white/25 uppercase tracking-widest">
-          <p>&copy; 2025 VCET. All Rights Reserved.</p>
+          <p>&copy; {currentYear} VCET. All Rights Reserved.</p>
           <Link
             to="/developers"
             className="mt-2 md:mt-0 text-white/60 hover:text-white transition-all duration-300 drop-shadow-[0_0_6px_rgba(255,255,255,0.25)] hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)]"
