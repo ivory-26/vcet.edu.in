@@ -11,11 +11,27 @@ import AdminFormSection from '../../components/AdminFormSection';
 const inputBase = "w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] transition-all text-slate-700";
 const labelBase = "block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1";
 
+const resolveStaticAssetPath = (value: string): string | null => {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (/^\/(images|pdfs)\//i.test(trimmed)) {
+    return encodeURI(trimmed);
+  }
+  return null;
+};
+
 const resolvePreviewImage = (image: unknown): string => {
-  if (typeof image === 'string') return resolveApiUrl(image);
+  if (typeof image === 'string') {
+    const directPath = resolveStaticAssetPath(image);
+    if (directPath) return directPath;
+    return resolveApiUrl(image) || encodeURI(image);
+  }
   if (image instanceof Blob) return URL.createObjectURL(image);
   if (image && typeof image === 'object' && 'url' in image && typeof (image as { url?: unknown }).url === 'string') {
-    return resolveApiUrl((image as { url: string }).url) || '';
+    const rawUrl = (image as { url: string }).url;
+    const directPath = resolveStaticAssetPath(rawUrl);
+    if (directPath) return directPath;
+    return resolveApiUrl(rawUrl) || encodeURI(rawUrl);
   }
   return '';
 };
