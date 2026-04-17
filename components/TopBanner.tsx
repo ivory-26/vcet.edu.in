@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Phone,
   Mail,
@@ -37,7 +38,11 @@ const TopBanner: React.FC = () => {
         <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 md:py-4">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-4">
             {/* Logo + College Name */}
-            <div className="flex flex-col lg:flex-row items-center text-center lg:text-left gap-3 lg:gap-5 flex-shrink-0 max-w-full">
+            <Link
+              to="/"
+              aria-label="Go to VCET homepage"
+              className="flex flex-col lg:flex-row items-center text-center lg:text-left gap-3 lg:gap-5 flex-shrink-0 max-w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/40 rounded-md"
+            >
               <div className="flex-shrink-0">
                 <img
                   src={VCET_LOGO_URL}
@@ -62,7 +67,7 @@ const TopBanner: React.FC = () => {
                   Approved by AICTE, DTE Maharashtra &bull; An Autonomous Institute Affiliated to University of Mumbai
                 </p>
               </div>
-            </div>
+            </Link>
             {/* closes logo+text unit */}
 
             {/* NAAC & NBA Logos */}
