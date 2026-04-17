@@ -385,7 +385,7 @@ const AirnovaPage: React.FC = () => {
         ]}
       />
 
-      <div className="relative bg-[#1a2b4b] py-16 px-6 overflow-hidden">
+      <div className="relative bg-[#1a2b4b] py-10 md:py-16 px-4 sm:px-6 overflow-hidden">
         <div className="container mx-auto max-w-4xl relative z-10">
           <p className="text-center text-xs font-black uppercase tracking-[0.3em] text-[#ffb100] mb-8 italic">Airnova By The Numbers</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -405,15 +405,15 @@ const AirnovaPage: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-10">
             <aside className="lg:col-span-1">
               <div className="sticky top-28">
-                <nav className="bg-white border border-slate-200 shadow-sm overflow-hidden rounded-xl">
+                <nav className="bg-white border border-slate-200 shadow-sm overflow-x-auto lg:overflow-hidden rounded-xl">
                   <div className="px-5 py-4 border-b border-slate-100 bg-[#1a2b4b]/3">
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#1a2b4b]/50 italic">Navigation</p>
                   </div>
-                  <div className="p-2 space-y-1">
+                  <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible gap-2 lg:gap-1 p-2 no-scrollbar">
                     {tabs.map((tab) => {
                       const isActive = activeTab === tab.id;
                       return (
-                        <button key={tab.id} onClick={() => handleTabChange(tab.id)} className={`w-full text-left flex items-center gap-3.5 px-4 py-3.5 transition-all ${isActive ? 'bg-[#1a2b4b] text-white' : 'text-[#475569] hover:bg-slate-50 hover:text-[#1a2b4b]'}`}>
+                        <button key={tab.id} onClick={() => handleTabChange(tab.id)} className={`w-auto lg:w-full min-w-[210px] sm:min-w-[230px] lg:min-w-0 flex-shrink-0 text-left flex items-center gap-3.5 px-4 py-3.5 transition-all rounded-lg lg:rounded-none ${isActive ? 'bg-[#1a2b4b] text-white' : 'text-[#475569] hover:bg-slate-50 hover:text-[#1a2b4b]'}`}>
                           <div className={`w-9 h-9 flex items-center justify-center ${isActive ? 'bg-white/10' : 'bg-slate-100'}`}>
                             <tab.icon className={`w-4 h-4 ${isActive ? 'text-[#ffb100]' : 'text-[#64748b]'}`} />
                           </div>

@@ -411,20 +411,20 @@ const StudentsClub: React.FC = () => {
             <aside className="lg:col-span-1">
               <div className="sticky top-28 space-y-4">
                 {/* Tab navigation */}
-                <nav className="bg-white border border-slate-200 shadow-sm overflow-hidden rounded-2xl">
+                <nav className="bg-white border border-slate-200 shadow-sm overflow-x-auto lg:overflow-hidden rounded-2xl">
                   {/* Nav header */}
                   <div className="px-5 py-4 border-b border-slate-100 bg-[#1a2b4b]/5">
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#1a2b4b]/50">Navigation</p>
                   </div>
                   {/* Nav items */}
-                  <div className="p-2 space-y-1">
+                  <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible gap-2 lg:gap-1 p-2 no-scrollbar">
                     {tabs.map((tab) => {
                       const isActive = activeTab === tab.id;
                       return (
                         <button
                           key={tab.id}
                           onClick={() => handleTabChange(tab.id)}
-                          className={`w-full text-left flex items-center gap-3.5 px-4 py-3.5 transition-all duration-250 group relative rounded-xl ${isActive
+                          className={`w-auto lg:w-full min-w-[210px] sm:min-w-[230px] lg:min-w-0 flex-shrink-0 text-left flex items-center gap-3.5 px-4 py-3.5 transition-all duration-250 group relative rounded-xl ${isActive
                               ? 'bg-[#1a2b4b] text-white shadow-md'
                               : 'text-[#475569] hover:bg-slate-50 hover:text-[#1a2b4b]'
                             }`}

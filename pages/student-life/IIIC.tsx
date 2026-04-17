@@ -85,25 +85,25 @@ const IIIC: React.FC = () => {
     <PageLayout>
       <PageBanner title="IIIC" breadcrumbs={[{ label: 'IIIC' }]} />
 
-      <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 px-6 lg:px-12 py-12 bg-[#F7F9FC]">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-14 px-4 sm:px-6 lg:px-12 py-8 sm:py-10 lg:py-12 bg-[#F7F9FC]">
         <aside className="w-full lg:w-[320px] flex-shrink-0">
-          <div className="lg:sticky lg:top-28 bg-white border border-[#E5E7EB] shadow-[4px_4px_0_#E5E7EB] overflow-hidden">
-            <nav className="flex flex-col py-2">
+          <div className="lg:sticky lg:top-28 bg-white border border-[#E5E7EB] shadow-[4px_4px_0_#E5E7EB] overflow-x-auto lg:overflow-hidden">
+            <nav className="flex gap-2 px-2 py-2 lg:flex-col lg:gap-0 lg:px-0">
               {sidebarLinks.map((link) => {
                 const isActive = activeId === link.id;
                 return (
                   <button
                     key={link.id}
                     onClick={() => setActiveId(link.id)}
-                    className={`px-6 py-4 text-[15px] text-left transition-all flex items-center justify-between group ${
+                    className={`px-4 py-2.5 lg:px-6 lg:py-4 text-sm lg:text-[15px] text-left transition-all flex items-center justify-between gap-3 group rounded-lg lg:rounded-none whitespace-nowrap ${
                       isActive ? 'bg-[#1a4b7c] text-[#fdb813] font-semibold' : 'text-[#1a4b7c] font-medium hover:bg-slate-50'
                     }`}
                   >
-                    <span className="flex items-center gap-4">
+                    <span className="flex items-center gap-2.5 lg:gap-4 min-w-0">
                       <i className={`ph ${link.icon} text-xl ${isActive ? '' : 'opacity-70'}`} />
                       {link.label}
                     </span>
-                    {isActive && <i className="ph ph-arrow-right text-sm transform group-hover:translate-x-1 transition-transform" />}
+                    {isActive && <i className="hidden lg:inline ph ph-arrow-right text-sm transform group-hover:translate-x-1 transition-transform" />}
                   </button>
                 );
               })}

@@ -723,7 +723,7 @@ const IETE: React.FC = () => {
               <div className="sticky top-20 lg:top-28 space-y-4">
 
                 {/* Tab navigation */}
-                <nav className="bg-white border border-slate-200 shadow-sm">
+                <nav className="bg-white border border-slate-200 shadow-sm overflow-x-auto lg:overflow-hidden">
                   <div className="px-4 md:px-5 py-3 md:py-4 border-b border-slate-100 bg-[#1a2b4b]/3">
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#1a2b4b]/50">Navigation</p>
                   </div>
@@ -735,7 +735,7 @@ const IETE: React.FC = () => {
                           key={tab.id}
                           type="button"
                           onClick={() => handleTabChange(tab.id)}
-                          className={`w-full lg:w-auto flex-shrink-0 text-left flex items-center gap-1.5 lg:gap-3.5 px-2.5 py-2 lg:py-3.5 transition-all duration-250 group relative min-h-[40px] ${
+                          className={`w-auto lg:w-full min-w-[200px] sm:min-w-[220px] lg:min-w-0 flex-shrink-0 text-left flex items-center gap-1.5 lg:gap-3.5 px-2.5 py-2 lg:py-3.5 transition-all duration-250 group relative min-h-[40px] ${
                             isActive
                               ? 'bg-[#1a2b4b] text-white shadow-md'
                               : 'text-[#475569] hover:bg-slate-50 hover:text-[#1a2b4b]'

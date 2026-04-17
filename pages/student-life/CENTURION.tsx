@@ -588,18 +588,18 @@ return (
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-10">
             <aside className="lg:col-span-1">
               <div className="sticky top-28 space-y-4">
-                <nav className="bg-white border border-slate-200 shadow-sm overflow-hidden rounded-xl">
+                <nav className="bg-white border border-slate-200 shadow-sm overflow-x-auto lg:overflow-hidden rounded-xl">
                   <div className="px-5 py-4 border-b border-slate-100 bg-[#1a2b4b]/3">
                     <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#1a2b4b]/50 italic">Navigation</p>
                   </div>
-                  <div className="p-2 space-y-1">
+                  <div className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible gap-2 lg:gap-1 p-2 no-scrollbar">
                     {tabs.map((tab) => {
                       const isActive = activeTab === tab.id;
                       return (
                         <button
                           key={tab.id}
                           onClick={() => handleTabChange(tab.id)}
-                          className={`w-full text-left flex items-center gap-3.5 px-4 py-3.5 transition-all duration-250 group relative ${isActive ? 'bg-[#1a2b4b] text-white shadow-md' : 'text-[#475569] hover:bg-slate-50 hover:text-[#1a2b4b]'
+                          className={`w-auto lg:w-full min-w-[210px] sm:min-w-[230px] lg:min-w-0 flex-shrink-0 text-left flex items-center gap-3.5 px-4 py-3.5 transition-all duration-250 group relative rounded-lg lg:rounded-none ${isActive ? 'bg-[#1a2b4b] text-white shadow-md' : 'text-[#475569] hover:bg-slate-50 hover:text-[#1a2b4b]'
                             }`}
                         >
                           {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-1 bg-[#ffb100]" />}

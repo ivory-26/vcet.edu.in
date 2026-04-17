@@ -507,7 +507,7 @@ const Hackathon: React.FC = () => {
                         <button
                           key={tab.id}
                           onClick={() => handleTabChange(tab.id)}
-                          className={`w-full lg:w-auto flex-shrink-0 text-left flex items-center gap-1.5 lg:gap-3.5 px-2.5 py-2 lg:py-3.5 transition-all duration-250 group relative min-h-[40px] ${isActive
+                          className={`w-auto lg:w-full min-w-[190px] sm:min-w-[220px] lg:min-w-0 flex-shrink-0 text-left flex items-center gap-1.5 lg:gap-3.5 px-2.5 py-2 lg:py-3.5 transition-all duration-250 group relative min-h-[40px] ${isActive
                               ? 'bg-[#1a2b4b] text-white shadow-md'
                               : 'text-[#475569] hover:bg-slate-50 hover:text-[#1a2b4b]'
                             }`}

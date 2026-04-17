@@ -818,22 +818,25 @@ const DesktopDropdownItem: React.FC<DesktopDropdownItemProps> = ({ item, flipSub
 const MobileNestedAccordionItem: React.FC<{ sub: SubItem, onClose: () => void }> = ({ sub, onClose }) => {
   const [open, setOpen] = useState(false);
   const hasLink = Boolean(sub.href);
+  const resolvedSubHref = hasLink ? resolveBackendHref(sub.href) : '';
+  const subIsInternal = resolvedSubHref.startsWith('/');
+  const subIsExternal = resolvedSubHref.startsWith('http') || resolvedSubHref.startsWith('blob:') || resolvedSubHref.startsWith('data:');
 
   return (
     <div>
       <div className="flex items-center justify-between py-2">
         {hasLink ? (
-          sub.href!.startsWith('/') ? (
-            <Link to={sub.href!} onClick={onClose} className="text-[12px] font-medium text-white/70 hover:text-brand-gold transition-colors">
+          subIsInternal ? (
+            <Link to={resolvedSubHref} onClick={onClose} className="text-[13px] font-medium text-white/85 hover:text-brand-gold transition-colors">
               {sub.label}
             </Link>
           ) : (
-            <a href={sub.href!} onClick={onClose} target="_blank" rel="noopener noreferrer" className="text-[12px] font-medium text-white/70 hover:text-brand-gold transition-colors">
+            <a href={resolvedSubHref} onClick={onClose} target={subIsExternal ? '_blank' : '_self'} rel="noopener noreferrer" className="text-[13px] font-medium text-white/85 hover:text-brand-gold transition-colors">
               {sub.label}
             </a>
           )
         ) : (
-          <span className="text-[12px] font-medium text-white/70">{sub.label}</span>
+          <span className="text-[13px] font-medium text-white/85">{sub.label}</span>
         )}
 
         <button onClick={() => setOpen(!open)} className="p-1 text-white/50 hover:text-brand-gold transition-colors">
@@ -841,15 +844,17 @@ const MobileNestedAccordionItem: React.FC<{ sub: SubItem, onClose: () => void }>
         </button>
       </div>
 
-      <div className="overflow-hidden transition-all duration-300" style={{ maxHeight: open ? '1000px' : '0px' }}>
+      <div className="overflow-hidden transition-all duration-300" style={{ maxHeight: open ? '4000px' : '0px' }}>
         <div className="pl-3 border-l border-brand-gold/20 ml-1 space-y-0.5 mt-1">
           {sub.subItems!.map(child => {
-            const isInternal = child.href?.startsWith('/');
-            const cls = "block py-1.5 text-[11px] text-white/40 hover:text-brand-gold transition-colors";
+            const resolvedChildHref = resolveBackendHref(child.href);
+            const isInternal = resolvedChildHref.startsWith('/');
+            const isExternal = resolvedChildHref.startsWith('http') || resolvedChildHref.startsWith('blob:') || resolvedChildHref.startsWith('data:');
+            const cls = "block py-1.5 text-[12px] text-white/70 hover:text-brand-gold transition-colors";
             return isInternal ? (
-              <Link key={child.label} to={child.href!} onClick={onClose} className={cls}>{child.label}</Link>
+              <Link key={child.label} to={resolvedChildHref} onClick={onClose} className={cls}>{child.label}</Link>
             ) : (
-              <a key={child.label} href={child.href!} onClick={onClose} target="_blank" rel="noopener noreferrer" className={cls}>{child.label}</a>
+              <a key={child.label} href={resolvedChildHref} onClick={onClose} target={isExternal ? '_blank' : '_self'} rel="noopener noreferrer" className={cls}>{child.label}</a>
             );
           })}
         </div>
@@ -864,6 +869,7 @@ interface MobileAccordionItemProps {
 }
 const MobileAccordionItem: React.FC<MobileAccordionItemProps> = ({ item, onClose }) => {
   const [open, setOpen] = useState(false);
+  const resolvedItemHref = item.href ? resolveBackendHref(item.href) : '';
 
   if (item.isGroupLabel) {
     return (
@@ -876,29 +882,29 @@ const MobileAccordionItem: React.FC<MobileAccordionItemProps> = ({ item, onClose
   }
 
   if (item.subItems && item.subItems.length > 0) {
-    const hasHref = item.href && item.href.length > 0;
+    const hasHref = resolvedItemHref.length > 0;
     const title = hasHref ? (
-      item.href!.startsWith('/') ? (
+      resolvedItemHref.startsWith('/') ? (
         <Link
-          to={item.href!}
+          to={resolvedItemHref}
           onClick={onClose}
-          className="text-sm font-medium text-white/90 hover:text-brand-gold"
+          className="text-[15px] font-medium text-white/95 hover:text-brand-gold"
         >
           {item.label}
         </Link>
       ) : (
         <a
-          href={item.href!}
+          href={resolvedItemHref}
           onClick={onClose}
-          target="_blank"
+          target={resolvedItemHref.startsWith('http') || resolvedItemHref.startsWith('blob:') || resolvedItemHref.startsWith('data:') ? '_blank' : '_self'}
           rel="noopener noreferrer"
-          className="text-sm font-medium text-white/90 hover:text-brand-gold"
+          className="text-[15px] font-medium text-white/95 hover:text-brand-gold"
         >
           {item.label}
         </a>
       )
     ) : (
-      <span className="text-sm font-medium text-white/90">{item.label}</span>
+      <span className="text-[15px] font-medium text-white/95">{item.label}</span>
     );
 
     return (
@@ -916,31 +922,33 @@ const MobileAccordionItem: React.FC<MobileAccordionItemProps> = ({ item, onClose
         </div>
         <div
           className="overflow-hidden transition-all duration-300"
-          style={{ maxHeight: open ? '1000px' : '0px' }}
+          style={{ maxHeight: open ? '4000px' : '0px' }}
         >
           <div className="pl-4 border-l border-brand-gold/30 ml-2 space-y-0.5">
             {item.subItems.map((sub) => {
               if (sub.subItems && sub.subItems.length > 0) {
                 return <MobileNestedAccordionItem key={sub.label} sub={sub} onClose={onClose} />;
               }
-              const isInternal = sub.href?.startsWith('/');
+              const resolvedSubHref = resolveBackendHref(sub.href);
+              const isInternal = resolvedSubHref.startsWith('/');
+              const isExternal = resolvedSubHref.startsWith('http') || resolvedSubHref.startsWith('blob:') || resolvedSubHref.startsWith('data:');
               return isInternal ? (
                 <Link
                   key={sub.label}
-                  to={sub.href!}
+                  to={resolvedSubHref}
                   onClick={onClose}
-                  className="block py-2 text-[12px] text-white/50 hover:text-brand-gold transition-colors"
+                  className="block py-2 text-[13px] text-white/75 hover:text-brand-gold transition-colors"
                 >
                   {sub.label}
                 </Link>
               ) : (
                 <a
                   key={sub.label}
-                  href={sub.href!}
+                  href={resolvedSubHref}
                   onClick={onClose}
-                  target="_blank"
+                  target={isExternal ? '_blank' : '_self'}
                   rel="noopener noreferrer"
-                  className="block py-2 text-[12px] text-white/50 hover:text-brand-gold transition-colors"
+                  className="block py-2 text-[13px] text-white/75 hover:text-brand-gold transition-colors"
                 >
                   {sub.label}
                 </a>
@@ -952,12 +960,12 @@ const MobileAccordionItem: React.FC<MobileAccordionItemProps> = ({ item, onClose
     );
   }
 
-  if (item.href?.startsWith('/')) {
+  if (resolvedItemHref.startsWith('/')) {
     return (
       <Link
-        to={item.href}
+        to={resolvedItemHref}
         onClick={onClose}
-        className="block py-2.5 text-sm text-white/70 hover:text-brand-gold transition-colors"
+        className="block py-2.5 text-[15px] text-white/80 hover:text-brand-gold transition-colors"
       >
         {item.label}
       </Link>
@@ -965,11 +973,11 @@ const MobileAccordionItem: React.FC<MobileAccordionItemProps> = ({ item, onClose
   }
   return (
     <a
-      href={item.href}
+      href={resolvedItemHref}
       onClick={onClose}
-      target={item.href?.startsWith('http') ? '_blank' : '_self'}
+      target={resolvedItemHref.startsWith('http') || resolvedItemHref.startsWith('blob:') || resolvedItemHref.startsWith('data:') ? '_blank' : '_self'}
       rel="noopener noreferrer"
-      className="block py-2.5 text-sm text-white/70 hover:text-brand-gold transition-colors"
+      className="block py-2.5 text-[15px] text-white/80 hover:text-brand-gold transition-colors"
     >
       {item.label}
     </a>
