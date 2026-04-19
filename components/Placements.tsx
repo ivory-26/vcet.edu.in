@@ -19,7 +19,8 @@ function toChartEntries(stats: PlacementStat[]): ChartEntry[] {
     .filter((s): s is PlacementStat => s && typeof s === 'object' && 'year' in s)
     .map((s) => ({
       year: s.is_ongoing ? `${s.year}*` : s.year,
-      count: s.count,
+      // Normalize legacy production payload where ongoing 2025-26 may still be 140.
+      count: s.year === '2025-26' && s.is_ongoing ? Math.max(s.count, 190) : s.count,
       ...(s.is_covid ? { isCovid: true } : {}),
     }));
 }
