@@ -112,11 +112,22 @@ const SplashScreen: React.FC = () => {
             }
 
             const target = event.currentTarget;
-            if (target.dataset.fallbackApplied === '1') {
-              return;
+            const currentSrc = target.currentSrc || target.src;
+            try {
+              const resolvedCurrent = new URL(currentSrc, window.location.origin).href;
+              const resolvedFallback = new URL(fallbackSrc, window.location.origin).href;
+              if (resolvedCurrent === resolvedFallback) {
+                return;
+              }
+            } catch {
+              if (currentSrc === fallbackSrc) {
+                return;
+              }
             }
 
-            target.dataset.fallbackApplied = '1';
+            if (!fallbackSrc.trim()) {
+              return;
+            }
             target.src = fallbackSrc;
           }}
           className="w-full h-auto block shadow-2xl"
