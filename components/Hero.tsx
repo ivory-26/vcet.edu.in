@@ -22,7 +22,7 @@ import ImagePreviewModal from "./ImagePreviewModal";
 declare global {
   interface Window {
     turnstile?: {
-      render: (container: string, params: any) => string;
+      render: (container: string | HTMLElement, params: any) => string;
       reset: (widgetId?: string) => void;
       getResponse: (widgetId?: string) => string | undefined;
       remove: (widgetId?: string) => void;
@@ -45,15 +45,6 @@ const departments = [
   "Master of Management Studies (MBA)",
 ];
 
-const courses = ["B.E.", "M.E.", "MBA", "MCA"];
-const specializations = [
-  "General",
-  "Cyber Security",
-  "Data Science",
-  "VLSI",
-  "Structural",
-];
-
 const AdmissionForm: React.FC = () => {
   const [form, setForm] = useState({
     name: "",
@@ -62,8 +53,6 @@ const AdmissionForm: React.FC = () => {
     state: "",
     city: "",
     department: "",
-    course: "",
-    specialization: "",
     consent: false,
   });
   const [submitted, setSubmitted] = useState(false);
@@ -300,53 +289,6 @@ const AdmissionForm: React.FC = () => {
                   ))}
                 </select>
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-white/40 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Course + Specialization */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div>
-                <label className={labelCls}>Course</label>
-                <div className="relative">
-                  <select id="hero-select-2" aria-label="hero select field"
-                    name="course"
-                    value={form.course}
-                    onChange={handle}
-                    required
-                    className={selectCls}
-                  >
-                    <option value="" disabled className="bg-brand-dark">
-                      Select
-                    </option>
-                    {courses.map((c) => (
-                      <option key={c} value={c} className="bg-brand-dark">
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-white/40 pointer-events-none" />
-                </div>
-              </div>
-              <div>
-                <label className={labelCls}>Specialization</label>
-                <div className="relative">
-                  <select id="hero-select-3" aria-label="hero select field"
-                    name="specialization"
-                    value={form.specialization}
-                    onChange={handle}
-                    className={selectCls}
-                  >
-                    <option value="" disabled className="bg-brand-dark">
-                      Select
-                    </option>
-                    {specializations.map((s) => (
-                      <option key={s} value={s} className="bg-brand-dark">
-                        {s}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-white/40 pointer-events-none" />
-                </div>
               </div>
             </div>
 
