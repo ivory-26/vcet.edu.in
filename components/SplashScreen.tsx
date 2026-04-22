@@ -12,8 +12,8 @@ const splashImages = [
   },
   {
     src:
-      resolveUploadedAssetUrl('/images/Main Page/Packages/AICTE-Pamphlet_page-0001.jpg') ??
-      '/images/Main Page/Packages/AICTE-Pamphlet_page-0001.jpg',
+      resolveUploadedAssetUrl('/images/about/aicte-pamphlet-banner.jpg') ??
+      '/images/about/aicte-pamphlet-banner.jpg',
     label: 'AICTE Pamphlet',
   },
 ];
