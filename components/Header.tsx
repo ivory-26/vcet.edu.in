@@ -500,10 +500,17 @@ const levenshteinDistance = (a: string, b: string): number => {
 const fuzzyTokenMatch = (term: string, token: string): boolean => {
   if (!term || !token) return false;
   if (token.includes(term) || term.includes(token)) return true;
-  if (term.length <= 2 || token.length <= 2) return false;
+
+  // Keep fuzzy matching conservative to avoid unrelated suggestions.
+  if (term.length < 5 || token.length < 5) return false;
+  if (term[0] !== token[0]) return false;
+
+  const lengthGap = Math.abs(term.length - token.length);
+  if (lengthGap > 1 && Math.max(term.length, token.length) < 9) return false;
+  if (lengthGap > 2) return false;
 
   const distance = levenshteinDistance(term, token);
-  if (term.length <= 5 || token.length <= 5) return distance <= 1;
+  if (Math.max(term.length, token.length) < 9) return distance <= 1;
   return distance <= 2;
 };
 
@@ -748,6 +755,7 @@ function searchPages(query: string, index: SearchEntry[]): SearchEntry[] {
   if (!q) return [];
 
   const terms = uniqueTerms(q.split(/\s+/).filter(Boolean));
+  const allowFuzzy = terms.length > 1 || q.length >= 6;
 
   type Scored = { entry: SearchEntry; score: number };
   const scored: Scored[] = [];
@@ -762,54 +770,61 @@ function searchPages(query: string, index: SearchEntry[]): SearchEntry[] {
     const matchSources: string[] = [];
     let termScore = 0;
     let allMatch = true;
+    let fuzzyTermsUsed = 0;
 
     for (const term of terms) {
-      let best = 0;
+      let directBest = 0;
+      let fuzzyBest = 0;
 
       if (labelNorm.includes(term)) {
-        best = Math.max(best, 70);
+        directBest = Math.max(directBest, 70);
         if (!matchSources.includes('label')) matchSources.push('label');
       }
       if (catNorm.includes(term)) {
-        best = Math.max(best, 24);
+        directBest = Math.max(directBest, 24);
         if (!matchSources.includes('category')) matchSources.push('category');
       }
       if (contextNorm.includes(term)) {
-        best = Math.max(best, 30);
+        directBest = Math.max(directBest, 30);
         if (!matchSources.includes('context')) matchSources.push('context');
       }
       if (hrefNorm.includes(term)) {
-        best = Math.max(best, 26);
+        directBest = Math.max(directBest, 26);
         if (!matchSources.includes('href')) matchSources.push('href');
       }
 
       const keywordExact = keywordNorm.some((token) => token.includes(term));
       if (keywordExact) {
-        best = Math.max(best, 42);
+        directBest = Math.max(directBest, 42);
         if (!matchSources.includes('keywords')) matchSources.push('keywords');
-      } else {
+      } else if (allowFuzzy) {
         const keywordFuzzy = keywordNorm.some((token) => fuzzyTokenMatch(term, token));
         if (keywordFuzzy) {
-          best = Math.max(best, 18);
+          fuzzyBest = Math.max(fuzzyBest, 18);
           if (!matchSources.includes('keywords')) matchSources.push('keywords');
         }
       }
 
       const labelTokens = tokenizeSearch(entry.label);
-      if (best === 0 && labelTokens.some((token) => fuzzyTokenMatch(term, token))) {
-        best = 20;
+      if (allowFuzzy && directBest === 0 && labelTokens.some((token) => fuzzyTokenMatch(term, token))) {
+        fuzzyBest = Math.max(fuzzyBest, 20);
         if (!matchSources.includes('label')) matchSources.push('label');
       }
 
+      const best = directBest > 0 ? directBest : fuzzyBest;
       if (best === 0) {
         allMatch = false;
         break;
       }
 
+      if (directBest === 0 && fuzzyBest > 0) {
+        fuzzyTermsUsed += 1;
+      }
       termScore += best;
     }
 
     if (!allMatch) continue;
+    if (!allowFuzzy && fuzzyTermsUsed > 0) continue;
 
     let score = 0;
     score += termScore;
@@ -821,6 +836,12 @@ function searchPages(query: string, index: SearchEntry[]): SearchEntry[] {
     const acronym = tokenizeSearch(entry.label).map((part) => part[0]).join('');
     if (acronym && acronym.includes(q.replace(/\s+/g, ''))) {
       score += 24;
+    }
+
+    if (fuzzyTermsUsed > 0) {
+      score -= fuzzyTermsUsed * 14;
+      // For single-word fuzzy matches, keep only high-confidence candidates.
+      if (terms.length === 1 && score < 52) continue;
     }
 
     const matchContext = entry.context || (() => {
