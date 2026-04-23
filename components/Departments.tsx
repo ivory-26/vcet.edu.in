@@ -2,6 +2,7 @@ import React from 'react';
 import SectionHeader from './SectionHeader';
 import { FocusCards } from '../ui/focus-cards';
 import type { Card } from '../ui/focus-cards';
+import { resolveUploadedAssetUrl } from '../utils/uploadedAssets';
 
 const departments: Card[] = [
   {
@@ -31,7 +32,9 @@ const departments: Card[] = [
   {
     title: 'Mechanical Engineering',
     description: 'Robotics, Design & Manufacturing',
-    src: '/images/Departments/MMS(MBA)/faciliteis/seminarhall-1.jpeg',
+    src:
+      resolveUploadedAssetUrl('/images/Departments/MMS(MBA)/faciliteis/mechanicaldeptinfra(homepage).jpeg') ??
+      '/images/Departments/MMS(MBA)/faciliteis/mechanicaldeptinfra(homepage).jpeg',
     href: '/mechanical-engineering',
   },
   {
