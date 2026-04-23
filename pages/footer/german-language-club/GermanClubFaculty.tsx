@@ -17,12 +17,12 @@ const GermanClubFaculty: React.FC = () => {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <div className="border border-brand-gold/60 bg-gradient-to-br from-brand-light to-white p-2">
             <div className="flex h-44 w-36 items-center justify-center border border-brand-blue/15 bg-white">
-              <div className="text-center">
-                <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center bg-brand-blue/10 text-brand-blue">
-                  <UserRound className="h-5 w-5" />
-                </div>
-                <p className="text-xs font-semibold text-brand-navy">Image Holder</p>
-              </div>
+              <img
+                src="https://vcet-3vjm.onrender.com/images/Departments/Computer Science & Engineering (Data Science)/csedsfacultyYogesh-Pingle-1.jpg"
+                alt="Dr. Yogesh Pingle"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
             </div>
           </div>
 
