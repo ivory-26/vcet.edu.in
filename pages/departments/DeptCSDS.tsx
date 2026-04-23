@@ -40,6 +40,8 @@ const magazinePdfs = [
   { label: 'MAGAZINE 2021-22', href: '/pdfs/Department/ComputerScienceandEngineering(DataScience)/Magazine/MAGAZINE-2021-22.pdf' },
 ];
 
+const CSDS_HOD_FALLBACK_PATH = '/images/Professor Teacher Profile/Dr.Satish-Salunkhe/imgi_151_Dr.Satish-Salunkhe-244x300.jpg';
+
 const DeptCSDS: React.FC = () => {
   const [activeId, setActiveId] = useState('about');
   const activeLink = sidebarLinks.find(l => l.id === activeId);
@@ -71,7 +73,10 @@ const DeptCSDS: React.FC = () => {
     loadDepartment();
   }, []);
 
-  const hodImageUrl = resolveUploadedAssetUrl(department?.content?.hodImage as string | null);
+  const hodImageUrl =
+    resolveUploadedAssetUrl(department?.content?.hodImage as string | null) ||
+    resolveUploadedAssetUrl(CSDS_HOD_FALLBACK_PATH) ||
+    CSDS_HOD_FALLBACK_PATH;
 
   const newsletters = dynamicApiItems
     .filter(item => item.type === 'newsletter' && item.pdf)
@@ -155,7 +160,16 @@ const DeptCSDS: React.FC = () => {
           {activeId === 'about' && (
             <section className="reveal bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-slate-100">
               <div className="space-y-6 text-slate-600 leading-relaxed text-justify">
-                <DepartmentHodImage imageSrc={hodImageUrl} />
+                <div className="mx-auto max-w-md text-center space-y-4">
+                  <DepartmentHodImage
+                    imageSrc={hodImageUrl}
+                    imageClassName="aspect-[4/5] w-full object-contain bg-white"
+                  />
+                  <div>
+                    <p className="mt-4 text-2xl font-bold text-brand-navy">Dr. Satish Salunkhe</p>
+                    <p className="mt-1 text-sm font-semibold text-brand-gold">Associate Professor &amp; Head Of Department</p>
+                  </div>
+                </div>
                 <p>
                   The Computer Science &amp; Engineering ( Data Science)Department is established in the year 2019.
                   Having started with a four-year undergraduate program, B. E. (CSE -DS), the department is willing

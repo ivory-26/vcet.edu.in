@@ -5,6 +5,7 @@ interface DepartmentHodImageProps {
   imageSrc?: string | null;
   alt?: string;
   className?: string;
+  imageClassName?: string;
   placeholderLabel?: string;
   placeholderHint?: string;
 }
@@ -13,6 +14,7 @@ const DepartmentHodImage: React.FC<DepartmentHodImageProps> = ({
   imageSrc,
   alt = 'Department HOD',
   className = 'mx-auto max-w-md text-center space-y-4',
+  imageClassName = 'aspect-[4/5] w-full object-cover',
   placeholderLabel = 'HOD Image Placeholder',
   placeholderHint = 'Add image later in this area',
 }) => {
@@ -22,7 +24,7 @@ const DepartmentHodImage: React.FC<DepartmentHodImageProps> = ({
     <div className={className}>
       <div className={resolvedImageSrc ? 'overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-sm' : 'rounded-3xl border-2 border-dashed border-blue-200 bg-blue-50/40 px-6 py-12'}>
         {resolvedImageSrc ? (
-          <img src={resolvedImageSrc} alt={alt} className="aspect-[4/5] w-full object-cover" />
+          <img src={resolvedImageSrc} alt={alt} className={imageClassName} />
         ) : (
           <>
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm">
