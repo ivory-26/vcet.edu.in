@@ -6,6 +6,8 @@ import { academicsService, type AcademicDocument } from '../services/academics';
 import { naacScoresService, type DynamicNaacScoreUpload } from '../services/naacScores';
 import { getResearchSection } from '../services/research';
 import { resolveUploadedAssetUrl, resolveBackendHref } from '../utils/uploadedAssets';
+import fallbackFacultyData from './fallbackFaculty.json';
+import { buildRouteCatalogEntries } from '../utils/siteSearchCatalog';
 
 const VCET_LOGO_PATH = '/images/VCET logo.jpeg';
 const VCET_LOGO_URL = resolveUploadedAssetUrl(VCET_LOGO_PATH) ?? VCET_LOGO_PATH;
@@ -398,9 +400,163 @@ interface SearchEntry {
   label: string;
   href: string;
   category: string;
-  keywords: string[];    // extra terms for matching
+  keywords: string[];
+  context?: string;
   external?: boolean;
 }
+
+interface FacultySearchRecord {
+  id?: number | string;
+  slug?: string;
+  is_active?: boolean;
+  basicInfo?: {
+    fullName?: string;
+    department?: string;
+    designation?: string;
+    isActive?: boolean;
+  };
+}
+
+const FALLBACK_FACULTY_SEARCH = (
+  Array.isArray(fallbackFacultyData)
+    ? fallbackFacultyData
+    : ((fallbackFacultyData as unknown) as { data?: FacultySearchRecord[] })?.data
+) as FacultySearchRecord[];
+
+const FOOTER_REPORT_LINKS: SearchEntry[] = [
+  {
+    label: 'Procedure for Student Educational Verification',
+    href: 'https://vcet.edu.in/wp-content/uploads/2021/11/Educational_verification-1-1.pdf',
+    category: 'Reports & Policies',
+    context: 'Useful Link',
+    keywords: ['educational verification', 'verification report', 'student verification', 'education verification'],
+    external: true,
+  },
+  {
+    label: 'VCET HR Policy',
+    href: 'https://vcet.edu.in/NAAC/VCET_HR_POLICY.pdf',
+    category: 'Reports & Policies',
+    context: 'Useful Link',
+    keywords: ['hr policy', 'human resource policy', 'policy document'],
+    external: true,
+  },
+  {
+    label: 'Institute Research Policy',
+    href: 'https://vcet.edu.in/wp-content/uploads/2025/03/Institute-Research-Policy.pdf',
+    category: 'Reports & Policies',
+    context: 'Useful Link',
+    keywords: ['research policy', 'institute policy', 'research guidelines'],
+    external: true,
+  },
+];
+
+const FACULTY_ROUTE_BY_DEPARTMENT: Record<string, string> = {
+  'computer engineering': '/computer-engineering',
+  'computer science and engineering data science': '/cs-data-science',
+  'computer science and data science': '/cs-data-science',
+  'information technology': '/information-technology',
+  'artificial intelligence and data science': '/ai-data-science',
+  'mechanical engineering': '/mechanical-engineering',
+  'electronics and telecommunication engineering': '/electronics-telecommunication',
+  'civil engineering': '/civil-engineering',
+  'first year engineering': '/first-year-engineering',
+};
+
+const normalizeSearchText = (value: string): string =>
+  value
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[_/\\.-]+/g, ' ')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const tokenizeSearch = (value: string): string[] => normalizeSearchText(value).split(' ').filter(Boolean);
+
+const uniqueTerms = (terms: string[]): string[] => Array.from(new Set(terms.filter(Boolean)));
+
+const levenshteinDistance = (a: string, b: string): number => {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+
+  const prev = new Array(b.length + 1).fill(0);
+  const curr = new Array(b.length + 1).fill(0);
+
+  for (let j = 0; j <= b.length; j += 1) prev[j] = j;
+
+  for (let i = 1; i <= a.length; i += 1) {
+    curr[0] = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+    }
+    for (let j = 0; j <= b.length; j += 1) prev[j] = curr[j];
+  }
+
+  return prev[b.length];
+};
+
+const fuzzyTokenMatch = (term: string, token: string): boolean => {
+  if (!term || !token) return false;
+  if (token.includes(term) || term.includes(token)) return true;
+  if (term.length <= 2 || token.length <= 2) return false;
+
+  const distance = levenshteinDistance(term, token);
+  if (term.length <= 5 || token.length <= 5) return distance <= 1;
+  return distance <= 2;
+};
+
+const extractHrefKeywords = (href: string): string[] => {
+  const base = href.split('?')[0] || href;
+  const tokens = tokenizeSearch(base);
+  const fileName = base.split('/').filter(Boolean).pop() || '';
+  const normalizedFile = normalizeSearchText(decodeURIComponent(fileName));
+  return uniqueTerms([...tokens, ...tokenizeSearch(normalizedFile)]);
+};
+
+const normalizeDepartmentKey = (value: string): string =>
+  normalizeSearchText(value)
+    .replace(/\bengg\b/g, 'engineering')
+    .replace(/\btelecomm\b/g, 'telecommunication')
+    .trim();
+
+const buildFacultySearchEntries = (): SearchEntry[] => {
+  return FALLBACK_FACULTY_SEARCH
+    .filter((faculty) => {
+      const isActive = faculty?.basicInfo?.isActive;
+      if (typeof isActive === 'boolean') return isActive;
+      if (typeof faculty.is_active === 'boolean') return faculty.is_active;
+      return Boolean(faculty?.basicInfo?.fullName);
+    })
+    .map((faculty) => {
+      const fullName = faculty?.basicInfo?.fullName?.trim() || 'Faculty Profile';
+      const department = faculty?.basicInfo?.department?.trim() || 'Faculty';
+      const designation = faculty?.basicInfo?.designation?.trim() || '';
+      const normalizedDept = normalizeDepartmentKey(department);
+      const departmentRoute = FACULTY_ROUTE_BY_DEPARTMENT[normalizedDept] || '';
+      const slugOrId = String(faculty.slug || faculty.id || '').trim();
+      const href = departmentRoute && slugOrId ? `${departmentRoute}/faculty/${slugOrId}` : `/faculty/${slugOrId}`;
+
+      return {
+        label: fullName,
+        href,
+        category: 'Faculty',
+        context: designation ? `${designation} · ${department}` : department,
+        keywords: uniqueTerms([
+          ...tokenizeSearch(fullName),
+          ...tokenizeSearch(department),
+          ...tokenizeSearch(designation),
+          ...(slugOrId ? tokenizeSearch(slugOrId) : []),
+          'faculty',
+          'professor',
+          'teacher',
+        ]),
+        external: false,
+      };
+    })
+    .filter((entry) => entry.href !== '/faculty/');
+};
 
 /** Additional keyword aliases so users find pages with natural queries */
 const keywordMap: Record<string, string[]> = {
@@ -506,10 +662,27 @@ const homepageSections: SearchEntry[] = [
 function buildSearchIndex(groups: MenuGroup[]): SearchEntry[] {
   const entries: SearchEntry[] = [];
 
+  const addEntry = (entry: SearchEntry) => {
+    const mergedKeywords = uniqueTerms([
+      ...entry.keywords,
+      ...extractHrefKeywords(entry.href),
+      ...tokenizeSearch(entry.label),
+      ...tokenizeSearch(entry.category),
+    ]);
+
+    const normalized: SearchEntry = {
+      ...entry,
+      keywords: mergedKeywords,
+    };
+
+    if (!entries.some((existing) => existing.href === normalized.href && existing.label === normalized.label)) {
+      entries.push(normalized);
+    }
+  };
+
   for (const group of groups) {
-    // Top-level items with direct href
     if (group.href && !group.dropdown) {
-      entries.push({
+      addEntry({
         label: group.label,
         href: group.href,
         category: group.label,
@@ -517,12 +690,12 @@ function buildSearchIndex(groups: MenuGroup[]): SearchEntry[] {
         external: group.href.startsWith('http'),
       });
     }
-    // Dropdown items
+
     if (group.dropdown) {
       for (const item of group.dropdown) {
         if (item.isGroupLabel) continue;
         if (item.href) {
-          entries.push({
+          addEntry({
             label: item.label,
             href: item.href,
             category: group.label,
@@ -530,11 +703,11 @@ function buildSearchIndex(groups: MenuGroup[]): SearchEntry[] {
             external: item.href.startsWith('http'),
           });
         }
-        // Sub-items
+
         if (item.subItems) {
           for (const sub of item.subItems) {
-            if (sub.href && !entries.some(e => e.href === sub.href && e.label === sub.label)) {
-              entries.push({
+            if (sub.href) {
+              addEntry({
                 label: sub.label,
                 href: sub.href,
                 category: group.label,
@@ -542,10 +715,11 @@ function buildSearchIndex(groups: MenuGroup[]): SearchEntry[] {
                 external: sub.href.startsWith('http'),
               });
             }
+
             if (sub.subItems) {
               for (const deepSub of sub.subItems) {
-                if (deepSub.href && !entries.some(e => e.href === deepSub.href && e.label === deepSub.label)) {
-                  entries.push({
+                if (deepSub.href) {
+                  addEntry({
                     label: deepSub.label,
                     href: deepSub.href,
                     category: group.label,
@@ -561,56 +735,123 @@ function buildSearchIndex(groups: MenuGroup[]): SearchEntry[] {
     }
   }
 
-  // Add homepage sections
-  entries.push(...homepageSections);
+  homepageSections.forEach(addEntry);
+  FOOTER_REPORT_LINKS.forEach(addEntry);
+  buildFacultySearchEntries().forEach(addEntry);
+  buildRouteCatalogEntries().forEach(addEntry);
 
   return entries;
 }
 
 function searchPages(query: string, index: SearchEntry[]): SearchEntry[] {
-  const q = query.toLowerCase().trim();
+  const q = normalizeSearchText(query);
   if (!q) return [];
 
-  const terms = q.split(/\s+/);
+  const terms = uniqueTerms(q.split(/\s+/).filter(Boolean));
 
   type Scored = { entry: SearchEntry; score: number };
   const scored: Scored[] = [];
 
   for (const entry of index) {
-    const labelLower = entry.label.toLowerCase();
-    const catLower = entry.category.toLowerCase();
-    const kwJoined = entry.keywords.join(' ').toLowerCase();
-    const all = `${labelLower} ${catLower} ${kwJoined}`;
+    const labelNorm = normalizeSearchText(entry.label);
+    const catNorm = normalizeSearchText(entry.category);
+    const contextNorm = normalizeSearchText(entry.context || '');
+    const hrefNorm = normalizeSearchText(entry.href);
+    const keywordNorm = uniqueTerms(entry.keywords.flatMap((k) => tokenizeSearch(k)));
 
-    // Every term must match somewhere
-    const allMatch = terms.every(t => all.includes(t));
+    const matchSources: string[] = [];
+    let termScore = 0;
+    let allMatch = true;
+
+    for (const term of terms) {
+      let best = 0;
+
+      if (labelNorm.includes(term)) {
+        best = Math.max(best, 70);
+        if (!matchSources.includes('label')) matchSources.push('label');
+      }
+      if (catNorm.includes(term)) {
+        best = Math.max(best, 24);
+        if (!matchSources.includes('category')) matchSources.push('category');
+      }
+      if (contextNorm.includes(term)) {
+        best = Math.max(best, 30);
+        if (!matchSources.includes('context')) matchSources.push('context');
+      }
+      if (hrefNorm.includes(term)) {
+        best = Math.max(best, 26);
+        if (!matchSources.includes('href')) matchSources.push('href');
+      }
+
+      const keywordExact = keywordNorm.some((token) => token.includes(term));
+      if (keywordExact) {
+        best = Math.max(best, 42);
+        if (!matchSources.includes('keywords')) matchSources.push('keywords');
+      } else {
+        const keywordFuzzy = keywordNorm.some((token) => fuzzyTokenMatch(term, token));
+        if (keywordFuzzy) {
+          best = Math.max(best, 18);
+          if (!matchSources.includes('keywords')) matchSources.push('keywords');
+        }
+      }
+
+      const labelTokens = tokenizeSearch(entry.label);
+      if (best === 0 && labelTokens.some((token) => fuzzyTokenMatch(term, token))) {
+        best = 20;
+        if (!matchSources.includes('label')) matchSources.push('label');
+      }
+
+      if (best === 0) {
+        allMatch = false;
+        break;
+      }
+
+      termScore += best;
+    }
+
     if (!allMatch) continue;
 
-    // Scoring: prefer label match > keyword match > category match
     let score = 0;
-    if (labelLower === q) score += 100; // exact match
-    if (labelLower.startsWith(q)) score += 50;
-    for (const t of terms) {
-      if (labelLower.includes(t)) score += 20;
-      if (kwJoined.includes(t)) score += 10;
-      if (catLower.includes(t)) score += 5;
+    score += termScore;
+
+    if (labelNorm === q) score += 140;
+    if (labelNorm.startsWith(q)) score += 75;
+    if (entry.category.toLowerCase() === 'faculty') score += 12;
+
+    const acronym = tokenizeSearch(entry.label).map((part) => part[0]).join('');
+    if (acronym && acronym.includes(q.replace(/\s+/g, ''))) {
+      score += 24;
     }
-    scored.push({ entry, score });
+
+    const matchContext = entry.context || (() => {
+      if (matchSources.includes('label')) return `Matched by title · ${entry.category}`;
+      if (matchSources.includes('context')) return `Matched in context · ${entry.category}`;
+      if (matchSources.includes('keywords')) return `Matched by keywords · ${entry.category}`;
+      if (matchSources.includes('href')) return 'Matched by file/path keyword';
+      return entry.category;
+    })();
+
+    scored.push({
+      entry: {
+        ...entry,
+        context: matchContext,
+      },
+      score,
+    });
   }
 
-  // Sort by score descending, then alphabetically
   scored.sort((a, b) => b.score - a.score || a.entry.label.localeCompare(b.entry.label));
 
-  // Deduplicate by href (keep highest scored)
   const seen = new Set<string>();
   const results: SearchEntry[] = [];
   for (const s of scored) {
-    if (seen.has(s.entry.href)) continue;
-    seen.add(s.entry.href);
+    const key = `${s.entry.href}::${s.entry.label}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
     results.push(s.entry);
   }
 
-  return results.slice(0, 15); // limit to 15 results
+  return results.slice(0, 20);
 }
 
 /* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1582,7 +1823,9 @@ const Header: React.FC = () => {
                                 {entry.label}
                               </p>
                               <p className="text-[11px] text-white/30 truncate mt-0.5">
-                                {entry.category}{entry.external ? ' · Opens in new tab' : ''}
+                                {entry.category}
+                                {entry.context ? ` · ${entry.context}` : ''}
+                                {entry.external ? ' · Opens in new tab' : ''}
                               </p>
                             </div>
                             <ChevronRight className={`w-4 h-4 flex-shrink-0 transition-all duration-200 ${isSelected ? 'text-brand-gold translate-x-0.5' : 'text-white/10 group-hover:text-white/30'
