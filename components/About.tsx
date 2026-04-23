@@ -113,8 +113,8 @@ const About: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <SectionHeader title="Who We Are" subtitle="Pioneering education for a digital world since 1994 — shaping engineers who build the future." />
 
-        <div className="grid grid-cols-1 gap-10 md:gap-12 lg:grid-cols-2 lg:gap-16 items-start">
-          <div className="space-y-8 reveal">
+        <div className="grid grid-cols-1 gap-10 md:gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="reveal flex h-full flex-col gap-8">
             <p className="text-2xl md:text-3xl font-display font-semibold leading-snug text-slate-800">
               At VCET, we believe education is not just about textbooks. It's about{' '}
               <span className="text-brand-gold">breaking boundaries</span>{' '}
@@ -155,9 +155,15 @@ const About: React.FC = () => {
                 </div>
               )}
             </div>
+
+            <div className="mt-auto grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {stats.map((stat, idx) => (
+                <StatCard key={idx} stat={stat} onVisible={() => {}} />
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-6 reveal" style={{transitionDelay: '0.2s'}}>
+          <div className="reveal flex h-full flex-col gap-6" style={{transitionDelay: '0.2s'}}>
             <div className="group md:-mt-1 rounded-2xl border border-brand-gold/20 bg-gradient-to-br from-white via-white to-brand-gold/[0.05] p-8 shadow-sm ring-1 ring-brand-gold/[0.06] transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-gold/35 hover:shadow-md">
               <div className="flex justify-between items-start mb-5">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-gold/10 transition-colors duration-300 group-hover:bg-brand-gold">
@@ -194,7 +200,7 @@ const About: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 md:gap-4 sm:grid-cols-3">
+            <div className="mt-auto grid grid-cols-1 gap-3 md:gap-4 sm:grid-cols-3">
               {[
                 { icon: MapPin, title: 'Prime Location', desc: '2-minute walk from Vasai Road (W).' },
                 { icon: ShieldCheck, title: 'Trusted Institution', desc: 'Established reputation in engineering education.' },
@@ -213,11 +219,6 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-16">
-          {stats.map((stat, idx) => (
-            <StatCard key={idx} stat={stat} onVisible={() => {}} />
-          ))}
-        </div>
       </div>
     </section>
   );
