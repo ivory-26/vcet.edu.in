@@ -33,6 +33,7 @@ declare global {
 
 const HOMEPAGE_BG_PATH = "/images/Main Page/Home background/VCET-Home-1-scaled.jpg";
 const HOMEPAGE_BG_URL = resolveUploadedAssetUrl(HOMEPAGE_BG_PATH) ?? HOMEPAGE_BG_PATH;
+const TURNSTILE_SITE_KEY = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined)?.trim() || '';
 
 const departmentOptions = [
   { label: "UNDER GRADUATE PROGRAMS (UG)", value: "", disabled: true },
@@ -96,6 +97,11 @@ const AdmissionForm: React.FC = () => {
         return;
       }
 
+      if (!TURNSTILE_SITE_KEY) {
+        setTurnstileError('Security verification is not configured. Please contact support.');
+        return;
+      }
+
       if (widgetId) {
         window.turnstile.remove(widgetId);
       }
@@ -103,7 +109,7 @@ const AdmissionForm: React.FC = () => {
       turnstileContainerRef.current.innerHTML = '';
 
       widgetId = window.turnstile.render(turnstileContainerRef.current, {
-        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY || '',
+        sitekey: TURNSTILE_SITE_KEY,
         callback: (token: string) => {
           setTurnstileToken(token);
           setTurnstileError(null);
