@@ -88,43 +88,69 @@ const AdmissionForm: React.FC = () => {
   const turnstileContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadTurnstileScript = () => {
-      if (document.querySelector('script[src*="turnstile"]')) {
+    let widgetId: string | null = null;
+    let isUnmounted = false;
+
+    const renderWidget = () => {
+      if (isUnmounted || !window.turnstile || !turnstileContainerRef.current) {
         return;
       }
 
+      if (widgetId) {
+        window.turnstile.remove(widgetId);
+      }
+
+      turnstileContainerRef.current.innerHTML = '';
+
+      widgetId = window.turnstile.render(turnstileContainerRef.current, {
+        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY || '',
+        callback: (token: string) => {
+          setTurnstileToken(token);
+          setTurnstileError(null);
+        },
+        'error-callback': () => {
+          setTurnstileError('Verification failed. Please try again.');
+          setTurnstileToken(null);
+        },
+        'expired-callback': () => {
+          setTurnstileToken(null);
+          setTurnstileError('Verification expired. Please try again.');
+        },
+      });
+
+      setTurnstileWidgetId(widgetId);
+    };
+
+    const scriptSelector = 'script[src*="challenges.cloudflare.com/turnstile"]';
+    const existingScript = document.querySelector(scriptSelector) as HTMLScriptElement | null;
+
+    if (window.turnstile) {
+      renderWidget();
+    } else if (existingScript) {
+      if (existingScript.dataset.loaded === 'true') {
+        renderWidget();
+      } else {
+        existingScript.addEventListener('load', renderWidget, { once: true });
+      }
+    } else {
       const script = document.createElement('script');
       script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
       script.async = true;
       script.defer = true;
       script.onload = () => {
-        if (window.turnstile && turnstileContainerRef.current) {
-          const widgetId = window.turnstile.render(turnstileContainerRef.current, {
-            sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY || '',
-            callback: (token: string) => {
-              setTurnstileToken(token);
-              setTurnstileError(null);
-            },
-            'error-callback': () => {
-              setTurnstileError('Verification failed. Please try again.');
-              setTurnstileToken(null);
-            },
-            'expired-callback': () => {
-              setTurnstileToken(null);
-              setTurnstileError('Verification expired. Please try again.');
-            },
-          });
-          setTurnstileWidgetId(widgetId);
-        }
+        script.dataset.loaded = 'true';
+        renderWidget();
       };
       document.head.appendChild(script);
-    };
-
-    loadTurnstileScript();
+    }
 
     return () => {
-      if (turnstileWidgetId && window.turnstile) {
-        window.turnstile.remove(turnstileWidgetId);
+      isUnmounted = true;
+      const script = document.querySelector(scriptSelector) as HTMLScriptElement | null;
+      script?.removeEventListener('load', renderWidget);
+
+      if (widgetId && window.turnstile) {
+        window.turnstile.remove(widgetId);
       }
     };
   }, []);
