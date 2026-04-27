@@ -63,7 +63,7 @@ export default function GoverningCouncil() {
 
   const chairman = data?.chairman || {
     role: 'Chairman',
-    name: 'Sri. Rajendraji Bhat',
+    name: 'Sri. Vikas Vartak',
     description: 'Industrialist'
   };
 
